@@ -4,18 +4,20 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @Autonomous(name="pursuit run", group="pure")
 
 public class MecanumPursuit extends OpMode
 {
-    Vehicle robot = new Vehicle((float)0.0, (float)0.0);
+    Vehicle robot = new Vehicle((float)0.0, (float)0.0, telemetry);
 
 //    private DcMotor testEncoder;
     private DcMotor RF = null;
@@ -23,15 +25,16 @@ public class MecanumPursuit extends OpMode
     private DcMotor LF = null;
     private DcMotor LR = null;
 
-    private DcMotor xEncoder = null;
-    private DcMotor yEncoder = null;
+    private DcMotorEx xEncoder = null;
+    private DcMotorEx yEncoder = null;
 
+    final double encoderWheelRadius = 1.5; //in inches
     final double tickPerRotation = 2400;
     final double inchesPerRotation = 3 * Math.PI;
 
     Telemetry telem;
     HardwareMap hwMap;
-    PVector target1 = new PVector(0,-30);
+    PVector target1 = new PVector(0,30);
 
 
     public void init()
@@ -46,55 +49,81 @@ public class MecanumPursuit extends OpMode
         LR  = hardwareMap.get(DcMotor.class, "lr");
         LR.setDirection(DcMotor.Direction.FORWARD);
 
-        xEncoder  = hardwareMap.get(DcMotor.class, "xEncoder");
+        xEncoder  = hardwareMap.get(DcMotorEx.class, "xEncoder");
         xEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         xEncoder.setDirection((DcMotor.Direction.FORWARD));
 
-        yEncoder  = hardwareMap.get(DcMotor.class, "yEncoder");
+        yEncoder  = hardwareMap.get(DcMotorEx.class, "yEncoder");
         yEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         yEncoder.setDirection((DcMotor.Direction.FORWARD));
+
+        getEncoderTelem();
 
 
     }
 
     public void loop()
     {
-        /* Chassis Control */
-        /** The x-axis of the left joystick on the gamepad. Used for chassis control*/
-        double lStickX = -gamepad1.left_stick_x;
-        /** The x-axis of the right joystick on the gamepad. Used for chassis control*/
-        double rStickX = -gamepad1.right_stick_x;
-        /** The y-axis of the left joystick on the gamepad. Used for chassis control*/
-        double lStickY = gamepad1.left_stick_y;
-        /** The y-axis of the right joystick on the gamepad. Used for chassis control*/
-        double rStickY = gamepad1.right_stick_y;
 
-//        RF.setPower(-gamepad1.right_stick_y);
-//        RR.setPower(-gamepad1.right_stick_y);
-//        LF.setPower(gamepad1.left_stick_y);
-//        LR.setPower(gamepad1.left_stick_y);
-//        joystickDrive(lStickX, lStickY, rStickX, rStickY, .5);
-        robot.location.set(xEncoder.getCurrentPosition(), yEncoder.getCurrentPosition());
+        robot.location.set(getXInchesMoved(), getYInchesMoved());
+//        robot.velocity.set(gamepad1.right_stick_y, gamepad1.left_stick_y);
+
+        robot.velocity.set(getXLinearVelocity(), getYLinearVelocity());
+
+        telemetry.addData("is it 0?: ", robot.velocity);
 
         updateMotors(target1);
 
-        getInchesMoved();
-
     }
 
-    public void getInchesMoved()
+    public void getEncoderTelem()
+    {
+        getXInchesMoved();
+        getYInchesMoved();
+        getXLinearVelocity();
+        getYLinearVelocity();
+    }
+
+    public float getXInchesMoved()
     {
         double inchesX = ((xEncoder.getCurrentPosition() / tickPerRotation) * inchesPerRotation);
+
+//        telemetry.addData("x inches moved: ", inchesX);
+
+        return (float)inchesX;
+    }
+
+    public float getYInchesMoved()
+    {
         double inchesY = ((yEncoder.getCurrentPosition() / tickPerRotation) * inchesPerRotation);
 
-        telemetry.addData("x inches moved: ", inchesX);
-        telemetry.addData("y inches moved: ", inchesY);
+//        telemetry.addData("y inches moved: ", inchesY);
+
+        return (float)inchesY;
+    }
+
+    public float getXLinearVelocity()
+    {
+        double linearX = ((xEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ));
+
+        telemetry.addData("x linear velocity: ", linearX);
+
+        return (float)linearX;
+    }
+
+    public float getYLinearVelocity()
+    {
+        double linearY = ((yEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ));
+
+        telemetry.addData("y linear velocity: ", linearY);
+
+        return (float)linearY;
     }
 
     public void updateMotors(PVector targetPosition)
     {
-        robot.arrive(target1);
-        PVector neededVeloctiy = robot.velocty.copy();
+//        robot.arrive(targetPosition);
+        PVector neededVeloctiy = robot.velocity.copy();
         neededVeloctiy.normalize();
 
         telemetry.addData("needed velocty: ", neededVeloctiy);
@@ -102,7 +131,7 @@ public class MecanumPursuit extends OpMode
         double x = neededVeloctiy.x;
         double y = neededVeloctiy.y;
 
-        joystickDrive(x, y, 0, 0, .5);
+//        joystickDrive(x, y, 0, 0, .5);
     }
 
     public void joystickDrive(double leftStickX, double leftStickY, double rightStickX, double rightStickY, double powerLimit)
