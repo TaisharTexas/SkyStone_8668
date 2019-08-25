@@ -20,10 +20,10 @@ public class MecanumPursuit extends OpMode
     Vehicle robot = new Vehicle((float)0.0, (float)0.0, telemetry);
 
 //    private DcMotor testEncoder;
-    private DcMotor RF = null;
-    private DcMotor RR = null;
-    private DcMotor LF = null;
-    private DcMotor LR = null;
+    private DcMotorEx RF = null;
+    private DcMotorEx RR = null;
+    private DcMotorEx LF = null;
+    private DcMotorEx LR = null;
 
     private DcMotorEx xEncoder = null;
     private DcMotorEx yEncoder = null;
@@ -34,28 +34,28 @@ public class MecanumPursuit extends OpMode
 
     Telemetry telem;
     HardwareMap hwMap;
-    PVector target1 = new PVector(0,30);
+    PVector target1 = new PVector(10,15);
 
 
     public void init()
     {
 
-        RF  = hardwareMap.get(DcMotor.class, "rf");
-        RF.setDirection(DcMotor.Direction.FORWARD);
-        RR  = hardwareMap.get(DcMotor.class, "rr");
-        RR.setDirection(DcMotor.Direction.FORWARD);
-        LF  = hardwareMap.get(DcMotor.class, "lf");
-        LF.setDirection(DcMotor.Direction.FORWARD);
-        LR  = hardwareMap.get(DcMotor.class, "lr");
-        LR.setDirection(DcMotor.Direction.FORWARD);
+        RF  = hardwareMap.get(DcMotorEx.class, "rf");
+        RF.setDirection(DcMotorEx.Direction.FORWARD);
+        RR  = hardwareMap.get(DcMotorEx.class, "rr");
+        RR.setDirection(DcMotorEx.Direction.FORWARD);
+        LF  = hardwareMap.get(DcMotorEx.class, "lf");
+        LF.setDirection(DcMotorEx.Direction.FORWARD);
+        LR  = hardwareMap.get(DcMotorEx.class, "lr");
+        LR.setDirection(DcMotorEx.Direction.FORWARD);
 
         xEncoder  = hardwareMap.get(DcMotorEx.class, "xEncoder");
-        xEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        xEncoder.setDirection((DcMotor.Direction.FORWARD));
+        xEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        xEncoder.setDirection((DcMotorEx.Direction.FORWARD));
 
         yEncoder  = hardwareMap.get(DcMotorEx.class, "yEncoder");
-        yEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        yEncoder.setDirection((DcMotor.Direction.FORWARD));
+        yEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        yEncoder.setDirection((DcMotorEx.Direction.FORWARD));
 
         getEncoderTelem();
 
@@ -115,23 +115,44 @@ public class MecanumPursuit extends OpMode
     {
         double linearY = ((yEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ));
 
-        telemetry.addData("y linear velocity: ", linearY);
+        telemetry.addData("mp.y linear velocity: ", linearY);
 
         return (float)linearY;
     }
 
     public void updateMotors(PVector targetPosition)
     {
-//        robot.arrive(targetPosition);
-        PVector neededVeloctiy = robot.velocity.copy();
-        neededVeloctiy.normalize();
+        robot.arrive(targetPosition);
+//        PVector neededVeloctiy = robot.velocity.copy();
 
-        telemetry.addData("needed velocty: ", neededVeloctiy);
+        telemetry.addData("mp.desired velocty: ", robot.desiredVelocity);
+        telemetry.addData("mp.position: ", robot.location);
 
-        double x = neededVeloctiy.x;
-        double y = neededVeloctiy.y;
+        double x = robot.desiredVelocity.x / robot.maxSpeed; //max speed is 30
+        double y = robot.desiredVelocity.y / robot.maxSpeed;
 
-//        joystickDrive(x, y, 0, 0, .5);
+        telemetry.addData("mp.desired velocity x: ", x);
+        telemetry.addData("mp.desired velocity y: ", y);
+
+       if (x > 0)
+       {
+           x = Range.clip(x, 0.05, 1);
+       }
+       else
+       {
+           x = Range.clip(x, -1, -0.05);
+       }
+
+        if (y > 0)
+        {
+            y = Range.clip(y, 0.05, 1);
+        }
+        else
+        {
+            y = Range.clip(y, -1, -0.05);
+        }
+
+        joystickDrive(-x, -y, 0, 0, .5);
     }
 
     public void joystickDrive(double leftStickX, double leftStickY, double rightStickX, double rightStickY, double powerLimit)
@@ -172,10 +193,11 @@ public class MecanumPursuit extends OpMode
             rightRear = rightRear / max *powerLimit;
         }
 
-        RF.setPower(rightFront);
-        RR.setPower(rightRear);
-        LF.setPower(leftFront);
-        LR.setPower(leftRear);
+        RF.setVelocity(rightFront * 15.7, AngleUnit.RADIANS);
+        RR.setVelocity(rightRear * 15.7, AngleUnit.RADIANS);
+        LF.setVelocity(leftFront * 15.7, AngleUnit.RADIANS);
+        LR.setVelocity(leftRear * 15.7, AngleUnit.RADIANS);
+
 
         //Give the motors the final power values -- sourced from the calculations above.
 

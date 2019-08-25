@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
-import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Vehicle
 {
     public PVector location;
     public PVector velocity;
-    public PVector accleration;
+    public PVector acceleration;
+    public PVector desiredVelocity;
+
     double endZone;
     double maxSpeed;
     double gain;
@@ -17,11 +18,12 @@ public class Vehicle
     Vehicle(float x, float y, Telemetry telem)
     {
         telemetry = telem;
-        accleration = new PVector(0,0);
+        acceleration = new PVector(0, 0);
         velocity = new PVector(0,0);
         location = new PVector(x,y);
+        desiredVelocity = new PVector(0,0);
         endZone = 6; //inch
-        gain = 0.3;
+        gain = 0.5;
 
         // 30 in/sec correlates to maximum unloaded motor speed //
         maxSpeed = 30; //inches/second
@@ -32,18 +34,13 @@ public class Vehicle
 
     public void arrive(PVector target)
     {
-        telemetry.addData("starting location: ",location);
-        telemetry.addData("starting velocity: ",velocity);
-
         //find the needed velocity to move to target and call it desiredVelocity
-        PVector desiredVelocity = PVector.sub(target, location);
+        desiredVelocity = PVector.sub(target, location);
 
-        telemetry.addData("desired velocity: ", desiredVelocity);
+        telemetry.addData("v.desired velocity: ", desiredVelocity);
 
         //speed is the magnitude of desiredVelocity
         float speed = desiredVelocity.mag();
-
-        telemetry.addData("speed: ", speed);
 
         if(speed < endZone)
         {
@@ -56,31 +53,26 @@ public class Vehicle
             desiredVelocity.setMag(maxSpeed);
         }
 
-        telemetry.addData("desired velocity set maxSpd: ", desiredVelocity);
+        telemetry.addData("v.desired velocity set maxSpd: ", desiredVelocity);
 
-        telemetry.addData("the velocity: ",velocity);
 
         // steerAcceleration is the amount of needed change in velocity
         PVector steerAcceleration = PVector.sub(desiredVelocity, velocity);
-
-        telemetry.addData("steerAcceleration: ", steerAcceleration);
-
-        telemetry.addData("the velocity 2: ",velocity);
+        telemetry.addData("v.steerAcceleration: ", steerAcceleration);
 
         // limit rate of change to robot velocity
         steerAcceleration.limit(gain);
 
-        telemetry.addData("limit steerAcceleration: ", steerAcceleration);
+        telemetry.addData("v.limit steerAcceleration: ", steerAcceleration);
 
 
         //corrects robot velocity by adding error (steerAcceleration)
-        velocity.add(steerAcceleration);
+        desiredVelocity = PVector.add(velocity, steerAcceleration);
 
-        telemetry.addData("velocity with Accel: ", velocity);
         //make sure final velocity isn't too fast
-        velocity.limit(maxSpeed);
+        desiredVelocity.limit(maxSpeed);
 
-        telemetry.addData("limited velocity: ", velocity);
+        telemetry.addData("v.desired velocity: ", desiredVelocity);
 
     }
 
