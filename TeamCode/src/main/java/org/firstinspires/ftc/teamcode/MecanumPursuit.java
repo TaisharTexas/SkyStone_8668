@@ -34,7 +34,7 @@ public class MecanumPursuit extends OpMode
 
     Telemetry telem;
     HardwareMap hwMap;
-    PVector target1 = new PVector(10,15);
+    PVector target1 = new PVector(5,20);
 
 
     public void init()
@@ -122,37 +122,19 @@ public class MecanumPursuit extends OpMode
 
     public void updateMotors(PVector targetPosition)
     {
-        robot.arrive(targetPosition);
+        robot.follow();
 //        PVector neededVeloctiy = robot.velocity.copy();
 
         telemetry.addData("mp.desired velocty: ", robot.desiredVelocity);
         telemetry.addData("mp.position: ", robot.location);
 
-        double x = robot.desiredVelocity.x / robot.maxSpeed; //max speed is 30
-        double y = robot.desiredVelocity.y / robot.maxSpeed;
+        double x = robot.desiredVelocity.x / 31.5; //robot.maxSpeed; //max speed is 30
+        double y = robot.desiredVelocity.y / 31.5; // robot.maxSpeed;
 
         telemetry.addData("mp.desired velocity x: ", x);
         telemetry.addData("mp.desired velocity y: ", y);
 
-       if (x > 0)
-       {
-           x = Range.clip(x, 0.05, 1);
-       }
-       else
-       {
-           x = Range.clip(x, -1, -0.05);
-       }
-
-        if (y > 0)
-        {
-            y = Range.clip(y, 0.05, 1);
-        }
-        else
-        {
-            y = Range.clip(y, -1, -0.05);
-        }
-
-        joystickDrive(-x, -y, 0, 0, .5);
+        joystickDrive(-x, -y, 0, 0, 1);
     }
 
     public void joystickDrive(double leftStickX, double leftStickY, double rightStickX, double rightStickY, double powerLimit)
@@ -197,9 +179,6 @@ public class MecanumPursuit extends OpMode
         RR.setVelocity(rightRear * 15.7, AngleUnit.RADIANS);
         LF.setVelocity(leftFront * 15.7, AngleUnit.RADIANS);
         LR.setVelocity(leftRear * 15.7, AngleUnit.RADIANS);
-
-
-        //Give the motors the final power values -- sourced from the calculations above.
 
 
 //////////////////////////////////////////////////////////////////////////
