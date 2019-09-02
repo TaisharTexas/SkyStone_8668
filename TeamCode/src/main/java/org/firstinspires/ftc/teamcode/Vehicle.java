@@ -18,6 +18,9 @@ public class Vehicle
     double maxSpeed;
     double gain;
 
+    int currentSegment = 0;
+    boolean lastSegment = false;
+
     Telemetry telemetry;
 
     Vehicle(float x, float y, Telemetry telem)
@@ -28,11 +31,12 @@ public class Vehicle
         location = new PVector(x,y);
         desiredVelocity = new PVector(0,0);
         endZone = 6; //inch
-        gain = 35;
 
         // 30 in/sec correlates to maximum unloaded motor speed //
-        maxSpeed = 15; //inches/second
+        maxSpeed = 13; //inches/second
         //30.615 in/sec = 15.7 rad/sec * 1.3 gearing * 1.5 in wheel radius
+
+        gain = maxSpeed * 2.3;
 
 
     }
@@ -85,20 +89,25 @@ public class Vehicle
      * Given a start waypoint and end waypoint, take the robot's current location and move the robot
      * first to the start point and then to the end point.
      */
-    public void follow()
+    public void follow(Path drivePath)
     {
         double radius = 5;
         PVector target;
 
-        PVector start = new PVector(20,0);
-        PVector end = new PVector(0,30);
+        PVector start = drivePath.pathPoints.get(currentSegment);
+        PVector end = drivePath.pathPoints.get(currentSegment + 1);
+
+        if(drivePath.pathPoints.size() == currentSegment + 2)
+        {
+            lastSegment = true;
+        }
 
         PVector velocityCopy = velocity.copy();
         velocityCopy.setMag(2);
 
         PVector projectedLoc = PVector.add(location, velocityCopy);
 
-        if(projectedLoc.dist(end) < radius)
+        if(projectedLoc.dist(end) < radius && lastSegment)
         {
             target = end.copy();
         }
@@ -106,11 +115,25 @@ public class Vehicle
         {
             PVector normalPoint = getNormalPoint(projectedLoc, start, end);
 
+            if(normalPoint.dist(end) > start.dist(end))
+            {
+                normalPoint = start;
+            }
+            else if(normalPoint.dist(start) > end.dist(start))
+            {
+                normalPoint = end;
+            }
+
             PVector pathDirection = PVector.sub(end, start);
             pathDirection.setMag(5.0);
 
             target = normalPoint.copy();
             target.add(pathDirection);
+        }
+
+        if(location.dist(end) < radius && !lastSegment)
+        {
+            currentSegment++;
         }
 
         arrive(target);

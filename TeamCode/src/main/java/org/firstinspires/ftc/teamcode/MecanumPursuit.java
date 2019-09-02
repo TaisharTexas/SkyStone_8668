@@ -36,6 +36,8 @@ public class MecanumPursuit extends OpMode
     HardwareMap hwMap;
     PVector target1 = new PVector(5,20);
 
+    Path drivePath = new Path();
+
 
     public void init()
     {
@@ -58,6 +60,13 @@ public class MecanumPursuit extends OpMode
         yEncoder.setDirection((DcMotorEx.Direction.FORWARD));
 
         getEncoderTelem();
+
+        drivePath.addPoint(0, 20);
+        drivePath.addPoint(20, 25);
+        drivePath.addPoint(20,45);
+        drivePath.addPoint(0, 45);
+        drivePath.addPoint(0,0);
+        drivePath.addPoint(40, 15);
 
 
     }
@@ -122,7 +131,7 @@ public class MecanumPursuit extends OpMode
 
     public void updateMotors(PVector targetPosition)
     {
-        robot.follow();
+        robot.follow(drivePath);
 //        PVector neededVeloctiy = robot.velocity.copy();
 
         telemetry.addData("mp.desired velocty: ", robot.desiredVelocity);
