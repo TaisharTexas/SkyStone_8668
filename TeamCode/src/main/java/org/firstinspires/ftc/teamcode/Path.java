@@ -5,18 +5,19 @@ import java.util.ArrayList;
 public class Path
 {
     ArrayList<PVector> pathPoints;
-    public double radius;
+    ArrayList<Double> maxSpeeds;
 
 
     Path()
     {
-        radius = 20;
         pathPoints = new ArrayList<PVector>();
+        maxSpeeds = new ArrayList<Double>();
     }
 
-    public void addPoint(float x, float y)
+    public void addPoint(float x, float y, double maxSpeed)
     {
         PVector point = new PVector(x, y);
         pathPoints.add(point);
+        maxSpeeds.add(maxSpeed);
     }
 }

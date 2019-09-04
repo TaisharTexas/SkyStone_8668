@@ -61,12 +61,13 @@ public class MecanumPursuit extends OpMode
 
         getEncoderTelem();
 
-        drivePath.addPoint(0, 20);
-        drivePath.addPoint(20, 25);
-        drivePath.addPoint(20,45);
-        drivePath.addPoint(0, 45);
-        drivePath.addPoint(0,0);
-        drivePath.addPoint(40, 15);
+        drivePath.addPoint(0,0,18);
+        drivePath.addPoint(0, 30, 18);
+        drivePath.addPoint(30, 30, 13);
+        drivePath.addPoint(30,50, 30);
+        drivePath.addPoint(30, 0, 20);
+        drivePath.addPoint(0,0,20);
+
 
 
     }
