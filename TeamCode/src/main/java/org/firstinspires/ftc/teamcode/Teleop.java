@@ -102,7 +102,7 @@ public class Teleop extends OpMode
         if (Math.abs(rightRear) > max)  { max = Math.abs(rightRear); }
 
         //Set the minimum and maximum power allowed for drive moves and compare it to the parameter powerLimit.
-        powerLimit = Range.clip(powerLimit, .05, 1);
+        powerLimit = Range.clip(powerLimit, .05, afterburners());
         //If max still equals zero after checking all four motors, then set the max to 1
         if (max == 0.0)
         {
@@ -209,6 +209,22 @@ public class Teleop extends OpMode
         telemetry.addData("y linear velocity: ", linearY);
 
         return (float)linearY;
+    }
+
+    public double afterburners()
+    {
+        double maximumSpeed;
+
+        if(gamepad1.right_bumper)
+        {
+            maximumSpeed = 1;
+        }
+        else
+        {
+            maximumSpeed = .5;
+        }
+
+        return maximumSpeed;
     }
 
     public void stop()

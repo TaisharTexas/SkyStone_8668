@@ -15,6 +15,7 @@ public class Vehicle
     public PVector velocity;
     public PVector acceleration;
     public PVector desiredVelocity;
+    public double currentHeading;
 
     double endZone;
     double maxSpeed;
@@ -42,8 +43,17 @@ public class Vehicle
         gainValue = 2.3;
         gain = maxSpeed * gainValue;
 
+    }
+
+
+    public void point(double targetHeading)
+    {
+        double desiredAngularVelocity = targetHeading-currentHeading;
+
+        double turnAcceleration = (desiredAngularVelocity - currentVelocity) * turnGain;
 
     }
+
 
     public void arrive(PVector target, double theMaxSpeed)
     {

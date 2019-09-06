@@ -8,6 +8,12 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -28,6 +34,8 @@ public class MecanumPursuit extends OpMode
 
     private DcMotorEx xEncoder = null;
     private DcMotorEx yEncoder = null;
+
+    private BNO055IMU gyro;
 
     final double encoderWheelRadius = 1.5; //in inches
     final double tickPerRotation = 2400;
@@ -60,13 +68,37 @@ public class MecanumPursuit extends OpMode
         yEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         yEncoder.setDirection((DcMotorEx.Direction.FORWARD));
 
+        try
+        {
+            // Set up the parameters with which we will use our IMU. Note that integration
+            // algorithm here just reports accelerations to the logcat log; it doesn't actually
+            // provide positional information.
+            BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+            parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+            parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+            parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+            parameters.loggingEnabled = true;
+            parameters.loggingTag = "IMU";
+            parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+            // Retrieve and initialize the IMU.
+            gyro = hwMap.get(BNO055IMU.class, "imu");
+            gyro.initialize(parameters);
+        }
+        catch (Exception p_exeception)
+        {
+            telem.addData("imu not found in config file", 0);
+            gyro = null;
+        }
+
         getEncoderTelem();
 
         drivePath.addPoint(0,0,18);
-        drivePath.addPoint(0, 30, 18);
-        drivePath.addPoint(30, 30, 13);
-        drivePath.addPoint(30,50, 30);
-        drivePath.addPoint(30, 0, 20);
+        drivePath.addPoint(0, 20, 18);
+        drivePath.addPoint(20, 20, 13);
+        drivePath.addPoint(20,40, 30);
+        drivePath.addPoint(40, 0, 20);
+//        drivePath.addPoint(30,0,20);
         drivePath.addPoint(0,0,20);
 
         ComputerDebugging.clearLogPoints();
@@ -231,6 +263,24 @@ public class MecanumPursuit extends OpMode
 //        }
 //////////////////////////////////////////////////////////////////////////////////
 
+    }
+
+    /**
+     * Used to get the robot's heading.
+     *
+     * @return  the robot's heading as an double
+     */
+    public double getHeading()
+    {
+        Orientation angles = gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        return AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle));
+    }
+
+    public double getVelocity()
+    {
+        double gyroReading;
+        gyroReading = gyro.getAngularVelocity().toAngleUnit(AngleUnit.DEGREES);
+        return
     }
 
     public void stop()

@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
-
 import org.firstinspires.ftc.teamcode.Vehicle;
 import org.firstinspires.ftc.teamcode.PVector;
-
 import java.text.DecimalFormat;
 
 public class ComputerDebugging
