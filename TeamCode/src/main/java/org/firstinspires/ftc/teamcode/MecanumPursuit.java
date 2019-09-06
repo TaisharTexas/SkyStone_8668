@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
@@ -112,6 +113,8 @@ public class MecanumPursuit extends OpMode
 //        robot.velocity.set(gamepad1.right_stick_y, gamepad1.left_stick_y);
 
         robot.velocity.set(getXLinearVelocity(), getYLinearVelocity());
+        robot.currentHeading = getHeading();
+        robot.currentAngularVelocity = getVelocity();
 
         telemetry.addData("is it 0?: ", robot.velocity);
 
@@ -278,9 +281,9 @@ public class MecanumPursuit extends OpMode
 
     public double getVelocity()
     {
-        double gyroReading;
-        gyroReading = gyro.getAngularVelocity().toAngleUnit(AngleUnit.DEGREES);
-        return
+        AngularVelocity gyroReading;
+        gyroReading = gyro.getAngularVelocity();
+        return gyroReading.xRotationRate;
     }
 
     public void stop()
