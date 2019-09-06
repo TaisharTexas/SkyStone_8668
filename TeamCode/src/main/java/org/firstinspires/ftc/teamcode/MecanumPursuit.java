@@ -69,7 +69,7 @@ public class MecanumPursuit extends OpMode
         drivePath.addPoint(30, 0, 20);
         drivePath.addPoint(0,0,20);
 
-
+        ComputerDebugging.clearLogPoints();
 
     }
 
@@ -86,6 +86,8 @@ public class MecanumPursuit extends OpMode
         updateMotors(target1);
 
         thePublisher.sendRobotLocation(robot);
+        thePublisher.sendLogPoint(robot.location);
+        thePublisher.markEndOfUpdate();
 
     }
 
