@@ -42,8 +42,6 @@ public class MecanumPursuit extends OpMode
     final double tickPerRotation = 2400;
     final double inchesPerRotation = 3 * Math.PI;
 
-    Telemetry telem;
-    HardwareMap hwMap;
     PVector target1 = new PVector(5,20);
 
     Path drivePath = new Path();
@@ -83,24 +81,22 @@ public class MecanumPursuit extends OpMode
             parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
             // Retrieve and initialize the IMU.
-            gyro = hwMap.get(BNO055IMU.class, "imu");
+            gyro = hardwareMap.get(BNO055IMU.class, "imu");
             gyro.initialize(parameters);
         }
         catch (Exception p_exeception)
         {
-            telem.addData("imu not found in config file", 0);
+            telemetry.addData("imu not found in config file", 0);
             gyro = null;
         }
 
         getEncoderTelem();
 
-        drivePath.addPoint(0,0,18);
-        drivePath.addPoint(0, 20, 18);
-        drivePath.addPoint(20, 20, 13);
-        drivePath.addPoint(20,40, 30);
-        drivePath.addPoint(40, 0, 20);
-//        drivePath.addPoint(30,0,20);
-        drivePath.addPoint(0,0,20);
+        drivePath.addPoint(0,0,20,0);
+        drivePath.addPoint(0, 20, 20, 90);
+//        drivePath.addPoint(20, 20, 20, -90);
+//        drivePath.addPoint(0,0,10,0);
+
 
         ComputerDebugging.clearLogPoints();
 
@@ -181,10 +177,12 @@ public class MecanumPursuit extends OpMode
         double x = robot.desiredVelocity.x / 31.5; //robot.maxSpeed; //max speed is 30
         double y = robot.desiredVelocity.y / 31.5; // robot.maxSpeed;
 
+        double turn = robot.joystickAngularVelocity / 343;
+
         telemetry.addData("mp.desired velocity x: ", x);
         telemetry.addData("mp.desired velocity y: ", y);
 
-        joystickDrive(-x, -y, 0, 0, 1);
+        joystickDrive(-x, -y, turn, 0, 1);
     }
 
     public void joystickDrive(double leftStickX, double leftStickY, double rightStickX, double rightStickY, double powerLimit)

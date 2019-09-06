@@ -17,6 +17,7 @@ public class Vehicle
     public PVector desiredVelocity;
     public double currentHeading;
     public double currentAngularVelocity;
+    public double joystickAngularVelocity;
 
     double endZone;
     double maxSpeed;
@@ -45,16 +46,29 @@ public class Vehicle
         gainValue = 2.3;
         gain = maxSpeed * gainValue;
 
-        turnGain = .4;
+        //unit: Degrees per second turned -- max turn rate is 343 Degrees/sec
+        turnGain = 200;
 
     }
 
 
-    public void point(double targetHeading)
+
+    public void point(double targetHeading, double theMaxTurnSpeed)
     {
         double desiredAngularVelocity = targetHeading-currentHeading;
 
-        double turnAcceleration = (desiredAngularVelocity - currentAngularVelocity) * turnGain;
+        if(Math.abs(desiredAngularVelocity) < 20)
+        {
+            float m = scaleVector((float)desiredAngularVelocity, 0,20,0,(float)theMaxTurnSpeed);
+            desiredAngularVelocity = m * Math.signum(desiredAngularVelocity);
+        }
+
+//        double turnAcceleration = (desiredAngularVelocity - currentAngularVelocity) * turnGain;
+
+        double requiredAngularAccel = desiredAngularVelocity - currentAngularVelocity;
+        requiredAngularAccel = Range.clip(requiredAngularAccel, -turnGain, turnGain);
+
+        joystickAngularVelocity = currentAngularVelocity + requiredAngularAccel;
 
     }
 
@@ -92,7 +106,6 @@ public class Vehicle
 
 //        telemetry.addData("v.limit steerAcceleration: ", steerAcceleration);
 
-
         //corrects robot velocity by adding error (steerAcceleration)
         desiredVelocity = PVector.add(velocity, steerAcceleration);
 
@@ -116,6 +129,7 @@ public class Vehicle
         PVector end = drivePath.pathPoints.get(currentSegment + 1);
 
         double theMaxSpeed = drivePath.maxSpeeds.get(currentSegment);
+        double theTargetHeading = drivePath.targetHeadings.get(currentSegment);
 
         if(theMaxSpeed > 20)
         {
@@ -169,6 +183,7 @@ public class Vehicle
         }
 
         arrive(target, theMaxSpeed);
+        point(theTargetHeading, 200);
     }
 
 
