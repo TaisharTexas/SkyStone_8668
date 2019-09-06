@@ -18,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 public class MecanumPursuit extends OpMode
 {
     Vehicle robot = new Vehicle((float)0.0, (float)0.0, telemetry);
+    ComputerDebugging thePublisher = new ComputerDebugging();
 
 //    private DcMotor testEncoder;
     private DcMotorEx RF = null;
@@ -83,6 +84,8 @@ public class MecanumPursuit extends OpMode
         telemetry.addData("is it 0?: ", robot.velocity);
 
         updateMotors(target1);
+
+        thePublisher.sendRobotLocation(robot);
 
     }
 

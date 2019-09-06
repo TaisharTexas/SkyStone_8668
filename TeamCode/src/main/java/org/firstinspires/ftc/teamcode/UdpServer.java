@@ -1,6 +1,8 @@
-package org.firstinspires.ftc.teamcode.sbfServer;
+package org.firstinspires.ftc.teamcode;
 
 
+
+import com.qualcomm.robotcore.util.Range;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -83,6 +85,7 @@ public class UdpServer implements Runnable{
         do {
             //We will start the end index approximately 600 away. But can't be greater
             //than the message length
+
             endIndex = Range.clip(startIndex + 600, 0, message.length() - 1);
 
 

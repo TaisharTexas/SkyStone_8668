@@ -22,7 +22,7 @@ public class ComputerDebugging
     public ComputerDebugging()
 	{
         UdpServer.kill = false;
-        udpServer = new UdpServer(11115);
+        udpServer = new UdpServer(18668);
         Thread runner = new Thread(udpServer);
         runner.start();//go go go
     }
@@ -39,11 +39,11 @@ public class ComputerDebugging
 
         //first send the robot location
         messageBuilder.append("ROBOT,");
-        messageBuilder.append(df.format(vehicle.position.x));
+        messageBuilder.append(df.format(vehicle.location.x));
         messageBuilder.append(",");
-        messageBuilder.append(df.format(vehicle.position.y));
+        messageBuilder.append(df.format(vehicle.location.y));
         messageBuilder.append(",");
-        messageBuilder.append(df.format(vehicle.position.y)); // REPLACE with HEADING
+        messageBuilder.append(df.format(0)); // REPLACE with HEADING
         messageBuilder.append("%");
 
     }
@@ -69,47 +69,47 @@ public class ComputerDebugging
 
     /**
      * Sends the location of any point you would like to send
-     * @param floatPoint the point you want to send
+     * @param thePoint the point you want to send
      */
-    public static void sendKeyPoint(FloatPoint floatPoint)
+    public static void sendKeyPoint(PVector thePoint)
 	{
 //        if(!Robot.usingComputer){return;}
 
         messageBuilder.append("P,")
-                .append(df.format(floatPoint.x))
+                .append(df.format(thePoint.x))
                 .append(",")
-                .append(df.format(floatPoint.y))
+                .append(df.format(thePoint.y))
                 .append("%");
     }
 
 
     /**
      * This is a point you don't want to clear every update
-     * @param floatPoint the point you want to send
+     * @param thePoint the point you want to send
      */
-    public static void sendLogPoint(FloatPoint floatPoint)
-	{
-//        if(!Robot.usingComputer){return;}
-
-        messageBuilder.append("LP,")
-                .append(df.format(floatPoint.x))
-                .append(",")
-                .append(df.format(floatPoint.y))
-                .append("%");
-    }
+//    public static void sendLogPoint(PVector thePoint)
+//	{
+////        if(!Robot.usingComputer){return;}
+//
+//        messageBuilder.append("LP,")
+//                .append(df.format(thePoint.x))
+//                .append(",")
+//                .append(df.format(thePoint.y))
+//                .append("%");
+//    }
 
     /**
      * This is a point you don't want to clear every update
-     * @param floatPoint the point you want to send
+     * @param thePoint the point you want to send
      */
-    public static void sendLogPoint(PVector floatPoint)
+    public static void sendLogPoint(PVector thePoint)
 	{
 //        if(!Robot.usingComputer){return;}
 
         messageBuilder.append("LP,")
-                      .append(df.format(floatPoint.x))
+                      .append(df.format(thePoint.x))
                       .append(",")
-                      .append(df.format(floatPoint.y))
+                      .append(df.format(thePoint.y))
                       .append("%");
     }
 
@@ -120,7 +120,7 @@ public class ComputerDebugging
      * @param point1
      * @param point2
      */
-    public static void sendLine(FloatPoint point1, FloatPoint point2)
+    public static void sendLine(PVector point1, PVector point2)
 	{
         //return if not using the computer
 //        if(!Robot.usingComputer){return;}
