@@ -1,21 +1,26 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @TeleOp(name="teleop", group="pure")
 
 public class Teleop extends OpMode
 {
+    Vehicle robot = new Vehicle(0,0, telemetry);
+
     private DcMotorEx RF = null;
     private DcMotorEx RR = null;
     private DcMotorEx LF = null;
@@ -24,12 +29,18 @@ public class Teleop extends OpMode
     private DcMotorEx xEncoder = null;
     private DcMotorEx yEncoder = null;
 
+    private BNO055IMU gyro;
+
     final double encoderWheelRadius = 1.5; //in inches
     final double tickPerRotation = 2400;
     final double inchesPerRotation = 3 * Math.PI;
 
-//    Telemetry telemetry;
-//    HardwareMap hardwareMap;
+    int currentXEncoder = 0;
+    int currentYEncoder = 0;
+    double currentHeading = 0;
+
+    double xPrev = 0;
+    double yPrev = 0;
 
 
     public void init()
@@ -55,6 +66,29 @@ public class Teleop extends OpMode
         yEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         yEncoder.setDirection((DcMotorEx.Direction.FORWARD));
 
+        try
+        {
+            // Set up the parameters with which we will use our IMU. Note that integration
+            // algorithm here just reports accelerations to the logcat log; it doesn't actually
+            // provide positional information.
+            BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+            parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+            parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+            parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+            parameters.loggingEnabled = true;
+            parameters.loggingTag = "IMU";
+            parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+            // Retrieve and initialize the IMU.
+            gyro = hardwareMap.get(BNO055IMU.class, "imu");
+            gyro.initialize(parameters);
+        }
+        catch (Exception p_exeception)
+        {
+            telemetry.addData("imu not found in config file", 0);
+            gyro = null;
+        }
+
         getEncoderTelem();
 
 
@@ -62,6 +96,11 @@ public class Teleop extends OpMode
 
     public void loop()
     {
+         currentXEncoder = xEncoder.getCurrentPosition();
+         currentYEncoder = yEncoder.getCurrentPosition();
+
+         currentHeading = getHeading();
+
         /* Chassis Control */
         /** The x-axis of the left joystick on the gamepad. Used for chassis control*/
         double lStickX = -gamepad1.left_stick_x;
@@ -72,12 +111,22 @@ public class Teleop extends OpMode
         /** The y-axis of the right joystick on the gamepad. Used for chassis control*/
         double rStickY = gamepad1.right_stick_y;
 
+
+
+        robot.location.set(robot.location.x+getXInchesMoved(), robot.location.y+getYInchesMoved());
+        xPrev = currentXEncoder;
+        yPrev = currentYEncoder;
+        telemetry.addData("mp.global location: ", robot.location);
+
+        robot.velocity.set(getXLinearVelocity(), getYLinearVelocity());
+        robot.currentHeading = currentHeading;
+       // robot.currentAngularVelocity = getVelocity();
+
+
+
         joystickDrive(lStickX, lStickY, rStickX, rStickY, 1);
 
-        getEncoderTelem();
-
-        telemetry.addData("x velocity: ", xEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius);
-        telemetry.addData("y velocity: ", yEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius);
+        //getEncoderTelem();
 
     }
 
@@ -177,18 +226,20 @@ public class Teleop extends OpMode
 
     public float getXInchesMoved()
     {
-        double inchesX = ((xEncoder.getCurrentPosition() / tickPerRotation) * inchesPerRotation);
+        double inchesX = (((currentXEncoder - xPrev) / tickPerRotation) * inchesPerRotation) * Math.cos(Math.toRadians(currentHeading)) +
+                (((currentYEncoder - yPrev) / tickPerRotation) * inchesPerRotation) * Math.sin(Math.toRadians(currentHeading));
 
-        telemetry.addData("x inches moved: ", inchesX);
+        telemetry.addData("mp.x inches moved: ", inchesX);
 
         return (float)inchesX;
     }
 
     public float getYInchesMoved()
     {
-        double inchesY = ((yEncoder.getCurrentPosition() / tickPerRotation) * inchesPerRotation);
+        double inchesY = ((-(currentXEncoder - xPrev) / tickPerRotation) * inchesPerRotation) * Math.sin(Math.toRadians(currentHeading)) +
+                ((-(currentYEncoder - yPrev) / tickPerRotation) * inchesPerRotation) * Math.cos(Math.toRadians(currentHeading));
 
-        telemetry.addData("y inches moved: ", inchesY);
+        telemetry.addData("mp.y inches moved: ", inchesY);
 
         return (float)inchesY;
     }
@@ -209,6 +260,24 @@ public class Teleop extends OpMode
         telemetry.addData("y linear velocity: ", linearY);
 
         return (float)linearY;
+    }
+
+    /**
+     * Used to get the robot's heading.
+     *
+     * @return  the robot's heading as an double
+     */
+    public double getHeading()
+    {
+        Orientation angles = gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        return AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle));
+    }
+
+    public double getVelocity()
+    {
+        AngularVelocity gyroReading;
+        gyroReading = gyro.getAngularVelocity();
+        return gyroReading.xRotationRate;
     }
 
     public double afterburners()
