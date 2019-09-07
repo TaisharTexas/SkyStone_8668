@@ -98,8 +98,10 @@ public class Teleop extends OpMode
     {
          currentXEncoder = xEncoder.getCurrentPosition();
          currentYEncoder = yEncoder.getCurrentPosition();
-
+        telemetry.addData("x encoder: ", currentXEncoder);
+        telemetry.addData("y encoder: ", currentYEncoder);
          currentHeading = getHeading();
+         telemetry.addData("heading: ", currentHeading);
 
         /* Chassis Control */
         /** The x-axis of the left joystick on the gamepad. Used for chassis control*/
@@ -237,7 +239,7 @@ public class Teleop extends OpMode
     public float getYInchesMoved()
     {
         double inchesY = ((-(currentXEncoder - xPrev) / tickPerRotation) * inchesPerRotation) * Math.sin(Math.toRadians(currentHeading)) +
-                ((-(currentYEncoder - yPrev) / tickPerRotation) * inchesPerRotation) * Math.cos(Math.toRadians(currentHeading));
+                         ((-(currentYEncoder - yPrev) / tickPerRotation) * inchesPerRotation) * Math.cos(Math.toRadians(currentHeading));
 
         telemetry.addData("mp.y inches moved: ", inchesY);
 
@@ -246,18 +248,20 @@ public class Teleop extends OpMode
 
     public float getXLinearVelocity()
     {
-        double linearX = ((xEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ));
+        double linearX = (xEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.cos(Math.toRadians(getHeading())) +
+                         (yEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.sin(Math.toRadians(getHeading()));
 
-        telemetry.addData("x linear velocity: ", linearX);
+          telemetry.addData("mp.x linear velocity: ", linearX);
 
         return (float)linearX;
     }
 
     public float getYLinearVelocity()
     {
-        double linearY = ((yEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ));
+        double linearY = (-xEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.sin(Math.toRadians(getHeading())) +
+                         (-yEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.cos(Math.toRadians(getHeading()));
 
-        telemetry.addData("y linear velocity: ", linearY);
+          telemetry.addData("mp.y linear velocity: ", linearY);
 
         return (float)linearY;
     }
