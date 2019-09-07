@@ -61,7 +61,8 @@ public class Vehicle
 
         if(Math.abs(desiredAngularVelocity) < 20)
         {
-            float m = scaleVector((float)desiredAngularVelocity, 0,20,0,(float)theMaxTurnSpeed);
+            double wantedAngularVelocity = Math.abs(desiredAngularVelocity);
+            float m = scaleVector((float)wantedAngularVelocity, 0,20,0,(float)theMaxTurnSpeed);
             desiredAngularVelocity = m * Math.signum(desiredAngularVelocity);
         }
 
@@ -191,7 +192,7 @@ public class Vehicle
         }
 
         arrive(target, theMaxSpeed);
-        point(theTargetHeading, 200);
+//        point(theTargetHeading, 200);
     }
 
 
