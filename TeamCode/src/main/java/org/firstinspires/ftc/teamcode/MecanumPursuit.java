@@ -204,9 +204,9 @@ public class MecanumPursuit extends OpMode
 
         telemetry.addData("mp.left stick velocty: ", neededVeloctiy);
         PVector headingVector = PVector.fromAngle((float)currentHeading);
-        //float rotation = 
+        float rotation = PVector.angleBetween(headingVector, neededVelociyy);
 
-        neededVeloctiy.rotate((float)Math.toRadians(-currentHeading));
+        neededVeloctiy.rotate(rotation);
 
         double x = neededVeloctiy.x / 31.5; //robot.maxSpeed; //max speed is 30
         double y = neededVeloctiy.y / 31.5; // robot.maxSpeed;
