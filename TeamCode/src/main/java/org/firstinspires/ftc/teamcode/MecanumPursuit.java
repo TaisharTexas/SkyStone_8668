@@ -70,7 +70,7 @@ public class MecanumPursuit extends OpMode
 
         yEncoder  = hardwareMap.get(DcMotorEx.class, "yEncoder");
         yEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        yEncoder.setDirection((DcMotorEx.Direction.FORWARD));
+        yEncoder.setDirection((DcMotorEx.Direction.REVERSE));
 
         try
         {
@@ -97,19 +97,11 @@ public class MecanumPursuit extends OpMode
 
         getEncoderTelem();
 
-        //the see-saw thing
-        drivePath.addPoint(0,0,15,0);
-        drivePath.addPoint(0, 30, 15, 0);
-        drivePath.addPoint(30,30, 15, 0);
-        drivePath.addPoint(30, 0, 15, 0);
+        drivePath.addPoint(0,0,15,25);
+        drivePath.addPoint(0, 40, 15, 25);
+        drivePath.addPoint(40,40, 15, 0);
+        drivePath.addPoint(40, 0, 15, 0);
         drivePath.addPoint(0,0,15, 0);
-
-//        drivePath.addPoint(0,0,15,0);
-//        drivePath.addPoint(0, 30, 15, 90);
-//        drivePath.addPoint(30,30, 15, 90);
-//        drivePath.addPoint(30, 0, 15, 0);
-//        drivePath.addPoint(0,0,15, 0);
-
 
 //        ComputerDebugging.clearLogPoints();
 
@@ -127,12 +119,17 @@ public class MecanumPursuit extends OpMode
         xPrev = currentXEncoder;
         yPrev = currentYEncoder;
         telemetry.addData("mp.global location: ", robot.location);
-//        robot.velocity.set(gamepad1.right_stick_y, gamepad1.left_stick_y);
 
         robot.velocity.set(getXLinearVelocity(), getYLinearVelocity());
+        telemetry.addData("mp.global velocity: ", robot.velocity);
+        robot.currentHeading = currentHeading;
+
         robot.currentHeading = currentHeading;
         robot.currentAngularVelocity = getVelocity();
 
+        telemetry.addData("mp.currentAngularVelocity: ", robot.currentAngularVelocity);
+
+        robot.follow(drivePath);
 
         updateMotors(target1);
 
@@ -153,9 +150,9 @@ public class MecanumPursuit extends OpMode
     public float getXInchesMoved()
     {
         double inchesX = (((currentXEncoder - xPrev) / tickPerRotation) * inchesPerRotation) * Math.cos(Math.toRadians(currentHeading)) +
-                         (((currentYEncoder - yPrev) / tickPerRotation) * inchesPerRotation) * Math.sin(Math.toRadians(currentHeading));
+                (((currentYEncoder - yPrev) / tickPerRotation) * inchesPerRotation) * Math.sin(Math.toRadians(currentHeading));
 
-       // telemetry.addData("mp.x inches moved: ", inchesX);
+        telemetry.addData("mp.x inches moved: ", inchesX);
 
         return (float)inchesX;
     }
@@ -163,16 +160,17 @@ public class MecanumPursuit extends OpMode
     public float getYInchesMoved()
     {
         double inchesY = ((-(currentXEncoder - xPrev) / tickPerRotation) * inchesPerRotation) * Math.sin(Math.toRadians(currentHeading)) +
-                         ((-(currentYEncoder - yPrev) / tickPerRotation) * inchesPerRotation) * Math.cos(Math.toRadians(currentHeading));
+                (((currentYEncoder - yPrev) / tickPerRotation) * inchesPerRotation) * Math.cos(Math.toRadians(currentHeading));
 
-       // telemetry.addData("mp.y inches moved: ", inchesY);
+        telemetry.addData("mp.y inches moved: ", inchesY);
 
         return (float)inchesY;
     }
+
     public float getXLinearVelocity()
     {
-        double linearX = (xEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.cos(Math.toRadians(getHeading())) +
-                         (yEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.sin(Math.toRadians(getHeading()));
+        double linearX = (xEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.cos(Math.toRadians(currentHeading)) +
+                (yEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.sin(Math.toRadians(currentHeading));
 
         telemetry.addData("mp.x linear velocity: ", linearX);
 
@@ -181,28 +179,38 @@ public class MecanumPursuit extends OpMode
 
     public float getYLinearVelocity()
     {
-        double linearY = (-xEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.sin(Math.toRadians(getHeading())) +
-                         (-yEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.cos(Math.toRadians(getHeading()));
+        double linearY = (-xEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.sin(Math.toRadians(currentHeading)) +
+                (yEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.cos(Math.toRadians(currentHeading));
 
         telemetry.addData("mp.y linear velocity: ", linearY);
 
         return (float)linearY;
     }
 
+    /**
+     * Used to get the robot's heading.
+     *
+     * @return  the robot's heading as an double
+     */
+    public double getHeading()
+    {
+        Orientation angles = gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        return -AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle));
+    }
+
     public void updateMotors(PVector targetPosition)
     {
-        robot.follow(drivePath);
         PVector neededVeloctiy = robot.desiredVelocity.copy();
 
-        telemetry.addData("mp.needed velocty: ", neededVeloctiy);
+        telemetry.addData("mp.left stick velocty: ", neededVeloctiy);
 
         neededVeloctiy.rotate((float)Math.toRadians(-currentHeading));
 
         double x = neededVeloctiy.x / 31.5; //robot.maxSpeed; //max speed is 30
         double y = neededVeloctiy.y / 31.5; // robot.maxSpeed;
-        telemetry.addData("mp.joystickAngularVel: ", robot.joystickAngularVelocity);
+        telemetry.addData("mp.right stick angular velocity: ", robot.joystickAngularVelocity);
 
-        double turn = robot.joystickAngularVelocity / 343;
+        double turn = -robot.joystickAngularVelocity / 343;
 
 //        telemetry.addData("mp.desired velocity x: ", x);
 //        telemetry.addData("mp.desired velocity y: ", y);
@@ -291,22 +299,13 @@ public class MecanumPursuit extends OpMode
 
     }
 
-    /**
-     * Used to get the robot's heading.
-     *
-     * @return  the robot's heading as an double
-     */
-    public double getHeading()
-    {
-        Orientation angles = gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        return AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle));
-    }
+
 
     public double getVelocity()
     {
         AngularVelocity gyroReading;
         gyroReading = gyro.getAngularVelocity();
-        return gyroReading.xRotationRate;
+        return -gyroReading.xRotationRate;
     }
 
     public void stop()
