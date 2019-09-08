@@ -203,6 +203,8 @@ public class MecanumPursuit extends OpMode
         PVector neededVeloctiy = robot.desiredVelocity.copy();
 
         telemetry.addData("mp.left stick velocty: ", neededVeloctiy);
+        PVector headingVector = PVector.fromAngle((float)currentHeading);
+        //float rotation = 
 
         neededVeloctiy.rotate((float)Math.toRadians(-currentHeading));
 
