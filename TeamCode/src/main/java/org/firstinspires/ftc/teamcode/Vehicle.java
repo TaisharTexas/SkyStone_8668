@@ -45,8 +45,7 @@ public class Vehicle
         maxSpeed = 13; //inches/second
         //30.615 in/sec = 15.7 rad/sec * 1.3 gearing * 1.5 in wheel radius
 
-        gainValue = 2.3;
-        gainValue = 10.0;
+        gainValue = 2.8;
         gain = maxSpeed * gainValue;
 
         //unit: Degrees per second turned -- max turn rate is 343 Degrees/sec
@@ -121,7 +120,7 @@ public class Vehicle
         }
 
         arrive(target, theMaxSpeed);
-        point(theTargetHeading, 30);
+        point(theTargetHeading, 100);
     }
 
 
@@ -141,18 +140,16 @@ public class Vehicle
         {
             desiredAngularVelocity = theMaxTurnSpeed * Math.signum(desiredAngularVelocity);
         }
-        telemetry.addData("mp.desiredAngularVel: ", desiredAngularVelocity);
-
-//        double turnAcceleration = (desiredAngularVelocity - currentAngularVelocity) * turnGain;
+//        telemetry.addData("mp.desiredAngularVel: ", desiredAngularVelocity);
 
 //        telemetry.addData("mp.currentAngularVel: ", currentAngularVelocity);
         double requiredAngularAccel = desiredAngularVelocity - currentAngularVelocity;
         requiredAngularAccel = Range.clip(requiredAngularAccel, -turnGain, turnGain);
 
-        telemetry.addData("mp.requiredAngularAccel: ", requiredAngularAccel);
+//        telemetry.addData("mp.requiredAngularAccel: ", requiredAngularAccel);
 
         joystickAngularVelocity = currentAngularVelocity + requiredAngularAccel;
-        telemetry.addData("mp.joystickAngularVelocity: ", joystickAngularVelocity);
+//        telemetry.addData("mp.joystickAngularVelocity: ", joystickAngularVelocity);
 
     }
 
@@ -191,11 +188,10 @@ public class Vehicle
         //telemetry.addData("v.limit steerAcceleration: ", steerAcceleration);
 
         //corrects robot velocity by adding error (steerAcceleration)
-        telemetry.addData("v.velocity: ", velocity);
+//        telemetry.addData("v.velocity: ", velocity);
         desiredVelocity = PVector.add(velocity, steerAcceleration);
-//        desiredVelocity.x = velocity.x +steerAcceleration.x;
-//        desiredVelocity.y = velocity.y + steerAcceleration.y;
-        telemetry.addData("v.desired velocity: ", desiredVelocity);
+
+//        telemetry.addData("v.desired velocity: ", desiredVelocity);
 
 
         //make sure final velocity isn't too fast

@@ -123,7 +123,7 @@ public class Teleop extends OpMode
         robot.velocity.set(getXLinearVelocity(), getYLinearVelocity());
         telemetry.addData("mp.global velocity: ", robot.velocity);
         robot.currentHeading = currentHeading;
-       // robot.currentAngularVelocity = getVelocity();
+        robot.currentAngularVelocity = getVelocity();
 
 
 
@@ -230,9 +230,9 @@ public class Teleop extends OpMode
     public float getXInchesMoved()
     {
         double inchesX = (((currentXEncoder - xPrev) / tickPerRotation) * inchesPerRotation) * Math.cos(Math.toRadians(currentHeading)) +
-                (((currentYEncoder - yPrev) / tickPerRotation) * inchesPerRotation) * Math.sin(Math.toRadians(currentHeading));
+                         (((currentYEncoder - yPrev) / tickPerRotation) * inchesPerRotation) * Math.cos(Math.toRadians(90-currentHeading));
 
-        telemetry.addData("mp.x inches moved: ", inchesX);
+//        telemetry.addData("mp.x inches moved: ", inchesX);
 
         return (float)inchesX;
     }
@@ -240,9 +240,9 @@ public class Teleop extends OpMode
     public float getYInchesMoved()
     {
         double inchesY = ((-(currentXEncoder - xPrev) / tickPerRotation) * inchesPerRotation) * Math.sin(Math.toRadians(currentHeading)) +
-                         (((currentYEncoder - yPrev) / tickPerRotation) * inchesPerRotation) * Math.cos(Math.toRadians(currentHeading));
+                          (((currentYEncoder - yPrev) / tickPerRotation) * inchesPerRotation) * Math.sin(Math.toRadians(90-currentHeading));
 
-        telemetry.addData("mp.y inches moved: ", inchesY);
+//        telemetry.addData("mp.y inches moved: ", inchesY);
 
         return (float)inchesY;
     }
@@ -250,9 +250,9 @@ public class Teleop extends OpMode
     public float getXLinearVelocity()
     {
         double linearX = (xEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.cos(Math.toRadians(currentHeading)) +
-                         (yEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.sin(Math.toRadians(currentHeading));
+                         (yEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.cos(Math.toRadians(90-currentHeading));
 
-          telemetry.addData("mp.x linear velocity: ", linearX);
+//        telemetry.addData("mp.x linear velocity: ", linearX);
 
         return (float)linearX;
     }
@@ -260,9 +260,9 @@ public class Teleop extends OpMode
     public float getYLinearVelocity()
     {
         double linearY = (-xEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.sin(Math.toRadians(currentHeading)) +
-                         (yEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.cos(Math.toRadians(currentHeading));
+                         (yEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.sin(Math.toRadians(90-currentHeading));
 
-          telemetry.addData("mp.y linear velocity: ", linearY);
+//        telemetry.addData("mp.y linear velocity: ", linearY);
 
         return (float)linearY;
     }
@@ -282,7 +282,8 @@ public class Teleop extends OpMode
     {
         AngularVelocity gyroReading;
         gyroReading = gyro.getAngularVelocity();
-        return gyroReading.xRotationRate;
+        telemetry.addData("rotation rate: ", -gyroReading.xRotationRate);
+        return -gyroReading.xRotationRate;
     }
 
     public double afterburners()
