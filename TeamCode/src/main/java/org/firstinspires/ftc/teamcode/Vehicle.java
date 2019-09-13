@@ -48,8 +48,8 @@ public class Vehicle
         gainValue = 2.8;
         gain = maxSpeed * gainValue;
 
-        //unit: Degrees per second turned -- max turn rate is 343 Degrees/sec
-        turnGain = 200;
+        //unit: degrees per second turned -- max turn rate is 343 degrees/sec
+        turnGain = 250;
 
     }
 
@@ -68,9 +68,13 @@ public class Vehicle
         double theMaxSpeed = drivePath.maxSpeeds.get(currentSegment);
         double theTargetHeading = drivePath.targetHeadings.get(currentSegment);
 
-        if(theMaxSpeed > 20)
+        if(theMaxSpeed >= 20 && theMaxSpeed < 26)
         {
-            gain = theMaxSpeed * 3.5;
+            gain = theMaxSpeed *  5;
+        }
+        else if(theMaxSpeed >= 26)
+        {
+            gain = theMaxSpeed * 8;
         }
         else
         {
@@ -129,11 +133,13 @@ public class Vehicle
         double desiredAngularVelocity = (targetHeading-currentHeading);
 
 
-        if(Math.abs(desiredAngularVelocity) < 45)
+        double slowDown = 20;
+
+        if(Math.abs(desiredAngularVelocity) < slowDown)
         {
             double wantedAngularVelocity = Math.abs(desiredAngularVelocity);
 //            float m = scaleVector((float)wantedAngularVelocity, 0,60,0,(float)theMaxTurnSpeed);
-            float m = (float)(theMaxTurnSpeed * (wantedAngularVelocity/45.0));
+            float m = (float)(theMaxTurnSpeed * (wantedAngularVelocity/slowDown));
             desiredAngularVelocity = m * Math.signum(desiredAngularVelocity);
         }
         else

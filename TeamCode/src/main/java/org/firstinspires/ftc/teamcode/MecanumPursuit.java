@@ -39,7 +39,8 @@ public class MecanumPursuit extends OpMode
 
     final double encoderWheelRadius = 1.5; //in inches
     final double tickPerRotation = 2400;
-    final double inchesPerRotation = 3 * Math.PI;
+    final double distanceConstant = 195.5/192; //calibrated over 16' & 12' on foam tiles -- 9/13/19
+    final double inchesPerRotation = 3 * Math.PI * distanceConstant;
     double xPrev = 0;
     double yPrev = 0;
     int currentXEncoder = 0;
@@ -96,12 +97,19 @@ public class MecanumPursuit extends OpMode
 
         getEncoderTelem();
 
-        drivePath.addPoint(0,0,10,45);
-        drivePath.addPoint(0, 30, 15, 90);
-        drivePath.addPoint(30,30, 10, 0);
-        drivePath.addPoint(30, 10, 10, 45);
-        drivePath.addPoint(15,5,15, 0);
-        drivePath.addPoint(0,0,15,0);
+        drivePath.addPoint(0,0,30,0);
+        drivePath.addPoint(0, 36, 20, 0);
+        drivePath.addPoint(0, 42, 20, 0);
+        drivePath.addPoint(6,48, 30, -90);
+        drivePath.addPoint(30,48,20,-90);
+        drivePath.addPoint(42, 48, 20,-90);
+        drivePath.addPoint(48, 54, 30, 0);
+        drivePath.addPoint(48, 86, 20, 0);
+        drivePath.addPoint(48,92,20, 0);
+        drivePath.addPoint(54, 96, 20,0);
+        drivePath.addPoint(66,96,20,90);
+        drivePath.addPoint(72, 102, 20, 90);
+        drivePath.addPoint(72, 120, 20, 90);
 
         ComputerDebugging.clearLogPoints();
 
