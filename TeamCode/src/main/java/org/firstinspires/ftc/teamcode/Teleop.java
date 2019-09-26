@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.os.Environment;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.Range;
 
@@ -14,6 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.sbfUtil.DataLogger;
 
 @TeleOp(name="teleop", group="pure")
 
@@ -41,6 +45,9 @@ public class Teleop extends OpMode
 
     double xPrev = 0;
     double yPrev = 0;
+    double loopTime=0;
+
+    private DataLogger myData;
 
 
     public void init()
@@ -89,19 +96,62 @@ public class Teleop extends OpMode
             gyro = null;
         }
 
-        getEncoderTelem();
+        myData = new DataLogger("8668_Robot_Data");
+        myData.addField("elapsedTime");
+        myData.addField("xEncoderPos");
+        myData.addField("yEncoderPos");
+        myData.addField("xEncoderVel");
+        myData.addField("yEncoderVel");
+        myData.addField("xVelCalc");
+        myData.addField("yVelCalc");
+        myData.newLine();
 
+    }
 
+    @Override
+    public void init_loop()
+    {
+
+        if ( xEncoder != null )
+        {
+            telemetry.addData("x encoder: ", xEncoder.getCurrentPosition());
+        }
+        if ( yEncoder != null )
+        {
+            telemetry.addData("y encoder: ", yEncoder.getCurrentPosition());
+        }
+        if ( gyro != null )
+        {
+            telemetry.addData("heading: ", getHeading());
+        }
+
+        if ( xEncoder != null && yEncoder != null )
+        {
+            getYLinearVelocity();
+        }
+        telemetry.addData("path: ", Environment.getExternalStorageDirectory().getPath() + "/");
+//
+    }
+
+    public void start()
+    {
+        resetStartTime();
     }
 
     public void loop()
     {
-         currentXEncoder = xEncoder.getCurrentPosition();
-         currentYEncoder = yEncoder.getCurrentPosition();
-//        telemetry.addData("x encoder: ", currentXEncoder);
-//        telemetry.addData("y encoder: ", currentYEncoder);
-         currentHeading = getHeading();
-         telemetry.addData("heading: ", currentHeading);
+
+        /*
+         * Update encoder values used to determine the robot's position and movement
+         */
+        currentXEncoder = xEncoder.getCurrentPosition();
+        currentYEncoder = yEncoder.getCurrentPosition();
+        loopTime = getRuntime();
+        double xInchesMoved = getXInchesMoved();
+        double yInchesMoved = getYInchesMoved();
+
+        currentHeading = getHeading();
+        telemetry.addData("mp.heading: ", currentHeading);
 
         /* Chassis Control */
         /** The x-axis of the left joystick on the gamepad. Used for chassis control*/
@@ -113,23 +163,53 @@ public class Teleop extends OpMode
         /** The y-axis of the right joystick on the gamepad. Used for chassis control*/
         double rStickY = gamepad1.right_stick_y;
 
-
-
-        robot.location.set(robot.location.x+getXInchesMoved(), robot.location.y+getYInchesMoved());
-        xPrev = currentXEncoder;
-        yPrev = currentYEncoder;
+        /*
+         * Get location moved and update the robot's location
+         */
+        robot.location.set((float)(robot.location.x + xInchesMoved), (float)(robot.location.y + yInchesMoved));
         telemetry.addData("mp.global location: ", robot.location);
 
-        robot.velocity.set(getXLinearVelocity(), getYLinearVelocity());
-        telemetry.addData("mp.global velocity: ", robot.velocity);
+        /*
+         * Calculate velocity manually using elapsed time and distance travelled.
+         */
+        double myVx = xInchesMoved/loopTime;
+        double myVy = yInchesMoved/loopTime;
+
+        robot.velocity.set((float)myVx, (float) myVy);
+        telemetry.addData("mp.calculated vel: ", robot.velocity);
+
+        /*
+         * Get velocity from encoders for the purposes of comparing with calculated velocity.
+         */
+        PVector myVelocity = new PVector(getXLinearVelocity(), getYLinearVelocity());
+        telemetry.addData("mp.encoder vel: ", myVelocity);
+
+        /*
+         * Grab the heading and tell the robot
+         */
         robot.currentHeading = currentHeading;
-        robot.currentAngularVelocity = getVelocity();
+        robot.currentAngularVelocity = getAngVelocity();
 
+        /*
+         * Reset previous encoder values and the run time for use in next loop iteration.
+         */
+        xPrev = currentXEncoder;
+        yPrev = currentYEncoder;
+        resetStartTime();
 
-
+        /* Tell the robot to move */
         joystickDrive(lStickX, lStickY, rStickX, rStickY, 1);
 
-        //getEncoderTelem();
+        myData.addField(loopTime);
+        myData.addField(currentXEncoder);
+        myData.addField(currentYEncoder);
+        myData.addField(myVelocity.x);
+        myData.addField(myVelocity.y);
+        myData.addField(myVx);
+        myData.addField(myVy);
+        myData.newLine();
+
+
 
     }
 
@@ -249,22 +329,39 @@ public class Teleop extends OpMode
 
     public float getXLinearVelocity()
     {
-        double linearX = (xEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.cos(Math.toRadians(currentHeading)) +
-                         (yEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.cos(Math.toRadians(90-currentHeading));
+        double xTicksPerSecond = xEncoder.getVelocity(AngleUnit.RADIANS) * xEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
+
+        double yTicksPerSecond =  yEncoder.getVelocity(AngleUnit.RADIANS) * yEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
+
+        double linearX = (xTicksPerSecond / tickPerRotation * 2.0 * Math.PI * encoderWheelRadius) * Math.cos(Math.toRadians(currentHeading)) +
+                         (yTicksPerSecond / tickPerRotation * 2.0 * Math.PI * encoderWheelRadius) * Math.cos(Math.toRadians(90-currentHeading));
 
 //        telemetry.addData("mp.x linear velocity: ", linearX);
 
-        return (float)linearX;
+        return (float)linearX*(float)0.76;
     }
 
     public float getYLinearVelocity()
     {
-        double linearY = (-xEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.sin(Math.toRadians(currentHeading)) +
-                         (yEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.sin(Math.toRadians(90-currentHeading));
+        double xTicksPerSecond = xEncoder.getVelocity(AngleUnit.RADIANS) * xEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
+        double yTicksPerSecond =  yEncoder.getVelocity(AngleUnit.RADIANS) * yEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
+
+        double motTicksPerSecond = RF.getVelocity(AngleUnit.RADIANS) * RF.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
+        telemetry.addData("encoder ticks per sec: ", yTicksPerSecond);
+        telemetry.addData("motor ticks per second: ", motTicksPerSecond);
+
+        double encodV = yEncoder.getVelocity(AngleUnit.DEGREES);
+        double motoV = RF.getVelocity(AngleUnit.DEGREES);
+
+        telemetry.addData (" encoder deg/sec: ", encodV);
+        telemetry.addData ("motor deg/sec: ", motoV);
+
+        double linearY = (-xTicksPerSecond / tickPerRotation * 2.0 * Math.PI * encoderWheelRadius ) * Math.sin(Math.toRadians(currentHeading)) +
+                         ( yTicksPerSecond / tickPerRotation * 2.0 * Math.PI * encoderWheelRadius ) * Math.sin(Math.toRadians(90-currentHeading));
 
 //        telemetry.addData("mp.y linear velocity: ", linearY);
 
-        return (float)linearY;
+        return (float)linearY*(float)0.76;
     }
 
     /**
@@ -278,7 +375,7 @@ public class Teleop extends OpMode
         return -AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle));
     }
 
-    public double getVelocity()
+    public double getAngVelocity()
     {
         AngularVelocity gyroReading;
         gyroReading = gyro.getAngularVelocity();
@@ -308,6 +405,7 @@ public class Teleop extends OpMode
 //        RR.setPower(0.0);
 //        LF.setPower(0.0);
 //        LR.setPower(0.0);
+        myData.closeDataLogger();
 
     }
 }

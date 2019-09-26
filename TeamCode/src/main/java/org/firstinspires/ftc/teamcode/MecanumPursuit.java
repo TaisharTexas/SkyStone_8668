@@ -40,7 +40,7 @@ public class MecanumPursuit extends OpMode
     final double encoderWheelRadius = 1.5; //in inches
     final double tickPerRotation = 2400;
     final double distanceConstant = 195.5/192; //calibrated over 16' & 12' on foam tiles -- 9/13/19
-    final double inchesPerRotation = 3 * Math.PI * distanceConstant;
+    final double inchesPerRotation = 3 * Math.PI * distanceConstant; // this is the encoder wheel distancd
     double xPrev = 0;
     double yPrev = 0;
     int currentXEncoder = 0;
@@ -109,10 +109,17 @@ public class MecanumPursuit extends OpMode
         drivePath.addPoint(54, 96, 20,0);
         drivePath.addPoint(66,96,20,90);
         drivePath.addPoint(72, 102, 20, 90);
-        drivePath.addPoint(72, 120, 20, 90);
+        drivePath.addPoint(72, 105, 20, 90);
+        drivePath.addPoint(72,120,15,90);
 
         ComputerDebugging.clearLogPoints();
 
+    }
+
+    public void start()
+    {
+        resetStartTime();
+        robot.elapsedTime = 0;
     }
 
     public void loop()
@@ -121,7 +128,7 @@ public class MecanumPursuit extends OpMode
         currentXEncoder = xEncoder.getCurrentPosition();
         currentYEncoder = yEncoder.getCurrentPosition();
         currentHeading = getHeading();
-        telemetry.addData("mp.heading: ", currentHeading);
+//        telemetry.addData("mp.heading: ", currentHeading);
 
         robot.location.set(robot.location.x+getXInchesMoved(), robot.location.y+getYInchesMoved());
         xPrev = currentXEncoder;
@@ -135,15 +142,16 @@ public class MecanumPursuit extends OpMode
         robot.currentHeading = currentHeading;
         robot.currentAngularVelocity = getVelocity();
 
-        telemetry.addData("mp.currentAngularVelocity: ", robot.currentAngularVelocity);
+//        telemetry.addData("mp.currentAngularVelocity: ", robot.currentAngularVelocity);
 
+        robot.elapsedTime = getRuntime();
         robot.follow(drivePath);
 
-        updateMotors(target1);
+        updateMotors();
 
-        thePublisher.sendRobotLocation(robot);
-        thePublisher.sendLogPoint(robot.location);
-        thePublisher.markEndOfUpdate();
+        ComputerDebugging.sendRobotLocation(robot);
+        ComputerDebugging.sendLogPoint(robot.location);
+        ComputerDebugging.markEndOfUpdate();
 
     }
 
@@ -177,22 +185,26 @@ public class MecanumPursuit extends OpMode
 
     public float getXLinearVelocity()
     {
-        double linearX = (xEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.cos(Math.toRadians(currentHeading)) +
-                         (yEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.cos(Math.toRadians(90-currentHeading));
+        double xTicksPerSecond = xEncoder.getVelocity(AngleUnit.RADIANS) * xEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
+        double yTicksPerSecond =  yEncoder.getVelocity(AngleUnit.RADIANS) * yEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
+        double linearX = (xTicksPerSecond / tickPerRotation * 2.0 * Math.PI * encoderWheelRadius) * Math.cos(Math.toRadians(currentHeading)) +
+                (yTicksPerSecond / tickPerRotation * 2.0 * Math.PI * encoderWheelRadius) * Math.cos(Math.toRadians(90-currentHeading));
 
 //        telemetry.addData("mp.x linear velocity: ", linearX);
 
-        return (float)linearX;
+        return (float)linearX*(float)0.76;
     }
 
     public float getYLinearVelocity()
     {
-        double linearY = (-xEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.sin(Math.toRadians(currentHeading)) +
-                         (yEncoder.getVelocity(AngleUnit.RADIANS) * encoderWheelRadius ) * Math.sin(Math.toRadians(90-currentHeading));
+        double xTicksPerSecond = xEncoder.getVelocity(AngleUnit.RADIANS) * xEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
+        double yTicksPerSecond =  yEncoder.getVelocity(AngleUnit.RADIANS) * yEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
+        double linearY = (-xTicksPerSecond / tickPerRotation * 2.0 * Math.PI * encoderWheelRadius ) * Math.sin(Math.toRadians(currentHeading)) +
+                ( yTicksPerSecond / tickPerRotation * 2.0 * Math.PI * encoderWheelRadius ) * Math.sin(Math.toRadians(90-currentHeading));
 
 //        telemetry.addData("mp.y linear velocity: ", linearY);
 
-        return (float)linearY;
+        return (float)linearY*(float)0.76;
     }
 
     /**
@@ -206,28 +218,32 @@ public class MecanumPursuit extends OpMode
         return -AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle));
     }
 
-    public void updateMotors(PVector targetPosition)
+    public void updateMotors()
     {
         PVector neededVelocity = robot.desiredVelocity.copy();
 
-        telemetry.addData("mp.needed Velocity: ", neededVelocity);
+//        telemetry.addData("mp.needed Velocity: ", neededVelocity);
 //        PVector headingVector = PVector.fromAngle((float)Math.toRadians(currentHeading+90));
 //        float rotation = PVector.angleBetween(headingVector, neededVelocity);
 //        float rotation = (float)(90+currentHeading) - (float)Math.toDegrees(neededVelocity.heading());
 //        telemetry.addData("mp.heading of neededVelocity: ", rotation);
 
 
-        telemetry.addData("mp.world velocity heading: ", Math.toDegrees(neededVelocity.heading()));
+//        telemetry.addData("mp.world velocity heading: ", Math.toDegrees(neededVelocity.heading()));
 
         neededVelocity.rotate((float)Math.toRadians(currentHeading));
 
-        telemetry.addData("mp.needed Velocity post rotate: ", neededVelocity);
-        telemetry.addData("mp.world velocity heading post rotate: ", Math.toDegrees(neededVelocity.heading()));
+//        telemetry.addData("mp.needed Velocity post rotate: ", neededVelocity);
+//        telemetry.addData("mp.world velocity heading post rotate: ", Math.toDegrees(neededVelocity.heading()));
 
 
-        double x = neededVelocity.x / 31.5; //robot.maxSpeed; //max speed is 30
-        double y = neededVelocity.y / 31.5; // robot.maxSpeed;
-        telemetry.addData("mp.right stick angular velocity: ", robot.joystickAngularVelocity);
+//        double x = neededVelocity.x / 31.4; //robot.maxSpeed; //max speed is 31.4 in/sec
+//        double y = neededVelocity.y / 31.4; // robot.maxSpeed;
+        double x = neededVelocity.x / 40.0; //robot.maxSpeed; //max speed is 31.4 in/sec
+        double y = neededVelocity.y / 40.0; // robot.maxSpeed;
+
+
+//        telemetry.addData("mp.right stick angular velocity: ", robot.joystickAngularVelocity);
 
         double turn = -robot.joystickAngularVelocity / 343;
 //        turn = -gamepad1.right_stick_x;
