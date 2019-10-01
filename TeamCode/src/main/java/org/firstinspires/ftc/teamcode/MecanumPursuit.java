@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -15,13 +16,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @Autonomous(name="pursuit run", group="pure")
-
+@Config
 public class MecanumPursuit extends OpMode
 {
     Vehicle robot = new Vehicle((float)0.0, (float)0.0, telemetry);
@@ -37,15 +40,26 @@ public class MecanumPursuit extends OpMode
 
     private BNO055IMU gyro;
 
-    final double encoderWheelRadius = 1.5; //in inches
-    final double tickPerRotation = 2400;
-    final double distanceConstant = 195.5/192; //calibrated over 16' & 12' on foam tiles -- 9/13/19
-    final double inchesPerRotation = 3 * Math.PI * distanceConstant; // this is the encoder wheel distancd
-    double xPrev = 0;
-    double yPrev = 0;
-    int currentXEncoder = 0;
-    int currentYEncoder = 0;
-    double currentHeading = 0;
+    private final double encoderWheelRadius = 1.5; //in inches
+    private final double tickPerRotation = 2400;
+    private final double distanceConstant = 195.5/192; //calibrated over 16' & 12' on foam tiles -- 9/13/19
+    private final double inchesPerRotation = 3 * Math.PI * distanceConstant; // this is the encoder wheel distancd
+    private final double gearRatio = 1.3;
+
+    private double xPrev = 0;
+    private double yPrev = 0;
+
+    private int currentXEncoder = 0;
+    private int currentYEncoder = 0;
+    private double currentHeading = 0;
+
+    private double xTicksPerSecond;
+    private double yTicksPerSecond;
+    private double xTicksPerRad;
+    private double yTicksPerRad;
+    private double xInPerSec;
+    private double yInPerSec;
+
 
     PVector target1 = new PVector(5,30);
 
@@ -54,6 +68,7 @@ public class MecanumPursuit extends OpMode
 
     public void init()
     {
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         RF  = hardwareMap.get(DcMotorEx.class, "rf");
         RF.setDirection(DcMotorEx.Direction.FORWARD);
@@ -71,6 +86,11 @@ public class MecanumPursuit extends OpMode
         yEncoder  = hardwareMap.get(DcMotorEx.class, "yEncoder");
         yEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         yEncoder.setDirection((DcMotorEx.Direction.REVERSE));
+
+        xTicksPerRad = xEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
+        yTicksPerRad = yEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
+
+
 
         try
         {
@@ -98,19 +118,10 @@ public class MecanumPursuit extends OpMode
         getEncoderTelem();
 
         drivePath.addPoint(0,0,30,0);
-        drivePath.addPoint(0, 36, 20, 0);
-        drivePath.addPoint(0, 42, 20, 0);
-        drivePath.addPoint(6,48, 30, -90);
-        drivePath.addPoint(30,48,20,-90);
-        drivePath.addPoint(42, 48, 20,-90);
-        drivePath.addPoint(48, 54, 30, 0);
-        drivePath.addPoint(48, 86, 20, 0);
-        drivePath.addPoint(48,92,20, 0);
-        drivePath.addPoint(54, 96, 20,0);
-        drivePath.addPoint(66,96,20,90);
-        drivePath.addPoint(72, 102, 20, 90);
-        drivePath.addPoint(72, 105, 20, 90);
-        drivePath.addPoint(72,120,15,90);
+        drivePath.addPoint(0, 48, 30, 0);
+        drivePath.addPoint(48, 48, 30, 0);
+        drivePath.addPoint(48, 96, 30, 0);
+        drivePath.addPoint(96, 96, 30, 0);
 
         ComputerDebugging.clearLogPoints();
 
@@ -124,6 +135,10 @@ public class MecanumPursuit extends OpMode
 
     public void loop()
     {
+        xTicksPerSecond = xEncoder.getVelocity(AngleUnit.RADIANS) * xTicksPerRad / gearRatio;
+        yTicksPerSecond = yEncoder.getVelocity(AngleUnit.RADIANS) * yTicksPerRad / gearRatio;
+        xInPerSec = xTicksPerSecond / tickPerRotation * 2.0 * Math.PI * encoderWheelRadius;
+        yInPerSec = yTicksPerSecond / tickPerRotation * 2.0 * Math.PI * encoderWheelRadius;
 
         currentXEncoder = xEncoder.getCurrentPosition();
         currentYEncoder = yEncoder.getCurrentPosition();
@@ -140,7 +155,7 @@ public class MecanumPursuit extends OpMode
         robot.currentHeading = currentHeading;
 
         robot.currentHeading = currentHeading;
-        robot.currentAngularVelocity = getVelocity();
+        robot.currentAngularVelocity = getAngularVelocity();
 
 //        telemetry.addData("mp.currentAngularVelocity: ", robot.currentAngularVelocity);
 
@@ -181,30 +196,6 @@ public class MecanumPursuit extends OpMode
 //        telemetry.addData("mp.y inches moved: ", inchesY);
 
         return (float)inchesY;
-    }
-
-    public float getXLinearVelocity()
-    {
-        double xTicksPerSecond = xEncoder.getVelocity(AngleUnit.RADIANS) * xEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
-        double yTicksPerSecond =  yEncoder.getVelocity(AngleUnit.RADIANS) * yEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
-        double linearX = (xTicksPerSecond / tickPerRotation * 2.0 * Math.PI * encoderWheelRadius) * Math.cos(Math.toRadians(currentHeading)) +
-                (yTicksPerSecond / tickPerRotation * 2.0 * Math.PI * encoderWheelRadius) * Math.cos(Math.toRadians(90-currentHeading));
-
-//        telemetry.addData("mp.x linear velocity: ", linearX);
-
-        return (float)linearX*(float)0.76;
-    }
-
-    public float getYLinearVelocity()
-    {
-        double xTicksPerSecond = xEncoder.getVelocity(AngleUnit.RADIANS) * xEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
-        double yTicksPerSecond =  yEncoder.getVelocity(AngleUnit.RADIANS) * yEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
-        double linearY = (-xTicksPerSecond / tickPerRotation * 2.0 * Math.PI * encoderWheelRadius ) * Math.sin(Math.toRadians(currentHeading)) +
-                ( yTicksPerSecond / tickPerRotation * 2.0 * Math.PI * encoderWheelRadius ) * Math.sin(Math.toRadians(90-currentHeading));
-
-//        telemetry.addData("mp.y linear velocity: ", linearY);
-
-        return (float)linearY*(float)0.76;
     }
 
     /**
@@ -337,12 +328,28 @@ public class MecanumPursuit extends OpMode
 
 
 
-    public double getVelocity()
+    public double getAngularVelocity()
     {
         AngularVelocity gyroReading;
         gyroReading = gyro.getAngularVelocity();
         telemetry.addData("mp.rot rate: ", -gyroReading.xRotationRate);
         return -gyroReading.xRotationRate;
+    }
+
+    public float getXLinearVelocity()
+    {
+        double linearX = xInPerSec * Math.cos(Math.toRadians(currentHeading)) +
+                yInPerSec * Math.cos(Math.toRadians(90-currentHeading));
+
+        return (float)linearX;
+    }
+
+    public float getYLinearVelocity()
+    {
+        double linearY = -yInPerSec * Math.sin(Math.toRadians(currentHeading)) +
+                ( yInPerSec ) * Math.sin(Math.toRadians(90-currentHeading));
+
+        return (float)linearY;
     }
 
     public void stop()

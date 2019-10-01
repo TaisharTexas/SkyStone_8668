@@ -26,6 +26,9 @@ public class Vehicle
     double gainValue;
     double turnGain;
 
+    double accelerationSteepness = 4.0;
+    double timeToAccelerate = 1.0;
+
     int currentSegment = 0;
     boolean lastSegment = false;
 
@@ -61,19 +64,16 @@ public class Vehicle
      */
     public void follow(Path drivePath)
     {
-
         PVector target;
-
         PVector start = drivePath.pathPoints.get(currentSegment);
          end = drivePath.pathPoints.get(currentSegment + 1);
 
-        double theMaxSpeed = drivePath.maxSpeeds.get(currentSegment);
-        double theTargetHeading = drivePath.targetHeadings.get(currentSegment);
-
-
+        double theMaxSpeed = drivePath.maxSpeeds.get(currentSegment + 1);
+        double theTargetHeading = drivePath.targetHeadings.get(currentSegment + 1);
 
         double radius = maxSpeed / 1.5;
         radius = Range.clip(radius,5,radius);
+
 
         if(theMaxSpeed >= 20 && theMaxSpeed < 26)
         {
@@ -84,7 +84,8 @@ public class Vehicle
             maxAccel = theMaxSpeed * 8;
             if (currentSegment == 0)
             {
-                maxAccel = Math.sqrt(elapsedTime * 15.0 * 240);
+                maxAccel = maxAccel / (1.0 + Math.exp(-accelerationSteepness * (elapsedTime - timeToAccelerate)));
+//                maxAccel = Math.sqrt(elapsedTime * 15.0 * 240);
                 maxAccel = Range.clip( maxAccel, 0, 240);
 
             }
@@ -94,22 +95,52 @@ public class Vehicle
             maxAccel = theMaxSpeed * gainValue;
         }
 
+
         telemetry.addData("v.elapsedTime: ", elapsedTime);
         telemetry.addData("v.gain: ", maxAccel);
+
 
         if(drivePath.pathPoints.size() == currentSegment + 2)
         {
             lastSegment = true;
         }
 
+
         PVector velocityCopy = velocity.copy();
         velocityCopy.setMag(2);
 
         PVector projectedLoc = PVector.add(location, velocityCopy);
 
+
         if(projectedLoc.dist(end) < radius && lastSegment)
         {
             target = end.copy();
+        }
+        else if(projectedLoc.dist(end) < radius)
+        {
+            currentSegment++;
+            start = drivePath.pathPoints.get(currentSegment);
+            end = drivePath.pathPoints.get(currentSegment + 1);
+            theMaxSpeed = drivePath.maxSpeeds.get(currentSegment + 1);
+            theTargetHeading = drivePath.targetHeadings.get(currentSegment + 1);
+
+            PVector normalPoint = getNormalPoint(projectedLoc, start, end);
+
+            if(normalPoint.dist(end) > start.dist(end))
+            {
+                normalPoint = start;
+            }
+            else if(normalPoint.dist(start) > end.dist(start))
+            {
+                normalPoint = end;
+            }
+
+            PVector pathDirection = PVector.sub(end, start);
+            pathDirection.setMag(5.0);
+
+            target = normalPoint.copy();
+            target.add(pathDirection);
+
         }
         else
         {
@@ -131,10 +162,12 @@ public class Vehicle
             target.add(pathDirection);
         }
 
+
         if(location.dist(end) < radius && !lastSegment)
         {
             currentSegment++;
         }
+
 
         arrive(target, theMaxSpeed);
         point(theTargetHeading, 100);
