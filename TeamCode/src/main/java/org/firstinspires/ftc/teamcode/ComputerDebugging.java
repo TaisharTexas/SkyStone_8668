@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import org.firstinspires.ftc.teamcode.Vehicle;
-import org.firstinspires.ftc.teamcode.PVector;
 import java.text.DecimalFormat;
 
 public class ComputerDebugging
@@ -30,16 +28,16 @@ public class ComputerDebugging
     /**
      * Sends the robot location to the debug computer
      */
-    public static void sendRobotLocation(Vehicle vehicle)
+    public static void sendRobotLocation(Pursuit pursuit)
 	{
         //return if not using computer
 //        if(!Robot.usingComputer){return;}
 
         //first send the robot location
         messageBuilder.append("ROBOT,");
-        messageBuilder.append(df.format(vehicle.location.x));
+        messageBuilder.append(df.format(pursuit.location.x));
         messageBuilder.append(",");
-        messageBuilder.append(df.format(vehicle.location.y));
+        messageBuilder.append(df.format(pursuit.location.y));
         messageBuilder.append(",");
         messageBuilder.append(df.format(0)); // REPLACE with HEADING
         messageBuilder.append("%");
@@ -49,7 +47,7 @@ public class ComputerDebugging
     /**
      * Sends the robot location to the debug computer
      */
-//    public static void sendRobotLocation(Vehicle car){
+//    public static void sendRobotLocation(Pursuit car){
 //        //return if not using computer
 //        if(!Robot.usingComputer){return;}
 //

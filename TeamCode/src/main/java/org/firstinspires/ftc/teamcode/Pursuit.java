@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.util.Range;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
@@ -9,13 +8,14 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  *
  * @author Andrew, SBF Robotics
  */
-public class Vehicle
+public class Pursuit
 {
     public PVector location;
     public PVector velocity;
     public PVector localVelocity;
     public PVector acceleration;
     public PVector desiredVelocity;
+    public PVector initialPosition;
     public double currentHeading;
     public double currentAngularVelocity;
     public double joystickAngularVelocity;
@@ -36,13 +36,14 @@ public class Vehicle
     double elapsedTime = 0;
     PVector end;
 
-    Vehicle(float x, float y, Telemetry telem)
+    Pursuit(float x, float y, Telemetry telem)
     {
         telemetry = telem;
         acceleration = new PVector(0, 0);
         velocity = new PVector(0,0);
         localVelocity = new PVector( 0,0);
         location = new PVector(x,y);
+        initialPosition = new PVector(x,y);
         desiredVelocity = new PVector(0,0);
         endZone = 6; //inch
 
@@ -87,7 +88,6 @@ public class Vehicle
                 maxAccel = maxAccel / (1.0 + Math.exp(-accelerationSteepness * (elapsedTime - timeToAccelerate)));
 //                maxAccel = Math.sqrt(elapsedTime * 15.0 * 240);
                 maxAccel = Range.clip( maxAccel, 0, 240);
-
             }
         }
         else
@@ -95,11 +95,8 @@ public class Vehicle
             maxAccel = theMaxSpeed * gainValue;
         }
 
-
-        telemetry.addData("v.elapsedTime: ", elapsedTime);
-        telemetry.addData("v.gain: ", maxAccel);
-
-
+//        telemetry.addData("v.elapsedTime: ", elapsedTime);
+//        telemetry.addData("v.gain: ", maxAccel);
         if(drivePath.pathPoints.size() == currentSegment + 2)
         {
             lastSegment = true;
@@ -179,7 +176,7 @@ public class Vehicle
         //find the needed velocity to move to target and call it desiredVelocity
         desiredVelocity = PVector.sub(target, location);
 
-        telemetry.addData("v.desired velocity: ", desiredVelocity);
+//        telemetry.addData("v.desired velocity: ", desiredVelocity);
 
         //speed is the magnitude of desiredVelocity
         float speed = desiredVelocity.mag();
@@ -195,29 +192,29 @@ public class Vehicle
             desiredVelocity.setMag(theMaxSpeed);
         }
 
-        telemetry.addData("v.desired velocity set maxSpd: ", desiredVelocity);
+//        telemetry.addData("v.desired velocity set maxSpd: ", desiredVelocity);
 
 
         // steerAcceleration is the amount of needed change in velocity
         PVector steerAcceleration = PVector.sub(desiredVelocity, velocity);
-        telemetry.addData("v.steerAcceleration: ", steerAcceleration);
+//        telemetry.addData("v.steerAcceleration: ", steerAcceleration);
 
         // limit rate of change to robot velocity
         steerAcceleration.limit(maxAccel);
-        telemetry.addData("v.limit steerAcceleration: ", steerAcceleration);
+//        telemetry.addData("v.limit steerAcceleration: ", steerAcceleration);
 
         if (currentSegment == 0)
         {
             steerAcceleration.setMag(maxAccel);  // try this
         }
 
-        telemetry.addData("v.setMag steerAcceleration: ", steerAcceleration);
+//        telemetry.addData("v.setMag steerAcceleration: ", steerAcceleration);
 
         //corrects robot velocity by adding error (steerAcceleration)
 //        telemetry.addData("v.velocity: ", velocity);
         desiredVelocity = PVector.add(velocity, steerAcceleration);
 
-        telemetry.addData("v.desired velocity: ", desiredVelocity);
+//        telemetry.addData("v.desired velocity: ", desiredVelocity);
 
 
         //make sure final velocity isn't too fast
@@ -289,6 +286,16 @@ public class Vehicle
         float outgoing = start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1));
 
         return outgoing;
+    }
+
+    public void updatePosition(PVector currentPosition)
+    {
+        location = PVector.add(initialPosition, currentPosition);
+    }
+
+    public void updateVelocity(PVector currentVelocity)
+    {
+        velocity.set(currentVelocity.x, currentVelocity.y);
     }
 
 
