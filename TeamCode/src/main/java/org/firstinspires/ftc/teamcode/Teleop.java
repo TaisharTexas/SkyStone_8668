@@ -22,13 +22,13 @@ public class Teleop extends OpMode
 
     /* Chassis Control */
     /** The x-axis of the left joystick on the gamepad. Used for chassis control*/
-    double lStickX = -gamepad1.left_stick_x;
+    double lStickX;
     /** The x-axis of the right joystick on the gamepad. Used for chassis control*/
-    double rStickX = -gamepad1.right_stick_x;
+    double rStickX;
     /** The y-axis of the left joystick on the gamepad. Used for chassis control*/
-    double lStickY = gamepad1.left_stick_y;
+    double lStickY;
     /** The y-axis of the right joystick on the gamepad. Used for chassis control*/
-    double rStickY = gamepad1.right_stick_y;
+    double rStickY;
 
 
     int currentXEncoder = 0;
@@ -78,6 +78,16 @@ public class Teleop extends OpMode
     public void loop()
     {
         robot.update();
+
+        /* Chassis Control */
+        /** The x-axis of the left joystick on the gamepad. Used for chassis control*/
+        lStickX = -gamepad1.left_stick_x;
+        /** The x-axis of the right joystick on the gamepad. Used for chassis control*/
+        rStickX = -gamepad1.right_stick_x;
+        /** The y-axis of the left joystick on the gamepad. Used for chassis control*/
+        lStickY = gamepad1.left_stick_y;
+        /** The y-axis of the right joystick on the gamepad. Used for chassis control*/
+        rStickY = gamepad1.right_stick_y;
 
         /* Tell the robot to move */
         robot.joystickDrive(lStickX, lStickY, rStickX, rStickY, afterburners());

@@ -58,11 +58,11 @@ public class Robot
     {
         telemetry = telem;
         hardwareMap = hwmap;
-        useCamera = useVision;
+//        useCamera = useVision;
 
         if ( useCamera)
         {
-            eyeOfSauron.init(hwmap, telem);
+//            eyeOfSauron.init(hwmap, telem);
         }
 
         RF = hardwareMap.get(DcMotorEx.class, "rf");
