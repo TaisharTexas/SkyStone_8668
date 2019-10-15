@@ -14,13 +14,22 @@ public class Teleop extends OpMode
     Pursuit pursuit = new Pursuit(0, 0, telemetry);
     Robot robot = new Robot();
 
+    /* Chassis Control */
+    /** The x-axis of the left joystick on the gamepad. Used for chassis control*/
+    double lStickX = -gamepad1.left_stick_x;
+    /** The x-axis of the right joystick on the gamepad. Used for chassis control*/
+    double rStickX = -gamepad1.right_stick_x;
+    /** The y-axis of the left joystick on the gamepad. Used for chassis control*/
+    double lStickY = gamepad1.left_stick_y;
+    /** The y-axis of the right joystick on the gamepad. Used for chassis control*/
+    double rStickY = gamepad1.right_stick_y;
+
 
     int currentXEncoder = 0;
     int currentYEncoder = 0;
     double currentHeading = 0;
 
-    double xPrev = 0;
-    double yPrev = 0;
+
     double loopTime=0;
 
     private DataLogger myData;
@@ -34,10 +43,6 @@ public class Teleop extends OpMode
         myData.addField("elapsedTime");
         myData.addField("xEncoderPos");
         myData.addField("yEncoderPos");
-//        myData.addField("xEncoderVel");
-//        myData.addField("yEncoderVel");
-//        myData.addField("xVelCalc");
-//        myData.addField("yVelCalc");
         myData.newLine();
 
     }
@@ -59,26 +64,12 @@ public class Teleop extends OpMode
     {
         robot.update();
 
-        /* Chassis Control */
-        /** The x-axis of the left joystick on the gamepad. Used for chassis control*/
-        double lStickX = -gamepad1.left_stick_x;
-        /** The x-axis of the right joystick on the gamepad. Used for chassis control*/
-        double rStickX = -gamepad1.right_stick_x;
-        /** The y-axis of the left joystick on the gamepad. Used for chassis control*/
-        double lStickY = gamepad1.left_stick_y;
-        /** The y-axis of the right joystick on the gamepad. Used for chassis control*/
-        double rStickY = gamepad1.right_stick_y;
-
         /* Tell the robot to move */
-        robot.joystickDrive(lStickX, lStickY, rStickX, rStickY, 1);
+        robot.joystickDrive(lStickX, lStickY, rStickX, rStickY, afterburners());
 
         myData.addField(loopTime);
         myData.addField(currentXEncoder);
         myData.addField(currentYEncoder);
-//        myData.addField(myVelocity.x);
-//        myData.addField(myVelocity.y);
-//        myData.addField(myVx);
-//        myData.addField(myVy);
         myData.newLine();
 
     }
