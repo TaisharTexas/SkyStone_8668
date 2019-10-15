@@ -1,11 +1,17 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.content.Context;
 import android.os.Environment;
+import android.os.storage.StorageManager;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.sbfUtil.DataLogger;
+
+import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 @TeleOp(name="teleop", group="pure")
 
@@ -53,6 +59,7 @@ public class Teleop extends OpMode
         telemetry.addData("heading: ", robot.getHeading());
 
         telemetry.addData("path: ", Environment.getExternalStorageDirectory().getPath() + "/");
+        telemetry.addData("path external: ", getExternalStoragePath(hardwareMap.appContext, true) );
     }
 
     public void start()
@@ -89,4 +96,41 @@ public class Teleop extends OpMode
 
         return maximumSpeed;
     }
+    /**
+     * Get external sd card path using reflection
+     * @param mContext
+     * @param is_removable is external storage removable
+     * @return
+     */
+    private static String getExternalStoragePath(Context mContext, boolean is_removable) {
+
+        StorageManager mStorageManager = (StorageManager) mContext.getSystemService(Context.STORAGE_SERVICE);
+        Class<?> storageVolumeClazz = null;
+        try {
+            storageVolumeClazz = Class.forName("android.os.storage.StorageVolume");
+            Method getVolumeList = mStorageManager.getClass().getMethod("getVolumeList");
+            Method getPath = storageVolumeClazz.getMethod("getPath");
+            Method isRemovable = storageVolumeClazz.getMethod("isRemovable");
+            Object result = getVolumeList.invoke(mStorageManager);
+            final int length = Array.getLength(result);
+            for (int i = 0; i < length; i++) {
+                Object storageVolumeElement = Array.get(result, i);
+                String path = (String) getPath.invoke(storageVolumeElement);
+                boolean removable = (Boolean) isRemovable.invoke(storageVolumeElement);
+                if (is_removable == removable) {
+                    return path;
+                }
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

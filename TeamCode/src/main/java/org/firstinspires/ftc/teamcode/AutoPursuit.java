@@ -8,7 +8,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 
 @Autonomous(name="pursuit run", group="pure")
 @Config
-public class MecanumPursuit extends OpMode
+public class AutoPursuit extends OpMode
 {
     Pursuit pursuit = new Pursuit((float)0.0, (float)0.0, telemetry);
     Robot robot = new Robot();
