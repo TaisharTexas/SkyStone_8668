@@ -71,6 +71,7 @@ public class Teleop extends OpMode
 
     public void start()
     {
+        robot.start();
         resetStartTime();
     }
 

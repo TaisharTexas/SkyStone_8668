@@ -36,6 +36,7 @@ public class AutoPursuit extends OpMode
     {
         resetStartTime();
         pursuit.elapsedTime = 0;
+        robot.start();
     }
 
     public void loop()
