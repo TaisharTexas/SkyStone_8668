@@ -20,7 +20,7 @@ public class AutoPursuit extends OpMode
     {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        robot.init(telemetry, hardwareMap);
+        robot.init(telemetry, hardwareMap, true);
 
         robot.getEncoderTelem();
 
@@ -62,13 +62,12 @@ public class AutoPursuit extends OpMode
 
         robot.updateMotors(pursuit.desiredVelocity.copy(), pursuit.joystickAngularVelocity);
 
-
-
     }
 
-
-
-
-
-
+    @Override
+    public void stop()
+    {
+        robot.stop();
+        super.stop();
+    }
 }

@@ -43,7 +43,7 @@ public class Teleop extends OpMode
 
     public void init()
     {
-        robot.init(telemetry, hardwareMap);
+        robot.init(telemetry, hardwareMap, false);
 
         myData = new DataLogger("8668_Robot_Data");
         myData.addField("elapsedTime");
@@ -51,6 +51,13 @@ public class Teleop extends OpMode
         myData.addField("yEncoderPos");
         myData.newLine();
 
+    }
+
+    @Override
+    public void stop()
+    {
+        robot.stop();
+        super.stop();
     }
 
     @Override

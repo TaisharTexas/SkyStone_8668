@@ -19,6 +19,8 @@ public class Robot
 
     private Telemetry telemetry;
     private HardwareMap hardwareMap;
+    FieldVision eyeOfSauron;
+    boolean useCamera;
 
     private DcMotorEx RF = null;
     private DcMotorEx RR = null;
@@ -52,10 +54,16 @@ public class Robot
 
 
 
-    public void init(Telemetry telem, HardwareMap hwmap)
+    public void init(Telemetry telem, HardwareMap hwmap, boolean useVision )
     {
         telemetry = telem;
         hardwareMap = hwmap;
+        useCamera = useVision;
+
+        if ( useCamera)
+        {
+            eyeOfSauron.init(hwmap, telem);
+        }
 
         RF = hardwareMap.get(DcMotorEx.class, "rf");
         RF.setDirection(DcMotorEx.Direction.FORWARD);
@@ -103,6 +111,14 @@ public class Robot
             gyro = null;
         }
 
+    }
+
+    public void start()
+    {
+        if (useCamera)
+        {
+            eyeOfSauron.start();
+        }
     }
 
     public void update()
@@ -334,6 +350,11 @@ public class Robot
         RR.setPower(0.0);
         LF.setPower(0.0);
         LR.setPower(0.0);
+
+        if (useCamera)
+        {
+            eyeOfSauron.tfodShutdown();
+        }
 
     }
 
