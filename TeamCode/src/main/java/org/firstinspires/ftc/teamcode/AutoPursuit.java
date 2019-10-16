@@ -14,7 +14,7 @@ import java.io.File;
 @Config
 public class AutoPursuit extends OpMode
 {
-//    ActionMaster theMaster = new ActionMaster();
+    ActionMaster theMaster = new ActionMaster();
 
     Pursuit pursuit = new Pursuit((float)0.0, (float)0.0, telemetry);
     Robot robot = new Robot();
