@@ -16,7 +16,7 @@ public class AutoPursuit extends OpMode
 {
     ActionMaster theMaster = new ActionMaster();
 
-    Pursuit pursuit = new Pursuit((float)0.0, (float)0.0, telemetry);
+    Pursuit pursuit = new Pursuit((float)39.0, (float)9.0, telemetry);
     Robot robot = new Robot();
     Path drivePath = new Path();
 
@@ -33,16 +33,24 @@ public class AutoPursuit extends OpMode
         robot.getEncoderTelem();
 
         // Set up path
-        drivePath.addPoint(0,0,15,0);
-        drivePath.addPoint(0,15,15,0);
-        drivePath.addPoint(15,15,15,0);
-        drivePath.addPoint(15,0,15,0);
-        drivePath.addPoint(0,0,15,0);
+//        drivePath.addPoint(0,0,15,0);
+//        drivePath.addPoint(0,15,15,0);
+//        drivePath.addPoint(15,15,15,0);
+//        drivePath.addPoint(15,0,15,0);
+//        drivePath.addPoint(0,0,15,0);
 //        drivePath.addPoint(0,0,30,0);
 //        drivePath.addPoint(0, 48, 30, 0);
 //        drivePath.addPoint(48, 48, 30, 0);
 //        drivePath.addPoint(48, 96, 30, 0);
 //        drivePath.addPoint(96, 96, 30, 0);
+
+       // Attempt to map out getting 1 stone in red alliance autonomous
+        drivePath.addPoint(39,9,25,-90);
+        drivePath.addPoint( 43,50,15,-90);
+        drivePath.addPoint( 34,50,10,-90);
+        drivePath.addPoint( 60,36,30,-90);
+        drivePath.addPoint( 121,36,30,0);
+
 
     }
 
