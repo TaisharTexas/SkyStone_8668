@@ -20,6 +20,7 @@ public class Teleop extends OpMode
     Pursuit pursuit = new Pursuit(0, 0, telemetry);
     Robot robot = new Robot();
 
+
     /* Chassis Control */
     /** The x-axis of the left joystick on the gamepad. Used for chassis control*/
     double lStickX;
@@ -43,7 +44,7 @@ public class Teleop extends OpMode
 
     public void init()
     {
-        robot.init(telemetry, hardwareMap, false);
+        robot.init(telemetry, hardwareMap, true);
 
         myData = new DataLogger("8668_Robot_Data");
         myData.addField("elapsedTime");
@@ -96,6 +97,8 @@ public class Teleop extends OpMode
         myData.addField(currentXEncoder);
         myData.addField(currentYEncoder);
         myData.newLine();
+
+        telemetry.addData("camera", robot.eyeOfSauron.tensorFlowMineralDetection());
 
     }
 
