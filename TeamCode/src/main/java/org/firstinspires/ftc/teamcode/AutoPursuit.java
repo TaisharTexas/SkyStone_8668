@@ -25,10 +25,10 @@ public class AutoPursuit extends OpMode
     {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        robot.init(telemetry, hardwareMap, true);
+        robot.init(telemetry, hardwareMap, false);
 
         File autoFile = new File("/auto.csv");
-//        theMaster.init(telemetry, autoFile, robot);
+        theMaster.init(telemetry, autoFile, robot);
 
         robot.getEncoderTelem();
 

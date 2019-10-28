@@ -46,6 +46,7 @@ public class Teleop extends OpMode
     {
         robot.init(telemetry, hardwareMap, true);
 
+
         myData = new DataLogger("8668_Robot_Data");
         myData.addField("elapsedTime");
         myData.addField("xEncoderPos");
@@ -98,7 +99,7 @@ public class Teleop extends OpMode
         myData.addField(currentYEncoder);
         myData.newLine();
 
-        telemetry.addData("camera", robot.eyeOfSauron.tensorFlowMineralDetection());
+        telemetry.addData("camera", robot.eyeOfSauron.getSkyStonePosition());
 
     }
 

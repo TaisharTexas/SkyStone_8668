@@ -19,7 +19,7 @@ public class Robot
 
     private Telemetry telemetry;
     private HardwareMap hardwareMap;
-    FieldVision eyeOfSauron = new FieldVision();
+    CameraVision eyeOfSauron = new CameraVision();
     boolean useCamera;
 
     private DcMotorEx RF = null;
@@ -62,7 +62,7 @@ public class Robot
 
         if ( useCamera)
         {
-            eyeOfSauron.init(hwmap, telem);
+            eyeOfSauron.init(hwmap);
         }
 
         RF = hardwareMap.get(DcMotorEx.class, "rf");
@@ -115,10 +115,7 @@ public class Robot
 
     public void start()
     {
-        if (useCamera)
-        {
-            eyeOfSauron.start();
-        }
+
     }
 
     public void update()
@@ -353,7 +350,7 @@ public class Robot
 
         if (useCamera)
         {
-            eyeOfSauron.tfodShutdown();
+            eyeOfSauron.stopCamera();
         }
 
     }
