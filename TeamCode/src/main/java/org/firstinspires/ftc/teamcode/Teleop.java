@@ -20,7 +20,6 @@ public class Teleop extends OpMode
     Pursuit pursuit = new Pursuit(0, 0, telemetry);
     Robot robot = new Robot();
 
-
     /* Chassis Control */
     /** The x-axis of the left joystick on the gamepad. Used for chassis control*/
     double lStickX;
@@ -46,12 +45,11 @@ public class Teleop extends OpMode
     {
         robot.init(telemetry, hardwareMap, true);
 
-
-        myData = new DataLogger("8668_Robot_Data");
-        myData.addField("elapsedTime");
-        myData.addField("xEncoderPos");
-        myData.addField("yEncoderPos");
-        myData.newLine();
+//        myData = new DataLogger("8668_Robot_Data");
+//        myData.addField("elapsedTime");
+//        myData.addField("xEncoderPos");
+//        myData.addField("yEncoderPos");
+//        myData.newLine();
 
     }
 
@@ -94,12 +92,16 @@ public class Teleop extends OpMode
         /* Tell the robot to move */
         robot.joystickDrive(lStickX, lStickY, rStickX, rStickY, afterburners());
 
-        myData.addField(loopTime);
-        myData.addField(currentXEncoder);
-        myData.addField(currentYEncoder);
-        myData.newLine();
+//        myData.addField(loopTime);
+//        myData.addField(currentXEncoder);
+//        myData.addField(currentYEncoder);
+//        myData.newLine();
 
-        telemetry.addData("camera", robot.eyeOfSauron.getSkyStonePosition());
+        loopTime = getRuntime();
+        resetStartTime();
+        telemetry.addData("Loop Time: ", "%0.3f", loopTime);
+        telemetry.addData("Robot X,Y: ", "%.3f, %.3f", robot.getX(), robot.getY());
+        telemetry.addData("SS Position: ", robot.eyeOfSauron.getSkyStonePosition());
 
     }
 
@@ -118,6 +120,10 @@ public class Teleop extends OpMode
 
         return maximumSpeed;
     }
+
+
+
+
     /**
      * Get external sd card path using reflection
      * @param mContext

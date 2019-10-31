@@ -160,6 +160,11 @@ public class CameraVision
                             input.rows()*.6),
                     right, 4);
 
+            double maxSum = Math.max(Math.max(leftSum,centerSum), rightSum);
+            maxSum = Math.max(1, maxSum);
+            Imgproc.putText( input, String.format("%.4f",1-leftSum/maxSum), new Point( 40, 325), Imgproc.FONT_HERSHEY_DUPLEX, 1, left);
+            Imgproc.putText( input, String.format("%.4f",1-centerSum/maxSum), new Point( 260, 325), Imgproc.FONT_HERSHEY_DUPLEX, 1, center);
+            Imgproc.putText( input, String.format("%.4f",1-rightSum/maxSum), new Point( 470, 325), Imgproc.FONT_HERSHEY_DUPLEX, 1, right);
 
 
             switch (stageToRenderToViewport)

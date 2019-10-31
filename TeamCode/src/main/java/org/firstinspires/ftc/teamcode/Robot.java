@@ -13,6 +13,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.openftc.revextensions2.ExpansionHubEx;
+import org.openftc.revextensions2.ExpansionHubMotor;
+import org.openftc.revextensions2.RevBulkData;
 
 public class Robot
 {
@@ -21,15 +24,16 @@ public class Robot
     private HardwareMap hardwareMap;
     CameraVision eyeOfSauron = new CameraVision();
     boolean useCamera;
+    RevBulkData bulkData;
+    ExpansionHubEx expansionHub;
 
-    private DcMotorEx RF = null;
-    private DcMotorEx RR = null;
-    private DcMotorEx LF = null;
-    private DcMotorEx LR = null;
+    private ExpansionHubMotor RF = null;
+    private ExpansionHubMotor RR = null;
+    private ExpansionHubMotor LF = null;
+    private ExpansionHubMotor LR = null;
 
-    private DcMotorEx xEncoder = null;
-    private DcMotorEx yEncoder = null;
-
+    private ExpansionHubMotor xEncoder = null;
+    private ExpansionHubMotor yEncoder = null;
     private BNO055IMU gyro;
 
     private double xTicksPerRad;
@@ -64,24 +68,30 @@ public class Robot
         {
             eyeOfSauron.init(hwmap);
         }
+        expansionHub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 2");
+        /*
+         * Setting ExpansionHub I2C bus speed
+         */
+        expansionHub.setAllI2cBusSpeeds(ExpansionHubEx.I2cBusSpeed.FAST_400K);
+        telemetry.addLine("Setting speed of all I2C buses");
 
-        RF = hardwareMap.get(DcMotorEx.class, "rf");
+        RF = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "rf");
         RF.setDirection(DcMotorEx.Direction.FORWARD);
 
-        RR = hardwareMap.get(DcMotorEx.class, "rr");
+        RR = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "rr");
         RR.setDirection(DcMotorEx.Direction.FORWARD);
 
-        LF = hardwareMap.get(DcMotorEx.class, "lf");
+        LF = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "lf");
         LF.setDirection(DcMotorEx.Direction.FORWARD);
 
-        LR = hardwareMap.get(DcMotorEx.class, "lr");
+        LR = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "lr");
         LR.setDirection(DcMotorEx.Direction.FORWARD);
 
-        xEncoder = hardwareMap.get(DcMotorEx.class, "xEncoder");
+        xEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "xEncoder");
         xEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         xEncoder.setDirection((DcMotorEx.Direction.FORWARD));
 
-        yEncoder = hardwareMap.get(DcMotorEx.class, "yEncoder");
+        yEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "yEncoder");
         yEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         yEncoder.setDirection((DcMotorEx.Direction.REVERSE));
 
@@ -121,14 +131,22 @@ public class Robot
     public void update()
     {
         currentHeading = updateHeading();
+        bulkData = expansionHub.getBulkInputData();
 
-        xTicksPerSecond = xEncoder.getVelocity(AngleUnit.RADIANS) * xTicksPerRad / gearRatio;
-        yTicksPerSecond = yEncoder.getVelocity(AngleUnit.RADIANS) * yTicksPerRad / gearRatio;
+//        xTicksPerSecond = xEncoder.getVelocity(AngleUnit.RADIANS) * xTicksPerRad / gearRatio;
+//        yTicksPerSecond = yEncoder.getVelocity(AngleUnit.RADIANS) * yTicksPerRad / gearRatio;
+
+        xTicksPerSecond = bulkData.getMotorVelocity(xEncoder) / gearRatio;
+        yTicksPerSecond = bulkData.getMotorVelocity(yEncoder) / gearRatio;
+
         xInPerSec = xTicksPerSecond / ticksPerInch;
         yInPerSec = yTicksPerSecond / ticksPerInch;
 
-        currentXEncoder = xEncoder.getCurrentPosition();
-        currentYEncoder = yEncoder.getCurrentPosition();
+//        currentXEncoder = xEncoder.getCurrentPosition();
+//        currentYEncoder = yEncoder.getCurrentPosition();
+
+        currentXEncoder = bulkData.getMotorCurrentPosition(xEncoder);
+        currentYEncoder = bulkData.getMotorCurrentPosition(xEncoder);
     }
 
     /**
