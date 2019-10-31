@@ -81,6 +81,10 @@ public class ActionMaster
                 {
                     myAction = new GyroAction(params);
                 }
+                else if(type.equalsIgnoreCase("PURSUITACTION"))
+                {
+                    myAction = new PursuitAction(params);
+                }
                 else
                 {
                     myAction = null;

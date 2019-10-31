@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode.sbfActions;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Pursuit;
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.Path;
+
 
 /**
  * Loaded into the run map as an action that drives the robot. Each action is parameterized by the CSV file.
@@ -19,6 +22,8 @@ public class PursuitAction extends RobotAction
     double xPoint;
     double yPoint;
     double theHeading;
+    Pursuit thePursuit;
+    Path drivePath;
 
     /** Creates a new object from the supplied parameters. */
     PursuitAction(String id, String nextAction, double power, double heading, double duration, double x, double y)
@@ -56,26 +61,31 @@ public class PursuitAction extends RobotAction
              Double.parseDouble(params[6]));
     }
 
-    /** Placeholder for initialization. Currently only calls the parent init method. */
+    /** Placeholder for initialization. */
     @Override
     public void init(Telemetry telem, Robot theRobot)
     {
+        thePursuit = new Pursuit((float)xPoint, (float)yPoint, telem);
+        drivePath= new Path();
         super.init(telem, theRobot);
+
     }
 
-    /** Placeholder for entry. Currently only calls the parent entry method.  */
+    /** Placeholder for entry. */
     @Override
     public void entry()
     {
+        drivePath.addPoint((float)xPoint, (float)yPoint, thePower, theHeading);
         super.entry();
     }
 
-    /** The body of the action to be executed: Calls the drive() method in MecanumChassis. */
+    /** The body of the action to be executed. */
     @Override
     public boolean execute()
     {
 //        telemetry.addData("distance ", theDistance);
-//        return robot.drive(thePower, theDirection, theGain, theDistance, timeout);
+        thePursuit.follow(drivePath);
+        robot.updateMotors(thePursuit.desiredVelocity.copy(), thePursuit.joystickAngularVelocity);
         return true;  // FIXME
     }
 

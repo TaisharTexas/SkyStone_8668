@@ -36,7 +36,7 @@ public class Pursuit
     double elapsedTime = 0;
     PVector end;
 
-    Pursuit(float x, float y, Telemetry telem)
+    public Pursuit(float x, float y, Telemetry telem)
     {
         telemetry = telem;
         acceleration = new PVector(0, 0);
@@ -168,6 +168,7 @@ public class Pursuit
 
         arrive(target, theMaxSpeed);
         point(theTargetHeading, 100);
+
     }
 
 

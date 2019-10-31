@@ -9,7 +9,7 @@ public class Path
     ArrayList<Double> targetHeadings;
 
 
-    Path()
+    public Path()
     {
         pathPoints = new ArrayList<PVector>();
         maxSpeeds = new ArrayList<Double>();
