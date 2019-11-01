@@ -31,6 +31,7 @@ public class Pursuit
 
     int currentSegment = 0;
     boolean lastSegment = false;
+    public boolean done = false;
 
     Telemetry telemetry;
     double elapsedTime = 0;
@@ -169,6 +170,11 @@ public class Pursuit
         arrive(target, theMaxSpeed);
         point(theTargetHeading, 100);
 
+        if(lastSegment && location.dist(end) <= .5)
+        {
+            done = true;
+        }
+
     }
 
 
@@ -297,6 +303,11 @@ public class Pursuit
     public void updateVelocity(PVector currentVelocity)
     {
         velocity.set(currentVelocity.x, currentVelocity.y);
+    }
+
+    public boolean getDone()
+    {
+        return done;
     }
 
 

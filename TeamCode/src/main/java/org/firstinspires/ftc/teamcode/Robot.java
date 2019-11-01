@@ -16,6 +16,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.openftc.revextensions2.ExpansionHubEx;
 import org.openftc.revextensions2.ExpansionHubMotor;
 import org.openftc.revextensions2.RevBulkData;
+import java.util.concurrent.TimeUnit;
+
 
 public class Robot
 {
@@ -33,6 +35,9 @@ public class Robot
     private ExpansionHubMotor RR = null;
     private ExpansionHubMotor LF = null;
     private ExpansionHubMotor LR = null;
+
+    /** The dc motor whose encoder is being used for distance measurements. */
+    ExpansionHubMotor encoderMotor;
 
     private ExpansionHubMotor xEncoder = null;
     private ExpansionHubMotor yEncoder = null;
@@ -60,11 +65,81 @@ public class Robot
 
 
 
+
+    /** Directional variables used to simulate joystick commands in autonomous.
+     * Simulates a forward drive command.*/
+    static final double FORWARD = 0.0;
+    /** Directional variables used to simulate joystick commands in autonomous.
+     * Simulates a backward drive command.*/
+    static final double BACKWARD = 180.0;
+    /** Directional variables used to simulate joystick commands in autonomous.
+     * Simulates a right strafe command.*/
+    static final double RIGHT = 270.0;
+    /** Directional variables used to simulate joystick commands in autonomous.
+     * Simulates a left strafe command.*/
+    static final double LEFT = 90.0;
+    /** Directional variables used to simulate joystick commands in autonomous.
+     * Simulates a forward-right diagonal strafe command.*/
+    static final double FORWARD_RIGHT_DIAGONAL = -45.0;
+    /** Directional variables used to simulate joystick commands in autonomous.
+     * Simulates a forward-left diagonal strafe command.*/
+    static final double FORWARD_LEFT_DIAGONAL = 45.0;
+    /** Directional variables used to simulate joystick commands in autonomous.
+     * Simulates a backward-right diagonal strafe command.*/
+    static final double REVERSE_RIGHT_DIAGONAL = -135.0;
+    /** Directional variables used to simulate joystick commands in autonomous.
+     * Simulates a backward-left diagonal strafe command.*/
+    static final double REVERSE_LEFT_DIAGONAL = 135.0;
+
+    /** The counts per motor revolution for a REV HD 40:1 Hex Motor.
+     * Used in converting inches to encoder ticks. Allows the programmer to code in inches while
+     * the motor measures in encoder ticks.*/
+    final double COUNTS_PER_MOTOR_REV = 1120;
+    /** The drive gear reduction currently being used on the robot drive modules.
+     * Used in converting inches to encoder ticks. Allows the programmer to code in inches while
+     * the motor measures in encoder ticks.*/
+    final double DRIVE_GEAR_REDUCTION = 1.3;
+    /** The wheel diameter of the mecanum wheel currently on the robot.
+     * Used in converting inches to encoder ticks. Allows the programmer to code in inches while
+     * the motor measures in encoder ticks.*/
+    final double WHEEL_DIAMETER_INCHES = 4.0;
+    /** The inches traveled per wheel rotation for the 4" diameter mecanum wheels currently on the robot.
+     * Used in converting inches to encoder ticks. Allows the programmer to code in inches while
+     * the motor measures in encoder ticks.*/
+    final double INCH_PER_REV = WHEEL_DIAMETER_INCHES * 3.14159;
+    /** The encoder ticks per inch ( (ticks per mtr rev*10)/(13*4*3.14159) ).
+     * Used in converting inches to encoder ticks. Allows the programmer to code in inches while
+     * the motor measures in encoder ticks.*/
+    final double COUNTS_PER_INCH = (1120*10)/(13*4*3.14159);
+
+    /** An int variable used in drive, tankDrive, and pointTurn to capture the encoder position before each move. */
+    double initialPosition;
+    /** A double variable used in drive and tankDrive to capture the initial heading before each move. */
+    double initialHeading;
+    /** A double variable used in pointTurn to either turn the robot left or right. */
+    double directionalPower;
+    /** A double variable used in pointTurn to represent the value by which the robot needs to correct.*/
+    double error;
+    /** A double that stores the starting heading of the robot for use in reseting the robot's
+     * heading to its start heading. */
+    double resetHeading;
+    boolean moving;
+    private long startTime = 0; // in nanoseconds
+    /** A double that is the number of nanoseconds per second. */
+    double NANOSECONDS_PER_SECOND = TimeUnit.SECONDS.toNanos(1);
+
+
+
+
+
+
+
     public void init(Telemetry telem, HardwareMap hwmap, boolean useVision )
     {
         telemetry = telem;
         hardwareMap = hwmap;
         useCamera = useVision;
+        startTime = 0;
 
         if ( useCamera)
         {
@@ -123,6 +198,10 @@ public class Robot
             telemetry.addData("imu not found in config file", 0);
             gyro = null;
         }
+
+        encoderMotor = LF;
+        moving = false;
+
 
     }
 
@@ -378,6 +457,191 @@ public class Robot
     }
 
 
+
+    /**
+     * The mecanumDrive method moves the four drive motors on the robot and will move the robot forward,
+     * backward, left, right, or at a 45 degree angle in any direction.
+     *
+     * @param power  How fast the robot will drive.
+     * @param gain  The rate at which the robot will correct an error
+     * @param direction  In which direction the robot will drive (forward, backward, left, right,
+     *                   or 45 degrees in any direction).
+     * @param distance  How far the robot will drive.
+     * @param time  The max time this move can take. A time-out feature: if the move stalls for some
+     *              reason, the timer will catch it.
+     * @return  A boolean that tells us whether or not the robot is moving.
+     */
+    public boolean drive(double power, double direction, double gain, double distance, double time)
+    {
+        double driveDistance = COUNTS_PER_INCH * distance;
+        double correction;
+        double actual = getHeading();
+
+//        telemetry.addData( "Is RR-Diagonal?: ", direction ==  REVERSE_RIGHT_DIAGONAL);
+//        telemetry.addData("Direction: ", direction);
+//        telemetry.addData("RR-Diag: ", REVERSE_RIGHT_DIAGONAL);
+
+        if (!moving)
+        {
+            initialHeading = getHeading();
+            if (Math.abs(initialHeading) > 130  &&  initialHeading < 0.0)
+            {
+                initialHeading += 360.0;
+            }
+            if( (direction == FORWARD_LEFT_DIAGONAL) || (direction  == REVERSE_RIGHT_DIAGONAL) )
+            {
+                initialPosition = RF.getCurrentPosition();
+                encoderMotor = RF;
+            }
+            else
+            {
+                initialPosition = LF.getCurrentPosition();
+                encoderMotor = LF;
+            }
+            resetStartTime();
+            moving = true;
+        }
+//        telemetry.addData("initial position: ", initialPosition);
+
+        if (Math.abs(initialHeading) > 130  &&  actual < 0.0)
+        {
+            actual += 360;
+        }
+
+        correction = ((initialHeading - actual) * gain);
+
+        double lStickX = power * Math.sin(Math.toRadians(direction));
+        double lStickY = -(power * Math.cos(Math.toRadians(direction)));
+
+//        telemetry.addData("Right Motor DD: ", Math.abs(rFrontMotor.getCurrentPosition() - initialPosition));
+//        telemetry.addData("Left Motor DD:", Math.abs(lFrontMotor.getCurrentPosition() - initialPosition));
+
+//        telemetry.addData("Drive Distance: ", driveDistance);
+        double tmpDistance = Math.abs(encoderMotor.getCurrentPosition() - initialPosition);
+//        telemetry.addData("Distance Driven:", tmpDistance);
+//        telemetry.addData("getRuntime() = ", getRuntime());
+//        telemetry.addData("time = ", time);
+
+        joystickDrive(lStickX, lStickY, correction, 0.0, power);
+
+        if (((Math.abs(encoderMotor.getCurrentPosition() - initialPosition)) >= driveDistance) || (getRuntime() > time))
+        {
+            stop();
+            moving = false;
+            encoderMotor = LF;
+        }
+
+        return !moving;
+    }
+
+    /**
+     * The pointTurn method turns the robot to a target heading, automatically picking the turn
+     * direction that is the shortest distance to turn to arrive at the target.
+     *
+     * @param targetHeading  The direction in which the robot will move.
+     * @param time  The maximum time the move can take before the code moves on.
+     * @param power  The power at which the robot will move.
+     * @return A boolean that tells use whether or not the robot is moving.
+     */
+    public boolean pointTurn(double power, double targetHeading, double time)
+    {
+        power = Math.abs(power);
+        double currentHeading = getHeading();
+
+        if (Math.abs(targetHeading) > 170  &&  currentHeading < 0.0)
+        {
+            currentHeading += 360;
+        }
+
+        if (!moving)
+        {
+            initialHeading = getHeading();
+            error = initialHeading - targetHeading;
+
+            if (error > 180)
+            {
+                error -= 360;
+            }
+            else if (error < -180)
+            {
+                error += 360;
+            }
+
+            if (error < 0)
+            {
+                directionalPower = power;
+            }
+            else
+            {
+                directionalPower = -power;
+            }
+
+            if ( Math.abs(error) < 60 )
+            {
+                directionalPower = -error * 0.01;
+                if (directionalPower > 0 )
+                {
+                    directionalPower = Range.clip( directionalPower, 0.15, power);
+                }
+                else
+                {
+                    directionalPower = Range.clip(directionalPower, -power, -0.15);
+                }
+            }
+
+            setMode(ExpansionHubMotor.RunMode.RUN_USING_ENCODER);
+            resetStartTime();
+            moving = true;
+        }
+
+        joystickDrive(0.0, 0.0, directionalPower, 0.0, power);
+
+        if(Math.abs(currentHeading - targetHeading) < 4.0 || getRuntime() > time)
+        {
+            stop();
+            moving = false;
+        }
+
+        return !moving;
+    }
+
+
+
+    /**
+     * Get the number of seconds this op mode has been running
+     * <p>
+     * This method has sub millisecond accuracy.
+     * @return number of seconds this op mode has been running
+     */
+    public double getRuntime()
+    {
+        return (System.nanoTime() - startTime) / NANOSECONDS_PER_SECOND;
+    }
+
+    /**
+     * Reset the internal timer to zero.
+     */
+    public void resetStartTime()
+    {
+        startTime = System.nanoTime();
+    }
+
+
+    /**
+     * setMode sets all four drive motors to a specified mode. There are three mode choices:
+     * 1) RUN_USING_ENCODERS,
+     * 2) RUN_WITHOUT_ENCODERS, and
+     * 3) RUN_TO_POSITION.
+     *
+     * @param mode The type of mode the motors will will run with.
+     */
+    private void setMode(ExpansionHubMotor.RunMode mode)
+    {
+        if (RF != null) { RF.setMode(mode); }
+        if (LF != null) { LF.setMode(mode); }
+        if (RR != null)  { RR.setMode(mode); }
+        if (LR != null)  { LR.setMode(mode); }
+    }
 
 
 }

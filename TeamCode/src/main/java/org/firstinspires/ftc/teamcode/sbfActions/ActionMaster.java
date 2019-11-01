@@ -4,6 +4,8 @@ package org.firstinspires.ftc.teamcode.sbfActions;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.sbfActions.RobotAction;
+import org.firstinspires.ftc.teamcode.Path;
+
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -83,18 +85,28 @@ public class ActionMaster
                 }
                 else if(type.equalsIgnoreCase("PURSUITACTION"))
                 {
-                    myAction = new PursuitAction(params);
+                    if(!actionMap.containsKey(type))
+                    {
+                        myAction = new PursuitAction(params);
+                    }
+                    else
+                    {
+                        myAction = actionMap.get(type);
+                        if(myAction != null)
+                        {
+                            ((PursuitAction)myAction).addPoint(params);
+                        }
+                        else
+                        {
+                            telemetry.addData("addPoint() FAILED ", "--myAction equals null--");
+                        }
+                    }
                 }
                 else
                 {
                     myAction = null;
                 }
-
-                if(myAction != null)
-                {
-                    myAction.init(telemetry, robot);
-                    this.addAction(myAction);
-                }
+                
                 telemetry.addData("TheAction: ", myAction);
             }
             this.addRunAction("One");
