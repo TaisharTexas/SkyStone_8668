@@ -43,7 +43,7 @@ public class Teleop extends OpMode
 
     public void init()
     {
-        robot.init(telemetry, hardwareMap, true);
+        robot.init(telemetry, hardwareMap, false);
 
 //        myData = new DataLogger("8668_Robot_Data");
 //        myData.addField("elapsedTime");
@@ -99,9 +99,9 @@ public class Teleop extends OpMode
 
         loopTime = getRuntime();
         resetStartTime();
-        telemetry.addData("Loop Time: ", "%0.3f", loopTime);
+        telemetry.addData("Loop Time: ", "%.3f", loopTime);
         telemetry.addData("Robot X,Y: ", "%.3f, %.3f", robot.getX(), robot.getY());
-        telemetry.addData("SS Position: ", robot.eyeOfSauron.getSkyStonePosition());
+//        telemetry.addData("SS Position: ", robot.eyeOfSauron.getSkyStonePosition());
 
     }
 

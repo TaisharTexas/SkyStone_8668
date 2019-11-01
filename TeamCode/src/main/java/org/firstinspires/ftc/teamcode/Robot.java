@@ -25,7 +25,9 @@ public class Robot
     CameraVision eyeOfSauron = new CameraVision();
     boolean useCamera;
     RevBulkData bulkData;
+    RevBulkData bulkDataAux;
     ExpansionHubEx expansionHub;
+    ExpansionHubEx expansionHubAux;
 
     private ExpansionHubMotor RF = null;
     private ExpansionHubMotor RR = null;
@@ -69,6 +71,7 @@ public class Robot
             eyeOfSauron.init(hwmap);
         }
         expansionHub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 2");
+        expansionHubAux = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 3");
         /*
          * Setting ExpansionHub I2C bus speed
          */
@@ -132,12 +135,13 @@ public class Robot
     {
         currentHeading = updateHeading();
         bulkData = expansionHub.getBulkInputData();
+        bulkDataAux = expansionHubAux.getBulkInputData();
 
 //        xTicksPerSecond = xEncoder.getVelocity(AngleUnit.RADIANS) * xTicksPerRad / gearRatio;
 //        yTicksPerSecond = yEncoder.getVelocity(AngleUnit.RADIANS) * yTicksPerRad / gearRatio;
 
-        xTicksPerSecond = bulkData.getMotorVelocity(xEncoder) / gearRatio;
-        yTicksPerSecond = bulkData.getMotorVelocity(yEncoder) / gearRatio;
+        xTicksPerSecond = bulkDataAux.getMotorVelocity(xEncoder) / gearRatio;
+        yTicksPerSecond = bulkDataAux.getMotorVelocity(yEncoder) / gearRatio;
 
         xInPerSec = xTicksPerSecond / ticksPerInch;
         yInPerSec = yTicksPerSecond / ticksPerInch;
@@ -145,8 +149,8 @@ public class Robot
 //        currentXEncoder = xEncoder.getCurrentPosition();
 //        currentYEncoder = yEncoder.getCurrentPosition();
 
-        currentXEncoder = bulkData.getMotorCurrentPosition(xEncoder);
-        currentYEncoder = bulkData.getMotorCurrentPosition(xEncoder);
+        currentXEncoder = bulkDataAux.getMotorCurrentPosition(xEncoder);
+        currentYEncoder = bulkDataAux.getMotorCurrentPosition(yEncoder);
     }
 
     /**
