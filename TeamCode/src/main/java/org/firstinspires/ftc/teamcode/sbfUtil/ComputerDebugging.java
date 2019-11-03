@@ -56,9 +56,9 @@ public class ComputerDebugging
 //
 //        //first send the robot location
 //        messageBuilder.append("CAR,");
-//        messageBuilder.append(df.format(car.getX()));
+//        messageBuilder.append(df.format(car.getXChange()));
 //        messageBuilder.append(",");
-//        messageBuilder.append(df.format(car.getY()));
+//        messageBuilder.append(df.format(car.getYChange()));
 //        messageBuilder.append(",");
 //        messageBuilder.append(df.format(car.getHeading()));
 //        messageBuilder.append("%");

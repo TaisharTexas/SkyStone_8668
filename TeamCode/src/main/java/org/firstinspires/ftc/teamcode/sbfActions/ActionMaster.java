@@ -70,24 +70,34 @@ public class ActionMaster
                 if (type.equalsIgnoreCase("WAITACTION"))
                 {
                     myAction = new WaitAction(params);
+                    myAction.init(telemetry, robot);
+                    this.addAction(myAction);
                 }
                 else if (type.equalsIgnoreCase("DRIVEACTION"))
                 {
                     myAction = new DriveAction(params);
+                    myAction.init(telemetry, robot);
+                    this.addAction(myAction);
                 }
                 else if(type.equalsIgnoreCase("CAMERAACTION"))
                 {
                     myAction = new CameraAction(params);
+                    myAction.init(telemetry, robot);
+                    this.addAction(myAction);
                 }
                 else if(type.equalsIgnoreCase("GYROACTION"))
                 {
                     myAction = new GyroAction(params);
+                    myAction.init(telemetry, robot);
+                    this.addAction(myAction);
                 }
                 else if(type.equalsIgnoreCase("PURSUITACTION"))
                 {
                     if(!actionMap.containsKey(type))
                     {
                         myAction = new PursuitAction(params);
+                        myAction.init(telemetry, robot);
+                        this.addAction(myAction);
                     }
                     else
                     {

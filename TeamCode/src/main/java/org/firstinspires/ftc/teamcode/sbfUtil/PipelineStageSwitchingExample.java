@@ -120,6 +120,11 @@ public class PipelineStageSwitchingExample extends LinearOpMode
              Scalar center = red;
              Scalar right = red;
 
+             Double leftL = 0.1;
+             Double leftR = 0.37;
+             Double rightL = 0.63;
+             Double rightR = 0.9;
+
             /*
              * This pipeline finds the contours of yellow blobs such as the Gold Mineral
              * from the Rover Ruckus game.
@@ -128,21 +133,21 @@ public class PipelineStageSwitchingExample extends LinearOpMode
             Core.extractChannel(yCbCrChan2Mat, yCbCrChan2Mat, 2);
             Imgproc.threshold(yCbCrChan2Mat, thresholdMat, 102, 255, Imgproc.THRESH_BINARY_INV);
 
-            for(int c = (int)(thresholdMat.cols()*.001); c < (int)(thresholdMat.cols()*.333); c++)
+            for(int c = (int)(thresholdMat.cols()*leftL); c < (int)(thresholdMat.cols()*leftR); c++)
             {
                 for(int r = (int)(thresholdMat.rows()*.4); r <= (thresholdMat.rows()*.6); r++)
                 {
                     leftSum = leftSum + (thresholdMat.get(r,c))[0];
                 }
             }
-            for(int c = (int)(thresholdMat.cols()*.340); c < (int)(thresholdMat.cols()*.666); c++)
+            for(int c = (int)(thresholdMat.cols()*leftR); c < (int)(thresholdMat.cols()*rightL); c++)
             {
                 for(int r = (int)(thresholdMat.rows()*.4); r <= (thresholdMat.rows()*.6); r++)
                 {
                     centerSum = centerSum + (thresholdMat.get(r,c))[0];
                 }
             }
-            for(int c = (int)(thresholdMat.cols()*.670); c < (int)(thresholdMat.cols()); c++)
+            for(int c = (int)(thresholdMat.cols()*rightL); c < (int)(thresholdMat.cols()*rightR); c++)
             {
                 for(int r = (int)(thresholdMat.rows()*.4); r <= (thresholdMat.rows()*.6); r++)
                 {
@@ -169,31 +174,36 @@ public class PipelineStageSwitchingExample extends LinearOpMode
             Imgproc.rectangle(
                     input,
                     new Point(
-                            input.cols()*.001,
+                            input.cols()*leftL,
                             input.rows()*.4),
                     new Point(
-                            input.cols()*.333,
+                            input.cols()*leftR,
                             input.rows()*.6),
                     left, 4);
             Imgproc.rectangle(
                     input,
                     new Point(
-                            input.cols()*.340,
+                            input.cols()*leftR+4,
                             input.rows()*.4),
                     new Point(
-                            input.cols()*.666,
+                            input.cols()*rightL - 4,
                             input.rows()*.6),
                     center, 4);
             Imgproc.rectangle(
                     input,
                     new Point(
-                            input.cols()*.670,
+                            input.cols()*rightL,
                             input.rows()*.4),
                     new Point(
-                            input.cols()*1.0,
+                            input.cols()*rightR,
                             input.rows()*.6),
                     right, 4);
 
+            double maxSum = Math.max(Math.max(leftSum,centerSum), rightSum);
+            maxSum = Math.max(1, maxSum);
+            Imgproc.putText( input, String.format("%.4f",1-leftSum/maxSum), new Point( 40, 325), Imgproc.FONT_HERSHEY_DUPLEX, 1, left);
+            Imgproc.putText( input, String.format("%.4f",1-centerSum/maxSum), new Point( 260, 325), Imgproc.FONT_HERSHEY_DUPLEX, 1, center);
+            Imgproc.putText( input, String.format("%.4f",1-rightSum/maxSum), new Point( 470, 325), Imgproc.FONT_HERSHEY_DUPLEX, 1, right);
 
 
             switch (stageToRenderToViewport)

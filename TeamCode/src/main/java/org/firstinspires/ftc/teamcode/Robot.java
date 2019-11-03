@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
@@ -22,6 +21,8 @@ import java.util.concurrent.TimeUnit;
 public class Robot
 {
 
+    // TODO: look at drive method imported; check reference to encoder ticks and other things.  Update
+    // for the new bulk data transfer.
     private Telemetry telemetry;
     private HardwareMap hardwareMap;
     CameraVision eyeOfSauron = new CameraVision();
@@ -49,18 +50,20 @@ public class Robot
     private double yTicksPerSecond;
     private double xInPerSec;
     private double yInPerSec;
-    private final double encoderWheelRadius = 1.5; //in inches
+    private final double encoderWheelRadius = 1.0; //in inches
     private final double tickPerRotation = 2400;
     private final double distanceConstant = 195.5/192; //calibrated over 16' & 12' on foam tiles -- 9/13/19
-    private final double inchesPerRotation = 3 * Math.PI * distanceConstant; // this is the encoder wheel distancd
-    private final double gearRatio = 1.3;
-    private final double ticksPerInch = tickPerRotation * 2.0 * Math.PI * encoderWheelRadius;
+    private final double inchesPerRotation = 2.0 * encoderWheelRadius * Math.PI * distanceConstant; // this is the encoder wheel distancd
+    private final double gearRatio = 1.733333333;
+    private final double ticksPerInch = tickPerRotation / ( inchesPerRotation );
     private double xPrev = 0;
     private double yPrev = 0;
 
-    private int currentXEncoder = 0;
-    private int currentYEncoder = 0;
-    private double currentHeading = 0;
+    public int prevXEncoder = 0;
+    public int prevYEncoder = 0;
+    public int xEncoderChange = 0;
+    public int yEncoderChange = 0;
+    public double currentHeading = 0;
 
 
 
@@ -130,10 +133,6 @@ public class Robot
 
 
 
-
-
-
-
     public void init(Telemetry telem, HardwareMap hwmap, boolean useVision )
     {
         telemetry = telem;
@@ -150,9 +149,10 @@ public class Robot
         /*
          * Setting ExpansionHub I2C bus speed
          */
-        expansionHub.setAllI2cBusSpeeds(ExpansionHubEx.I2cBusSpeed.FAST_400K);
-        telemetry.addLine("Setting speed of all I2C buses");
+//        expansionHub.setAllI2cBusSpeeds(ExpansionHubEx.I2cBusSpeed.FAST_400K);
+//        telemetry.addLine("Setting speed of all I2C buses");
 
+        /* TODO: add try/catch for the items in the hardware map */
         RF = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "rf");
         RF.setDirection(DcMotorEx.Direction.FORWARD);
 
@@ -171,7 +171,7 @@ public class Robot
 
         yEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "yEncoder");
         yEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        yEncoder.setDirection((DcMotorEx.Direction.REVERSE));
+        yEncoder.setDirection((DcMotorEx.Direction.FORWARD));
 
         xTicksPerRad = xEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
         yTicksPerRad = yEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
@@ -212,24 +212,31 @@ public class Robot
 
     public void update()
     {
+        /*
+         * Update the sensor data using bulk transferes from the Rev Hubs
+         */
         currentHeading = updateHeading();
         bulkData = expansionHub.getBulkInputData();
         bulkDataAux = expansionHubAux.getBulkInputData();
 
-//        xTicksPerSecond = xEncoder.getVelocity(AngleUnit.RADIANS) * xTicksPerRad / gearRatio;
-//        yTicksPerSecond = yEncoder.getVelocity(AngleUnit.RADIANS) * yTicksPerRad / gearRatio;
-
+        /*
+         * Update the velocity as read by the encoders
+         */
         xTicksPerSecond = bulkDataAux.getMotorVelocity(xEncoder) / gearRatio;
         yTicksPerSecond = bulkDataAux.getMotorVelocity(yEncoder) / gearRatio;
 
         xInPerSec = xTicksPerSecond / ticksPerInch;
         yInPerSec = yTicksPerSecond / ticksPerInch;
 
-//        currentXEncoder = xEncoder.getCurrentPosition();
-//        currentYEncoder = yEncoder.getCurrentPosition();
+        /*
+         * Update the position change since the last time as read by the encoders
+         */
+        xEncoderChange = bulkDataAux.getMotorCurrentPosition(xEncoder) - prevXEncoder;
+        yEncoderChange = bulkDataAux.getMotorCurrentPosition(yEncoder) - prevYEncoder;
 
-        currentXEncoder = bulkDataAux.getMotorCurrentPosition(xEncoder);
-        currentYEncoder = bulkDataAux.getMotorCurrentPosition(yEncoder);
+        /* store the current value to use as the previous value the next time around */
+        prevXEncoder = bulkDataAux.getMotorCurrentPosition(xEncoder);
+        prevYEncoder = bulkDataAux.getMotorCurrentPosition(yEncoder);
     }
 
     /**
@@ -249,84 +256,44 @@ public class Robot
 
     public void getEncoderTelem()
     {
-        getXInchesMoved();
-        getYInchesMoved();
+        getXChange();
+        getYChange();
         getXLinearVelocity();
         getYLinearVelocity();
     }
 
 
-    public float getXInchesMoved()
+    public float getXChange()
     {
-        double inchesX = (((currentXEncoder - xPrev) / tickPerRotation) * inchesPerRotation) * Math.cos(Math.toRadians(currentHeading)) +
-                (((currentYEncoder - yPrev) / tickPerRotation) * inchesPerRotation) * Math.cos(Math.toRadians(90-currentHeading));
-
-//        telemetry.addData("mp.x inches moved: ", inchesX);
-
+        double inchesX = (((xEncoderChange) / tickPerRotation) * inchesPerRotation) * Math.cos(Math.toRadians(currentHeading)) +
+                         (((yEncoderChange) / tickPerRotation) * inchesPerRotation) * Math.sin(Math.toRadians(currentHeading));
         return (float)inchesX;
     }
 
-    public float getYInchesMoved()
+    public float getYChange()
     {
-        double inchesY = ((-(currentXEncoder - xPrev) / tickPerRotation) * inchesPerRotation) * Math.sin(Math.toRadians(currentHeading)) +
-                (((currentYEncoder - yPrev) / tickPerRotation) * inchesPerRotation) * Math.sin(Math.toRadians(90-currentHeading));
+        double inchesY = ((-(xEncoderChange) / tickPerRotation) * inchesPerRotation) * Math.sin(Math.toRadians(currentHeading)) +
+                         (((yEncoderChange) / tickPerRotation) * inchesPerRotation) * Math.cos(Math.toRadians(currentHeading));
         return (float)inchesY;
     }
 
-    public float getX()
+    public PVector getLocationChange()
     {
-        double inchesX = (((currentXEncoder) / tickPerRotation) * inchesPerRotation) * Math.cos(Math.toRadians(currentHeading)) +
-                (((currentYEncoder) / tickPerRotation) * inchesPerRotation) * Math.cos(Math.toRadians(90-currentHeading));
-        return (float)inchesX;
-    }
-
-    public float getY()
-    {
-        double inchesY = ((-(currentXEncoder) / tickPerRotation) * inchesPerRotation) * Math.sin(Math.toRadians(currentHeading)) +
-                (((currentYEncoder) / tickPerRotation) * inchesPerRotation) * Math.sin(Math.toRadians(90-currentHeading));
-        return (float)inchesY;
-    }
-
-    public PVector getLocation()
-    {
-        PVector location = new PVector(getX(), getY());
+        PVector location = new PVector(getXChange(), getYChange());
         return location;
     }
 
-
-
     public void updateMotors(PVector neededVelocity, double spin)
     {
-//        PVector neededVelocity = bot.desiredVelocity.copy();
+        float rotation = (float)(90-currentHeading) - (float)Math.toDegrees(neededVelocity.heading());
+//        telemetry.addData("currHdg, needHdg, rotation ", "%.2f, %.2f, %.2f", 90-currentHeading, Math.toDegrees(neededVelocity.heading()), rotation);
 
-//        telemetry.addData("mp.needed Velocity: ", neededVelocity);
-//        PVector headingVector = PVector.fromAngle((float)Math.toRadians(currentHeading+90));
-//        float rotation = PVector.angleBetween(headingVector, neededVelocity);
-//        float rotation = (float)(90+currentHeading) - (float)Math.toDegrees(neededVelocity.heading());
-//        telemetry.addData("mp.heading of neededVelocity: ", rotation);
+        double x = neededVelocity.mag()*Math.sin(Math.toRadians(rotation)) / 40.0; //bot.maxSpeed; //max speed is 31.4 in/sec
+        double y = neededVelocity.mag()*Math.cos(Math.toRadians(rotation)) / 40.0; // bot.maxSpeed;
 
-
-//        telemetry.addData("mp.world velocity heading: ", Math.toDegrees(neededVelocity.heading()));
-
-        neededVelocity.rotate((float)Math.toRadians(currentHeading));
-
-//        telemetry.addData("mp.needed Velocity post rotate: ", neededVelocity);
-//        telemetry.addData("mp.world velocity heading post rotate: ", Math.toDegrees(neededVelocity.heading()));
-
-
-//        double x = neededVelocity.x / 31.4; //bot.maxSpeed; //max speed is 31.4 in/sec
-//        double y = neededVelocity.y / 31.4; // bot.maxSpeed;
-        double x = neededVelocity.x / 40.0; //bot.maxSpeed; //max speed is 31.4 in/sec
-        double y = neededVelocity.y / 40.0; // bot.maxSpeed;
-
-
-//        telemetry.addData("mp.right stick angular velocity: ", bot.joystickAngularVelocity);
+//        telemetry.addData("Joystick x, y: ", "%.3f, %.3f", x, y );
 
         double turn = -spin / 343;
-//        turn = -gamepad1.right_stick_x;
-
-//        telemetry.addData("mp.desired velocity x: ", x);
-//        telemetry.addData("mp.desired velocity y: ", y);
 
         joystickDrive(-x, -y, turn, 0, 1);
     }
@@ -413,26 +380,25 @@ public class Robot
     }
 
 
-
     public double getAngularVelocity()
     {
         AngularVelocity gyroReading;
         gyroReading = gyro.getAngularVelocity();
-        telemetry.addData("mp.rot rate: ", -gyroReading.xRotationRate);
+//        telemetry.addData("mp.rot rate: ", -gyroReading.xRotationRate);
         return -gyroReading.xRotationRate;
     }
 
     public float getXLinearVelocity()
     {
         double linearX = xInPerSec * Math.cos(Math.toRadians(currentHeading)) +
-                yInPerSec * Math.cos(Math.toRadians(90-currentHeading));
+                yInPerSec * Math.sin(Math.toRadians(currentHeading));
         return (float)linearX;
     }
 
     public float getYLinearVelocity()
     {
-        double linearY = -yInPerSec * Math.sin(Math.toRadians(currentHeading)) +
-                ( yInPerSec ) * Math.sin(Math.toRadians(90-currentHeading));
+        double linearY = -xInPerSec * Math.sin(Math.toRadians(currentHeading)) +
+                ( yInPerSec ) * Math.cos(Math.toRadians(currentHeading));
         return (float)linearY;
     }
 

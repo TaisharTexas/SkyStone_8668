@@ -19,18 +19,6 @@ public class WaitAction extends RobotAction
     WaitAction(String id, String nextAction, double duration)
     {
         super( id, nextAction, duration);
-//        theId = id;
-//        timeout = duration;
-//
-//        if(nextAction.isEmpty())
-//        {
-//            theNextAction = null;
-//        }
-//        else
-//        {
-//            theNextAction = nextAction;
-//        }
-
     }
 
     /** Takes the parameters from the CSV file, converts them appropriately, and calls the

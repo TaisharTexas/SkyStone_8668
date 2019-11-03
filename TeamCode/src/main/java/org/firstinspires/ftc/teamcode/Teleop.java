@@ -93,14 +93,17 @@ public class Teleop extends OpMode
         robot.joystickDrive(lStickX, lStickY, rStickX, rStickY, afterburners());
 
 //        myData.addField(loopTime);
-//        myData.addField(currentXEncoder);
-//        myData.addField(currentYEncoder);
+//        myData.addField(xEncoderChange);
+//        myData.addField(yEncoderChange);
 //        myData.newLine();
 
         loopTime = getRuntime();
         resetStartTime();
-        telemetry.addData("Loop Time: ", "%.3f", loopTime);
-        telemetry.addData("Robot X,Y: ", "%.3f, %.3f", robot.getX(), robot.getY());
+        telemetry.addData("Loop Time ", "%.3f", loopTime);
+        telemetry.addData("Gamepad left stick x, Left Stick X", "%.3f, %.3f", gamepad1.left_stick_x, lStickX);
+        telemetry.addData("Gamepad left stick y, Left Stick Y", "%.3f, %.3f", gamepad1.left_stick_y, lStickY);
+        telemetry.addData("Heading ", "%.3f", robot.currentHeading);
+
 //        telemetry.addData("SS Position: ", robot.eyeOfSauron.getSkyStonePosition());
 
     }

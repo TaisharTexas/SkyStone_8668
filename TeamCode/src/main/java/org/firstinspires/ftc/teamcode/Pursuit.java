@@ -10,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  */
 public class Pursuit
 {
+    // TODO: figure out if there are any variables here that do not need to be used.  Also comment!
     public PVector location;
     public PVector velocity;
     public PVector localVelocity;
@@ -44,7 +45,7 @@ public class Pursuit
         velocity = new PVector(0,0);
         localVelocity = new PVector( 0,0);
         location = new PVector(x,y);
-        initialPosition = new PVector(x,y);
+//        initialPosition = new PVector(x,y);
         desiredVelocity = new PVector(0,0);
         endZone = 6; //inch
 
@@ -68,7 +69,7 @@ public class Pursuit
     {
         PVector target;
         PVector start = drivePath.pathPoints.get(currentSegment);
-         end = drivePath.pathPoints.get(currentSegment + 1);
+        end = drivePath.pathPoints.get(currentSegment + 1);
 
         double theMaxSpeed = drivePath.maxSpeeds.get(currentSegment + 1);
         double theTargetHeading = drivePath.targetHeadings.get(currentSegment + 1);
@@ -103,7 +104,7 @@ public class Pursuit
             lastSegment = true;
         }
 
-
+//        telemetry.addData("CurrentSegment, Last Segment?: ", "%d, %s", currentSegment, String.valueOf(lastSegment ));
         PVector velocityCopy = velocity.copy();
         velocityCopy.setMag(2);
 
@@ -166,7 +167,7 @@ public class Pursuit
             currentSegment++;
         }
 
-
+//        telemetry.addData("Target loc: ", target);
         arrive(target, theMaxSpeed);
         point(theTargetHeading, 100);
 
@@ -182,15 +183,15 @@ public class Pursuit
     {
         //find the needed velocity to move to target and call it desiredVelocity
         desiredVelocity = PVector.sub(target, location);
-
-//        telemetry.addData("v.desired velocity: ", desiredVelocity);
+        telemetry.addData("Robot Loc: ", location );
+//        telemetry.addData("Desired velocity: ", desiredVelocity);
 
         //speed is the magnitude of desiredVelocity
         float speed = desiredVelocity.mag();
 
         if(location.dist(end) < endZone)
         {
-            float m = scaleVector(speed, 0, (float)endZone, 0, (float)theMaxSpeed);
+            float m = scaleVector(speed, 0, (float)endZone, 0.1f, (float)theMaxSpeed);
             desiredVelocity.setMag(m);
         }
         else
@@ -204,13 +205,15 @@ public class Pursuit
 
         // steerAcceleration is the amount of needed change in velocity
         PVector steerAcceleration = PVector.sub(desiredVelocity, velocity);
+//        telemetry.addData("Robot Velocity: ", velocity);
+
 //        telemetry.addData("v.steerAcceleration: ", steerAcceleration);
 
         // limit rate of change to robot velocity
         steerAcceleration.limit(maxAccel);
 //        telemetry.addData("v.limit steerAcceleration: ", steerAcceleration);
 
-        if (currentSegment == 0)
+        if (currentSegment == 0 && !lastSegment)
         {
             steerAcceleration.setMag(maxAccel);  // try this
         }
@@ -221,7 +224,7 @@ public class Pursuit
 //        telemetry.addData("v.velocity: ", velocity);
         desiredVelocity = PVector.add(velocity, steerAcceleration);
 
-//        telemetry.addData("v.desired velocity: ", desiredVelocity);
+//        telemetry.addData("Robot Desired velocity: ", desiredVelocity);
 
 
         //make sure final velocity isn't too fast
@@ -297,7 +300,7 @@ public class Pursuit
 
     public void updatePosition(PVector currentPosition)
     {
-        location = PVector.add(initialPosition, currentPosition);
+        location = PVector.add(location, currentPosition);
     }
 
     public void updateVelocity(PVector currentVelocity)
