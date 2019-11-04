@@ -441,7 +441,10 @@ public class Robot
     {
         double driveDistance = COUNTS_PER_INCH * distance;
         double correction;
-        double actual = getHeading();
+
+        update();
+
+        double actual = currentHeading;
 
 //        telemetry.addData( "Is RR-Diagonal?: ", direction ==  REVERSE_RIGHT_DIAGONAL);
 //        telemetry.addData("Direction: ", direction);
@@ -449,19 +452,19 @@ public class Robot
 
         if (!moving)
         {
-            initialHeading = getHeading();
+            initialHeading = currentHeading;
             if (Math.abs(initialHeading) > 130  &&  initialHeading < 0.0)
             {
                 initialHeading += 360.0;
             }
             if( (direction == FORWARD_LEFT_DIAGONAL) || (direction  == REVERSE_RIGHT_DIAGONAL) )
             {
-                initialPosition = RF.getCurrentPosition();
+                initialPosition = bulkData.getMotorCurrentPosition(RF); //.getCurrentPosition();
                 encoderMotor = RF;
             }
             else
             {
-                initialPosition = LF.getCurrentPosition();
+                initialPosition = bulkData.getMotorCurrentPosition(LF); //.getCurrentPosition();
                 encoderMotor = LF;
             }
             resetStartTime();
@@ -483,14 +486,15 @@ public class Robot
 //        telemetry.addData("Left Motor DD:", Math.abs(lFrontMotor.getCurrentPosition() - initialPosition));
 
 //        telemetry.addData("Drive Distance: ", driveDistance);
-        double tmpDistance = Math.abs(encoderMotor.getCurrentPosition() - initialPosition);
+//        double tmpDistance = Math.abs(encoderMotor.getCurrentPosition() - initialPosition);
 //        telemetry.addData("Distance Driven:", tmpDistance);
 //        telemetry.addData("getRuntime() = ", getRuntime());
 //        telemetry.addData("time = ", time);
 
         joystickDrive(lStickX, lStickY, correction, 0.0, power);
 
-        if (((Math.abs(encoderMotor.getCurrentPosition() - initialPosition)) >= driveDistance) || (getRuntime() > time))
+        if (((Math.abs(bulkData.getMotorCurrentPosition(encoderMotor)- initialPosition)) >= driveDistance) || (getRuntime() > time))
+//        if (((Math.abs(encoderMotor.getCurrentPosition() - initialPosition)) >= driveDistance) || (getRuntime() > time))
         {
             stop();
             moving = false;
@@ -512,7 +516,10 @@ public class Robot
     public boolean pointTurn(double power, double targetHeading, double time)
     {
         power = Math.abs(power);
-        double currentHeading = getHeading();
+
+        update();
+
+//        double currentHeading = getHeading();
 
         if (Math.abs(targetHeading) > 170  &&  currentHeading < 0.0)
         {
@@ -521,7 +528,7 @@ public class Robot
 
         if (!moving)
         {
-            initialHeading = getHeading();
+            initialHeading = currentHeading;
             error = initialHeading - targetHeading;
 
             if (error > 180)

@@ -33,6 +33,8 @@ public class AutoPursuit extends OpMode
 
         robot.getEncoderTelem();
 
+        // TODO: get rid of hte Path object here and use the PursuitAction
+
         // Set up path
         drivePath.addPoint(0,0,30,0);
         drivePath.addPoint(0,45,15,90);
@@ -60,6 +62,7 @@ public class AutoPursuit extends OpMode
     public void loop()
     {
 
+        // TODO: get rid of the pursuit items here and use the PursuitAction and the ActionMaster.
         robot.update();
         telemetry.addData("Robot Heading: ", robot.currentHeading);
 
@@ -76,7 +79,9 @@ public class AutoPursuit extends OpMode
         pursuit.elapsedTime = getRuntime();
         pursuit.follow(drivePath);
 
-        robot.updateMotors(pursuit.desiredVelocity.copy(), pursuit.joystickAngularVelocity);
+
+        theMaster.execute();
+//        robot.updateMotors(pursuit.desiredVelocity.copy(), pursuit.joystickAngularVelocity);
 
     }
 
