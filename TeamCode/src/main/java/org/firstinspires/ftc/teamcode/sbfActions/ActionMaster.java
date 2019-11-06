@@ -85,6 +85,12 @@ public class ActionMaster
                     myAction.init(telemetry, robot);
                     this.addAction(myAction);
                 }
+                else if(type.equalsIgnoreCase("TURNACTION"))
+                {
+                    myAction = new TurnAction(params);
+                    myAction.init(telemetry, robot);
+                    this.addAction(myAction);
+                }
                 else if(type.equalsIgnoreCase("GYROACTION"))
                 {
                     myAction = new GyroAction(params);

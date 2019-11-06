@@ -16,8 +16,8 @@ public class AutoPursuit extends OpMode
 {
     ActionMaster theMaster = new ActionMaster();
 
-//    Pursuit pursuit = new Pursuit((float)39.0, (float)9.0, telemetry);
-    Pursuit pursuit = new Pursuit((float)0.0, (float)0.0, telemetry);
+    Pursuit pursuit = new Pursuit((float)39.0, (float)9.0, telemetry);
+//    Pursuit pursuit = new Pursuit((float)0.0, (float)0.0, telemetry);
     Robot robot = new Robot();
     Path drivePath = new Path();
 
@@ -36,18 +36,19 @@ public class AutoPursuit extends OpMode
         // TODO: get rid of hte Path object here and use the PursuitAction
 
         // Set up path
-        drivePath.addPoint(0,0,30,0);
-        drivePath.addPoint(0,45,15,90);
-        drivePath.addPoint(25,45,15,90);
-        drivePath.addPoint(15,15,30,45);
-        drivePath.addPoint(0,0,15,0);
+//        drivePath.addPoint(0,0,30,0);
+//        drivePath.addPoint(0,45,15,90);
+//        drivePath.addPoint(25,45,15,90);
+//        drivePath.addPoint(15,15,30,45);
+//        drivePath.addPoint(0,0,15,0);
 
        // Attempt to map out getting 1 stone in red alliance autonomous
-//        drivePath.addPoint(39,9,25,-90);
-//        drivePath.addPoint( 43,50,15,-90);
-//        drivePath.addPoint( 34,50,10,-90);
-//        drivePath.addPoint( 60,36,30,-90);
-//        drivePath.addPoint( 121,36,30,0);
+        drivePath.addPoint(39,9,25,-90);
+        drivePath.addPoint( 43,55,15,-90);
+        drivePath.addPoint( 30,55,10,-90);
+        drivePath.addPoint( 60,18,25,-90);
+        drivePath.addPoint(90, 25, 30, -45);
+        drivePath.addPoint( 121,40,20,0);
 
 
     }
@@ -80,8 +81,8 @@ public class AutoPursuit extends OpMode
         pursuit.follow(drivePath);
 
 
-        theMaster.execute();
-//        robot.updateMotors(pursuit.desiredVelocity.copy(), pursuit.joystickAngularVelocity);
+//        theMaster.execute();
+        robot.updateMotors(pursuit.desiredVelocity.copy(), pursuit.joystickAngularVelocity);
 
     }
 
