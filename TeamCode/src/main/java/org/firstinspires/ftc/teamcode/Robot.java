@@ -144,6 +144,7 @@ public class Robot
         {
             eyeOfSauron.init(hwmap);
         }
+
         expansionHub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 2");
         expansionHubAux = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 3");
         /*
@@ -204,6 +205,12 @@ public class Robot
 
 
     }
+
+    public void init_loop()
+    {
+        telemetry.addData("gyro status ", gyro.getSystemStatus());
+    }
+
 
     public void start()
     {
@@ -614,6 +621,15 @@ public class Robot
         if (LF != null) { LF.setMode(mode); }
         if (RR != null)  { RR.setMode(mode); }
         if (LR != null)  { LR.setMode(mode); }
+    }
+
+    public String getSkyStonePosition()
+    {
+        return eyeOfSauron.getSkyStonePosition();
+    }
+    public void stopCamera()
+    {
+        eyeOfSauron.stopCamera();
     }
 
 

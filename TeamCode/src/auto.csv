@@ -1,0 +1,16 @@
+Type,ID,Next Action,Duration,Param 3,Param 4,Param 5,Param 6
+WaitAction,One,lookStones,0.2,,,,
+CameraAction,lookStones,leftPosition,5,,,,
+PursuitAction,leftPosition,intakeStone,6,25,-90,39,9
+PursuitAction,leftPosition,intakeStone,6,15,-90,43,55
+PursuitAction,leftPosition,intakeStone,6,10,-90,30,55
+WaitAction,intakeStone,gotoFoundation,2,,,,
+PursuitAction,gotoFoundation,ejectStone,6,25,-90,30,55
+PursuitAction,gotoFoundation,ejectStone,6,25,-90,60,18
+PursuitAction,gotoFoundation,ejectStone,6,25,-45,90,25
+PursuitAction,gotoFoundation,ejectStone,6,25,0,121,40
+WaitAction,ejectStone,gotoLine,2,,,,
+PursuitAction,gotoLine,allDone,6,25,0,121,40
+PursuitAction,gotoLine,allDone,6,25,-45,90,25
+PursuitAction,gotoLine,allDone,6,25,-90,70,18
+WaitAction,allDone,,0.2,,,,

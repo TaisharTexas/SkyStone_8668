@@ -49,8 +49,13 @@ public class AutoPursuit extends OpMode
         drivePath.addPoint( 60,18,25,-90);
         drivePath.addPoint(90, 25, 30, -45);
         drivePath.addPoint( 121,40,20,0);
+    }
 
-
+    @Override
+    public void init_loop()
+    {
+        robot.init_loop();
+        super.init_loop();
     }
 
     public void start()

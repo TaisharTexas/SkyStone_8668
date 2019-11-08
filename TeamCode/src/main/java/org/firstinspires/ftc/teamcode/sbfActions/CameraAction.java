@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.sbfActions;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.sbfActions.RobotAction;
 
 /**
  * Loaded into the run map as an action that uses the camera. Each action is parameterized by the CSV file.
@@ -13,7 +12,7 @@ import org.firstinspires.ftc.teamcode.sbfActions.RobotAction;
 public class CameraAction extends RobotAction
 {
     /** The location of the gold mineral. */
-    String goldPosition = "null";
+    String ssPosition = "null";
     /** A truth value that is whether or not the method is done. */
     boolean done = false;
     /** A truth value that is whether or not to shutdown the camera. */
@@ -52,52 +51,52 @@ public class CameraAction extends RobotAction
     }
 
     /** The body of the action to be executed: Based on the location of the gold mineral returned by
-     * the goldPosition() method, sets the next action
+     * the ssPosition() method, sets the next action
      * */
     @Override
     public boolean execute()
     {
         try
         {
-//            goldPosition = robot.goldPosition();
+            ssPosition = robot.getSkyStonePosition();
         }
         catch(Exception e)
         {
             e.printStackTrace();
         }
 
-//        if(goldPosition.equals("right"))
-//        {
-//            theNextAction = "rightPosition";
-//            telemetry.addData("Gold Position: ", goldPosition);
-//            done = true;
-//        }
-        if(goldPosition.equals("center"))
+        if(ssPosition.equals("RIGHT"))
+        {
+            theNextAction = "rightPosition";
+            telemetry.addData("SS Position: ", ssPosition);
+            done = true;
+        }
+        if(ssPosition.equals("CENTER"))
         {
             theNextAction = "centerPosition";
-            telemetry.addData("Gold Position: ", goldPosition);
+            telemetry.addData("SS Position: ", ssPosition);
             done = true;
         }
-        else if(goldPosition.equals("left"))
+        else if(ssPosition.equals("LEFT"))
         {
             theNextAction = "leftPosition";
-            telemetry.addData("Gold Position: ", goldPosition);
+            telemetry.addData("SS Position: ", ssPosition);
             done = true;
         }
-//        else if(goldPosition.equals("tweakRight"))
+//        else if(ssPosition.equals("tweakRight"))
 //        {
 //            theNextAction = "tweakRight";
 //            done = false;
 //        }
-//        else if(goldPosition.equals("tweakLeft"))
+//        else if(ssPosition.equals("tweakLeft"))
 //        {
 //            theNextAction = "tweakLeft";
 //            done  =  false;
 //        }
-//        else if(goldPosition.equals("checkRight") && !alreadyChecked)
+//        else if(ssPosition.equals("checkRight") && !alreadyChecked)
 //        {
 //            theNextAction = "checkRight";
-//            telemetry.addData("Gold Position: ", goldPosition);
+//            telemetry.addData("Gold Position: ", ssPosition);
 //            done = true;
 //            if(theShutdown)
 //            {
@@ -105,9 +104,9 @@ public class CameraAction extends RobotAction
 //            }
 //            alreadyChecked = true;
 //        }
-//        else if(alreadyChecked && goldPosition.equals("checkRight"))
+//        else if(alreadyChecked && ssPosition.equals("checkRight"))
 //        {
-//            telemetry.addData("Gold Position: ", goldPosition);
+//            telemetry.addData("Gold Position: ", ssPosition);
 //            theNextAction = "centerPosition";
 //            done = true;
 //        }
@@ -115,7 +114,7 @@ public class CameraAction extends RobotAction
         {
             done = false;
         }
-        telemetry.addData("Gold Position: ", goldPosition);
+        telemetry.addData("SS Position: ", ssPosition);
         telemetry.addData("Camera Action done? ", done);
 
         return done || super.execute();  // the super.execute is temporary so that we have time to see what is going on.
@@ -128,7 +127,7 @@ public class CameraAction extends RobotAction
     {
         if(theShutdown)
         {
-//            robot.tfodShutdown();
+            robot.stopCamera();
         }
         super.exit();
     }
