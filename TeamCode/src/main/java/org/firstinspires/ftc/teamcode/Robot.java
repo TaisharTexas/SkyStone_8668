@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
@@ -36,6 +37,11 @@ public class Robot
     private ExpansionHubMotor RR = null;
     private ExpansionHubMotor LF = null;
     private ExpansionHubMotor LR = null;
+    private ExpansionHubMotor leftVertical = null;
+    private ExpansionHubMotor rightVertical = null;
+    private DcMotor leftIntake = null;
+    private DcMotor rightIntake = null;
+
 
     /** The dc motor whose encoder is being used for distance measurements. */
     ExpansionHubMotor encoderMotor;
@@ -166,16 +172,29 @@ public class Robot
         LR = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "lr");
         LR.setDirection(DcMotorEx.Direction.FORWARD);
 
+        leftVertical = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "leftV");
+        leftVertical.setDirection(DcMotorEx.Direction.FORWARD);
+
+        rightVertical = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "rightV");
+        rightVertical.setDirection(DcMotorEx.Direction.FORWARD);
+
         xEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "xEncoder");
+       // xEncoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         xEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         xEncoder.setDirection((DcMotorEx.Direction.FORWARD));
 
         yEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "yEncoder");
+        //yEncoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         yEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         yEncoder.setDirection((DcMotorEx.Direction.FORWARD));
 
         xTicksPerRad = xEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
         yTicksPerRad = yEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
+
+        leftIntake = hardwareMap.get(DcMotor.class, "yEncoder");
+        leftIntake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightIntake = hardwareMap.get(DcMotor.class, "xEncoder");
+        rightIntake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         try
         {
@@ -240,6 +259,10 @@ public class Robot
          */
         xEncoderChange = bulkDataAux.getMotorCurrentPosition(xEncoder) - prevXEncoder;
         yEncoderChange = bulkDataAux.getMotorCurrentPosition(yEncoder) - prevYEncoder;
+
+        telemetry.addData("xEncoder", bulkDataAux.getMotorCurrentPosition(xEncoder));
+        telemetry.addData("yEncoder", bulkDataAux.getMotorCurrentPosition(yEncoder));
+
 
         /* store the current value to use as the previous value the next time around */
         prevXEncoder = bulkDataAux.getMotorCurrentPosition(xEncoder);
@@ -630,6 +653,50 @@ public class Robot
     public void stopCamera()
     {
         eyeOfSauron.stopCamera();
+    }
+
+
+    public void intakeIn()
+    {
+//        xEncoder.setPower(-1.0);
+        leftIntake.setPower(-0.75);
+//        yEncoder.setPower(1.0);
+        rightIntake.setPower(0.75);
+
+        telemetry.addData("x power:", xEncoder.getPower());
+        telemetry.addData("y power:", yEncoder.getPower());
+    }
+
+    public void intakeOut()
+    {
+//        xEncoder.setPower(1.0);
+        leftIntake.setPower(0.75);
+//        yEncoder.setPower(-1.0);
+        rightIntake.setPower(-0.75);
+
+        telemetry.addData("x power:", xEncoder.getPower());
+        telemetry.addData("y power:", yEncoder.getPower());
+    }
+
+    public void intakeStop()
+    {
+//        xEncoder.setPower(0.0);
+        leftIntake.setPower(0.0);
+//        yEncoder.setPower(0.0);
+        rightIntake.setPower(0.0);
+
+    }
+
+    public void verticalDrive(double power)
+    {
+        leftVertical.setPower(power);
+        rightVertical.setPower(-power);
+    }
+
+    public void verticalStop()
+    {
+        leftVertical.setPower(0.0);
+        rightVertical.setPower(0.0);
     }
 
 

@@ -90,7 +90,33 @@ public class Teleop extends OpMode
         rStickY = gamepad1.right_stick_y;
 
         /* Tell the robot to move */
-        robot.joystickDrive(lStickX, lStickY, rStickX, rStickY, afterburners());
+        robot.joystickDrive(-lStickX, lStickY, rStickX, rStickY, afterburners());
+
+        if(gamepad2.left_stick_y > .05 || gamepad2.left_stick_y < -.05)
+        {
+            robot.verticalDrive(gamepad2.left_stick_y);
+        }
+        else
+        {
+            robot.verticalStop();
+        }
+
+        if(gamepad2.left_bumper)
+        {
+            robot.intakeIn();
+        }
+        else if(gamepad2.right_bumper)
+        {
+            robot.intakeOut();
+        }
+        else
+        {
+            robot.intakeStop();
+        }
+
+        telemetry.addData("leftbumper:", gamepad2.left_bumper);
+        telemetry.addData("rightBumper:", gamepad2.right_bumper);
+
 
 //        myData.addField(loopTime);
 //        myData.addField(xEncoderChange);
