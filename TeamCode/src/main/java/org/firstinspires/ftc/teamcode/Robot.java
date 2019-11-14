@@ -199,6 +199,7 @@ public class Robot
         try
         {
             leftFoundation = hardwareMap.get(Servo.class, "leftFoundation");
+            leftFoundation.setDirection(Servo.Direction.FORWARD);
 //            leftFoundation.scaleRange();
         }
         catch (Exception p_exeception)
@@ -209,6 +210,7 @@ public class Robot
         try
         {
             rightFoundation = hardwareMap.get(Servo.class, "rightFoundation");
+            rightFoundation.setDirection(Servo.Direction.REVERSE);
 //            rightFoundation.scaleRange();
         }
         catch (Exception p_exeception)
@@ -709,14 +711,20 @@ public class Robot
 
     public void grabFoundation()
     {
-//        rightFoundation.setPosition();
-//        leftFoundation.setPosition();
+        rightFoundation.setPosition(.9);
+        leftFoundation.setPosition(.9);
+    }
+
+    public void pointFive()
+    {
+        rightFoundation.setPosition(.5);
+        leftFoundation.setPosition(.5);
     }
 
     public void releaseFoundation()
     {
-//        rightFoundation.setPosition();
-//        leftFoundation.setPosition();
+        rightFoundation.setPosition(.15);
+        leftFoundation.setPosition(.15);
     }
 
 

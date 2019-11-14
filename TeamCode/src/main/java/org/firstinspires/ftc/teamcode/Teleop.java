@@ -50,6 +50,8 @@ public class Teleop extends OpMode
         robot.init(telemetry, hardwareMap, false);
         lift.init(telemetry, hardwareMap);
 
+        robot.pointFive();
+
 //        myData = new DataLogger("8668_Robot_Data");
 //        myData.addField("elapsedTime");
 //        myData.addField("xEncoderPos");
@@ -127,6 +129,19 @@ public class Teleop extends OpMode
         else
         {
             robot.intakeStop();
+        }
+
+        if(gamepad2.x)
+        {
+            robot.grabFoundation();
+        }
+        else if(gamepad2.y)
+        {
+            robot.releaseFoundation();
+        }
+        else if(gamepad2.a)
+        {
+            robot.pointFive();
         }
 
 
