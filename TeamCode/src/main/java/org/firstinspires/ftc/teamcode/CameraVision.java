@@ -17,18 +17,20 @@ import org.openftc.easyopencv.OpenCvWebcam;
 
 public class CameraVision
 {
-    OpenCvCamera phoneCam;
+    OpenCvCamera webCam;
+
     CameraVision.StageSwitchingPipeline stageSwitchingPipeline;
 
     public void init(HardwareMap hwMap)
     {
         int cameraMonitorViewId = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName());
-//        phoneCam = new OpenCvWebcam(hwMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        phoneCam = new OpenCvInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
-        phoneCam.openCameraDevice();
+//        webCam = new OpenCvWebcam(hwMap.get(WebcamName.class, "rightCam"), cameraMonitorViewId);
+        webCam = new OpenCvWebcam(hwMap.get(WebcamName.class, "leftCam"), cameraMonitorViewId);
+//        webCam = new OpenCvInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+        webCam.openCameraDevice();
         stageSwitchingPipeline = new CameraVision.StageSwitchingPipeline();
-        phoneCam.setPipeline(stageSwitchingPipeline);
-        phoneCam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+        webCam.setPipeline(stageSwitchingPipeline);
+        webCam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
     }
 
     static class StageSwitchingPipeline extends OpenCvPipeline
@@ -40,7 +42,7 @@ public class CameraVision
         double centerSum = 0;
         double rightSum = 0;
 
-        String SSposition;
+        String SSposition = "null";
 
         enum Stage
         {
@@ -141,28 +143,28 @@ public class CameraVision
                     input,
                     new Point(
                             input.cols()*leftL,
-                            input.rows()*.4),
+                            input.rows()*.39),
                     new Point(
                             input.cols()*leftR,
-                            input.rows()*.6),
+                            input.rows()*.61),
                     left, 4);
             Imgproc.rectangle(
                     input,
                     new Point(
                             input.cols()*leftR+4,
-                            input.rows()*.4),
+                            input.rows()*.39),
                     new Point(
                             input.cols()*rightL - 4,
-                            input.rows()*.6),
+                            input.rows()*.61),
                     center, 4);
             Imgproc.rectangle(
                     input,
                     new Point(
                             input.cols()*rightL,
-                            input.rows()*.4),
+                            input.rows()*.39),
                     new Point(
                             input.cols()*rightR,
-                            input.rows()*.6),
+                            input.rows()*.61),
                     right, 4);
 
             double maxSum = Math.max(Math.max(leftSum,centerSum), rightSum);
@@ -204,7 +206,7 @@ public class CameraVision
 
     public void stopCamera()
     {
-        phoneCam.stopStreaming();
+        webCam.stopStreaming();
     }
 
 }

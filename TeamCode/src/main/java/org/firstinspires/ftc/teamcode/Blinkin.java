@@ -27,12 +27,13 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.firstinspires.ftc.teamcode.sbfUtil;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
@@ -49,9 +50,10 @@ import java.util.concurrent.TimeUnit;
  *
  * Displays the first pattern upon init.
  */
-@TeleOp(name="BlinkinExample")
-@Disabled
-public class SampleRevBlinkinLedDriver extends OpMode {
+public class Blinkin
+{
+    private Telemetry telemetry;
+    private HardwareMap hardwareMap;
 
     /*
      * Change the pattern every 10 seconds in AUTO mode.
@@ -72,17 +74,20 @@ public class SampleRevBlinkinLedDriver extends OpMode {
     Deadline ledCycleDeadline;
     Deadline gamepadRateLimit;
 
+
     protected enum DisplayKind {
         MANUAL,
         AUTO
     }
 
-    @Override
-    public void init()
+    public void init(Telemetry telem, HardwareMap hwMap)
     {
-        displayKind = DisplayKind.AUTO;
+        hardwareMap =hwMap;
+        telemetry = telem;
 
-        blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
+        displayKind = DisplayKind.MANUAL;
+
+        blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, "lights");
         pattern = RevBlinkinLedDriver.BlinkinPattern.RAINBOW_RAINBOW_PALETTE;
         blinkinLedDriver.setPattern(pattern);
 
@@ -93,10 +98,9 @@ public class SampleRevBlinkinLedDriver extends OpMode {
         gamepadRateLimit = new Deadline(GAMEPAD_LOCKOUT, TimeUnit.MILLISECONDS);
     }
 
-    @Override
     public void loop()
     {
-        handleGamepad();
+//        handleGamepad();
 
         if (displayKind == DisplayKind.AUTO) {
             doAutoDisplay();
@@ -107,39 +111,39 @@ public class SampleRevBlinkinLedDriver extends OpMode {
         }
     }
 
-    /*
-     * handleGamepad
-     *
-     * Responds to a gamepad button press.  Demonstrates rate limiting for
-     * button presses.  If loop() is called every 10ms and and you don't rate
-     * limit, then any given button press may register as multiple button presses,
-     * which in this application is problematic.
-     *
-     * A: Manual mode, Right bumper displays the next pattern, left bumper displays the previous pattern.
-     * B: Auto mode, pattern cycles, changing every LED_PERIOD seconds.
-     */
-    protected void handleGamepad()
-    {
-        if (!gamepadRateLimit.hasExpired()) {
-            return;
-        }
-
-        if (gamepad1.a) {
-            setDisplayKind(DisplayKind.MANUAL);
-            gamepadRateLimit.reset();
-        } else if (gamepad1.b) {
-            setDisplayKind(DisplayKind.AUTO);
-            gamepadRateLimit.reset();
-        } else if ((displayKind == DisplayKind.MANUAL) && (gamepad1.left_bumper)) {
-            pattern = pattern.previous();
-            displayPattern();
-            gamepadRateLimit.reset();
-        } else if ((displayKind == DisplayKind.MANUAL) && (gamepad1.right_bumper)) {
-            pattern = pattern.next();
-            displayPattern();
-            gamepadRateLimit.reset();
-        }
-    }
+//    /*
+//     * handleGamepad
+//     *
+//     * Responds to a gamepad button press.  Demonstrates rate limiting for
+//     * button presses.  If loop() is called every 10ms and and you don't rate
+//     * limit, then any given button press may register as multiple button presses,
+//     * which in this application is problematic.
+//     *
+//     * A: Manual mode, Right bumper displays the next pattern, left bumper displays the previous pattern.
+//     * B: Auto mode, pattern cycles, changing every LED_PERIOD seconds.
+//     */
+//    protected void handleGamepad()
+//    {
+//        if (!gamepadRateLimit.hasExpired()) {
+//            return;
+//        }
+//
+//        if (gamepad1.a) {
+//            setDisplayKind(DisplayKind.MANUAL);
+//            gamepadRateLimit.reset();
+//        } else if (gamepad1.b) {
+//            setDisplayKind(DisplayKind.AUTO);
+//            gamepadRateLimit.reset();
+//        } else if ((displayKind == DisplayKind.MANUAL) && (gamepad1.left_bumper)) {
+//            pattern = pattern.previous();
+//            displayPattern();
+//            gamepadRateLimit.reset();
+//        } else if ((displayKind == DisplayKind.MANUAL) && (gamepad1.right_bumper)) {
+//            pattern = pattern.next();
+//            displayPattern();
+//            gamepadRateLimit.reset();
+//        }
+//    }
 
     protected void setDisplayKind(DisplayKind displayKind)
     {

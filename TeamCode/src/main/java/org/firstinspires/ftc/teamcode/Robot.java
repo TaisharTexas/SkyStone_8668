@@ -17,6 +17,8 @@ import org.openftc.revextensions2.ExpansionHubEx;
 import org.openftc.revextensions2.ExpansionHubMotor;
 import org.openftc.revextensions2.RevBulkData;
 import java.util.concurrent.TimeUnit;
+import com.qualcomm.robotcore.hardware.Servo;
+
 
 
 public class Robot
@@ -26,8 +28,10 @@ public class Robot
     // for the new bulk data transfer.
     private Telemetry telemetry;
     private HardwareMap hardwareMap;
+
     CameraVision eyeOfSauron = new CameraVision();
     boolean useCamera;
+
     RevBulkData bulkData;
     RevBulkData bulkDataAux;
     ExpansionHubEx expansionHub;
@@ -37,10 +41,13 @@ public class Robot
     private ExpansionHubMotor RR = null;
     private ExpansionHubMotor LF = null;
     private ExpansionHubMotor LR = null;
-    private ExpansionHubMotor leftVertical = null;
-    private ExpansionHubMotor rightVertical = null;
+
     private DcMotor leftIntake = null;
     private DcMotor rightIntake = null;
+
+    private Servo leftFoundation = null;
+    private Servo rightFoundation = null;
+
 
 
     /** The dc motor whose encoder is being used for distance measurements. */
@@ -70,9 +77,6 @@ public class Robot
     public int xEncoderChange = 0;
     public int yEncoderChange = 0;
     public double currentHeading = 0;
-
-
-
 
 
     /** Directional variables used to simulate joystick commands in autonomous.
@@ -172,11 +176,7 @@ public class Robot
         LR = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "lr");
         LR.setDirection(DcMotorEx.Direction.FORWARD);
 
-        leftVertical = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "leftV");
-        leftVertical.setDirection(DcMotorEx.Direction.FORWARD);
 
-        rightVertical = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "rightV");
-        rightVertical.setDirection(DcMotorEx.Direction.FORWARD);
 
         xEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "xEncoder");
        // xEncoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
@@ -195,6 +195,27 @@ public class Robot
         leftIntake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightIntake = hardwareMap.get(DcMotor.class, "xEncoder");
         rightIntake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        try
+        {
+            leftFoundation = hardwareMap.get(Servo.class, "leftFoundation");
+//            leftFoundation.scaleRange();
+        }
+        catch (Exception p_exeception)
+        {
+            telemetry.addData("leftFoundation not found in config file", 0);
+            leftFoundation = null;
+        }
+        try
+        {
+            rightFoundation = hardwareMap.get(Servo.class, "rightFoundation");
+//            rightFoundation.scaleRange();
+        }
+        catch (Exception p_exeception)
+        {
+            telemetry.addData("rightFoundation not found in config file", 0);
+            rightFoundation = null;
+        }
 
         try
         {
@@ -279,6 +300,8 @@ public class Robot
         Orientation angles = gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         return -AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle));
     }
+
+
     public double getHeading()
     {
         return currentHeading;
@@ -656,15 +679,14 @@ public class Robot
     }
 
 
+
     public void intakeIn()
     {
 //        xEncoder.setPower(-1.0);
         leftIntake.setPower(-0.75);
 //        yEncoder.setPower(1.0);
-        rightIntake.setPower(0.75);
+        rightIntake.setPower(0.67);
 
-        telemetry.addData("x power:", xEncoder.getPower());
-        telemetry.addData("y power:", yEncoder.getPower());
     }
 
     public void intakeOut()
@@ -672,10 +694,8 @@ public class Robot
 //        xEncoder.setPower(1.0);
         leftIntake.setPower(0.75);
 //        yEncoder.setPower(-1.0);
-        rightIntake.setPower(-0.75);
+        rightIntake.setPower(-0.67);
 
-        telemetry.addData("x power:", xEncoder.getPower());
-        telemetry.addData("y power:", yEncoder.getPower());
     }
 
     public void intakeStop()
@@ -687,17 +707,19 @@ public class Robot
 
     }
 
-    public void verticalDrive(double power)
+    public void grabFoundation()
     {
-        leftVertical.setPower(power);
-        rightVertical.setPower(-power);
+//        rightFoundation.setPosition();
+//        leftFoundation.setPosition();
     }
 
-    public void verticalStop()
+    public void releaseFoundation()
     {
-        leftVertical.setPower(0.0);
-        rightVertical.setPower(0.0);
+//        rightFoundation.setPosition();
+//        leftFoundation.setPosition();
     }
+
+
 
 
 }

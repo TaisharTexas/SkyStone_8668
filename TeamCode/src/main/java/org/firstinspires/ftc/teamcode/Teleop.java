@@ -6,6 +6,7 @@ import android.os.storage.StorageManager;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.sbfUtil.DataLogger;
 
@@ -19,6 +20,7 @@ public class Teleop extends OpMode
 {
     Pursuit pursuit = new Pursuit(0, 0, telemetry);
     Robot robot = new Robot();
+    Lift lift = new Lift();
 
     /* Chassis Control */
     /** The x-axis of the left joystick on the gamepad. Used for chassis control*/
@@ -29,6 +31,8 @@ public class Teleop extends OpMode
     double lStickY;
     /** The y-axis of the right joystick on the gamepad. Used for chassis control*/
     double rStickY;
+
+
 
 
     int currentXEncoder = 0;
@@ -44,12 +48,14 @@ public class Teleop extends OpMode
     public void init()
     {
         robot.init(telemetry, hardwareMap, false);
+        lift.init(telemetry, hardwareMap);
 
 //        myData = new DataLogger("8668_Robot_Data");
 //        myData.addField("elapsedTime");
 //        myData.addField("xEncoderPos");
 //        myData.addField("yEncoderPos");
 //        myData.newLine();
+
 
     }
 
@@ -67,6 +73,20 @@ public class Teleop extends OpMode
 
         telemetry.addData("path: ", Environment.getExternalStorageDirectory().getPath() + "/");
         telemetry.addData("path external: ", getExternalStoragePath(hardwareMap.appContext, true) );
+
+//        if(robot.getSkyStonePosition().equals("RIGHT"))
+//        {
+//            telemetry.addData("skystone: ", "right");
+//        }
+//        else if(robot.getSkyStonePosition().equals("LEFT"))
+//        {
+//            telemetry.addData("skystone: ", "left");
+//        }
+//        else if(robot.getSkyStonePosition().equals("CENTER"))
+//        {
+//            telemetry.addData("skystone: ", "center");
+//        }
+
     }
 
     public void start()
@@ -92,15 +112,10 @@ public class Teleop extends OpMode
         /* Tell the robot to move */
         robot.joystickDrive(-lStickX, lStickY, rStickX, rStickY, afterburners());
 
-        if(gamepad2.left_stick_y > .05 || gamepad2.left_stick_y < -.05)
-        {
-            robot.verticalDrive(gamepad2.left_stick_y);
-        }
-        else
-        {
-            robot.verticalStop();
-        }
+        //lift controls
+        lift.verticalDrive(gamepad2.left_stick_y);
 
+        //intake controls
         if(gamepad2.left_bumper)
         {
             robot.intakeIn();
@@ -113,9 +128,6 @@ public class Teleop extends OpMode
         {
             robot.intakeStop();
         }
-
-        telemetry.addData("leftbumper:", gamepad2.left_bumper);
-        telemetry.addData("rightBumper:", gamepad2.right_bumper);
 
 
 //        myData.addField(loopTime);

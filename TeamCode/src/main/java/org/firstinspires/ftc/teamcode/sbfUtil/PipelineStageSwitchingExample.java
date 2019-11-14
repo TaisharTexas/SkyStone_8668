@@ -43,7 +43,7 @@ public class PipelineStageSwitchingExample extends LinearOpMode
          */
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        phoneCam = new OpenCvWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        phoneCam = new OpenCvWebcam(hardwareMap.get(WebcamName.class, "rightCam"), cameraMonitorViewId);
         phoneCam.openCameraDevice();
         stageSwitchingPipeline = new StageSwitchingPipeline();
         phoneCam.setPipeline(stageSwitchingPipeline);
