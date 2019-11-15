@@ -51,7 +51,8 @@ public class CameraVision
             RAW_IMAGE,
         }
 
-        private CameraVision.StageSwitchingPipeline.Stage stageToRenderToViewport = CameraVision.StageSwitchingPipeline.Stage.YCbCr_CHAN2;
+//        private CameraVision.StageSwitchingPipeline.Stage stageToRenderToViewport = CameraVision.StageSwitchingPipeline.Stage.YCbCr_CHAN2;
+        private CameraVision.StageSwitchingPipeline.Stage stageToRenderToViewport = Stage.RAW_IMAGE;
         private CameraVision.StageSwitchingPipeline.Stage[] stages = CameraVision.StageSwitchingPipeline.Stage.values();
 
         @Override

@@ -21,6 +21,7 @@ public class Teleop extends OpMode
     Pursuit pursuit = new Pursuit(0, 0, telemetry);
     Robot robot = new Robot();
     Lift lift = new Lift();
+    CameraVision camera = new CameraVision();
 
     /* Chassis Control */
     /** The x-axis of the left joystick on the gamepad. Used for chassis control*/
@@ -76,18 +77,6 @@ public class Teleop extends OpMode
         telemetry.addData("path: ", Environment.getExternalStorageDirectory().getPath() + "/");
         telemetry.addData("path external: ", getExternalStoragePath(hardwareMap.appContext, true) );
 
-//        if(robot.getSkyStonePosition().equals("RIGHT"))
-//        {
-//            telemetry.addData("skystone: ", "right");
-//        }
-//        else if(robot.getSkyStonePosition().equals("LEFT"))
-//        {
-//            telemetry.addData("skystone: ", "left");
-//        }
-//        else if(robot.getSkyStonePosition().equals("CENTER"))
-//        {
-//            telemetry.addData("skystone: ", "center");
-//        }
 
     }
 

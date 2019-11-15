@@ -47,6 +47,7 @@ public class Robot
 
     private Servo leftFoundation = null;
     private Servo rightFoundation = null;
+    private boolean servoDone = false;
 
 
 
@@ -242,6 +243,11 @@ public class Robot
             gyro = null;
         }
 
+        if(leftFoundation!=null && rightFoundation!=null)
+        {
+            releaseFoundation();
+        }
+
         encoderMotor = LF;
         moving = false;
 
@@ -250,7 +256,7 @@ public class Robot
 
     public void init_loop()
     {
-        telemetry.addData("gyro status ", gyro.getSystemStatus());
+//        telemetry.addData("gyro status ", gyro.getSystemStatus());
     }
 
 
@@ -341,16 +347,16 @@ public class Robot
     public void updateMotors(PVector neededVelocity, double spin)
     {
         float rotation = (float)(90-currentHeading) - (float)Math.toDegrees(neededVelocity.heading());
-//        telemetry.addData("currHdg, needHdg, rotation ", "%.2f, %.2f, %.2f", 90-currentHeading, Math.toDegrees(neededVelocity.heading()), rotation);
+        telemetry.addData("currHdg, needHdg, rotation ", "%.2f, %.2f, %.2f", 90-currentHeading, Math.toDegrees(neededVelocity.heading()), rotation);
 
         double x = neededVelocity.mag()*Math.sin(Math.toRadians(rotation)) / 40.0; //bot.maxSpeed; //max speed is 31.4 in/sec
         double y = neededVelocity.mag()*Math.cos(Math.toRadians(rotation)) / 40.0; // bot.maxSpeed;
 
-//        telemetry.addData("Joystick x, y: ", "%.3f, %.3f", x, y );
+        telemetry.addData("Joystick x, y: ", "%.3f, %.3f", x, y );
 
         double turn = -spin / 343;
 
-        joystickDrive(-x, -y, turn, 0, 1);
+        joystickDrive(x, -y, turn, 0, 1);
     }
 
     public void joystickDrive(double leftStickX, double leftStickY, double rightStickX, double rightStickY, double powerLimit)
@@ -492,7 +498,7 @@ public class Robot
      *              reason, the timer will catch it.
      * @return  A boolean that tells us whether or not the robot is moving.
      */
-    public boolean drive(double power, double direction, double gain, double distance, double time)
+    public boolean drive(double power, double direction, double gain, double distance, double time, boolean intake)
     {
         double driveDistance = COUNTS_PER_INCH * distance;
         double correction;
@@ -500,6 +506,12 @@ public class Robot
         update();
 
         double actual = currentHeading;
+
+        if(intake)
+        {
+            leftIntake.setPower(.5);
+            rightIntake.setPower(.5);
+        }
 
 //        telemetry.addData( "Is RR-Diagonal?: ", direction ==  REVERSE_RIGHT_DIAGONAL);
 //        telemetry.addData("Direction: ", direction);
@@ -546,12 +558,13 @@ public class Robot
 //        telemetry.addData("getRuntime() = ", getRuntime());
 //        telemetry.addData("time = ", time);
 
-        joystickDrive(lStickX, lStickY, correction, 0.0, power);
+        joystickDrive(lStickX, lStickY, -correction, 0.0, power);
 
         if (((Math.abs(bulkData.getMotorCurrentPosition(encoderMotor)- initialPosition)) >= driveDistance) || (getRuntime() > time))
 //        if (((Math.abs(encoderMotor.getCurrentPosition() - initialPosition)) >= driveDistance) || (getRuntime() > time))
         {
             stop();
+            intakeStop();
             moving = false;
             encoderMotor = LF;
         }
@@ -709,11 +722,26 @@ public class Robot
 
     }
 
-    public void grabFoundation()
+    public boolean foundationDrive(double position)
+    {
+
+        rightFoundation.setPosition(position);
+        leftFoundation.setPosition(position);
+
+        if(rightFoundation.getPosition()==position && leftFoundation.getPosition()==position)
+        {
+            servoDone = true;
+        }
+
+        return true;
+    }
+
+    public void releaseFoundation()
     {
         rightFoundation.setPosition(.9);
         leftFoundation.setPosition(.9);
     }
+
 
     public void pointFive()
     {
@@ -721,7 +749,7 @@ public class Robot
         leftFoundation.setPosition(.5);
     }
 
-    public void releaseFoundation()
+    public void grabFoundation()
     {
         rightFoundation.setPosition(.15);
         leftFoundation.setPosition(.15);

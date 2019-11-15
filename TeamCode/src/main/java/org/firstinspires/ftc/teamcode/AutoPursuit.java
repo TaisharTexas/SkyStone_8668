@@ -24,16 +24,16 @@ public class AutoPursuit extends OpMode
 
     public void init()
     {
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+//        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        robot.init(telemetry, hardwareMap, false);
+        robot.init(telemetry, hardwareMap, true);
 
         File autoFile = new File("/storage/9016-4EF8/auto.csv");
         theMaster.init(telemetry, autoFile, robot);
 
         robot.getEncoderTelem();
 
-        // TODO: get rid of hte Path object here and use the PursuitAction
+        // TODO: get rid of the Path object here and use the PursuitAction
 
         // Set up path
 //        drivePath.addPoint(0,0,30,0);
@@ -43,12 +43,12 @@ public class AutoPursuit extends OpMode
 //        drivePath.addPoint(0,0,15,0);
 
        // Attempt to map out getting 1 stone in red alliance autonomous
-        drivePath.addPoint(39,9,25,-90);
-        drivePath.addPoint( 43,55,15,-90);
-        drivePath.addPoint( 30,55,10,-90);
-        drivePath.addPoint( 60,18,25,-90);
-        drivePath.addPoint(90, 25, 30, -45);
-        drivePath.addPoint( 121,40,20,0);
+//        drivePath.addPoint(39,9,25,-90);
+//        drivePath.addPoint( 43,55,15,-90);
+//        drivePath.addPoint( 30,55,10,-90);
+//        drivePath.addPoint( 60,18,25,-90);
+//        drivePath.addPoint(90, 25, 30, -45);
+//        drivePath.addPoint( 121,40,20,0);
     }
 
     @Override
@@ -71,23 +71,23 @@ public class AutoPursuit extends OpMode
         // TODO: get rid of the pursuit items here and use the PursuitAction and the ActionMaster.
         robot.update();
         telemetry.addData("Robot Heading: ", robot.currentHeading);
-
-        pursuit.updatePosition(robot.getLocationChange());
-        pursuit.updateVelocity(robot.getVelocity());
+//
+//        pursuit.updatePosition(robot.getLocationChange());
+//        pursuit.updateVelocity(robot.getVelocity());
 
 
 //        telemetry.addData("mp.global velocity: ", bot.velocity);
-        pursuit.currentHeading = robot.getHeading();
-        pursuit.currentAngularVelocity = robot.getAngularVelocity();
+//        pursuit.currentHeading = robot.getHeading();
+//        pursuit.currentAngularVelocity = robot.getAngularVelocity();
 
 //        telemetry.addData("mp.currentAngularVelocity: ", bot.currentAngularVelocity);
 
-        pursuit.elapsedTime = getRuntime();
-        pursuit.follow(drivePath);
+//        pursuit.elapsedTime = getRuntime();
+//        pursuit.follow(drivePath);
 
 
-//        theMaster.execute();
-        robot.updateMotors(pursuit.desiredVelocity.copy(), pursuit.joystickAngularVelocity);
+        theMaster.execute();
+//        robot.updateMotors(pursuit.desiredVelocity.copy(), pursuit.joystickAngularVelocity);
 
     }
 

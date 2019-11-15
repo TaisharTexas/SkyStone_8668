@@ -71,6 +71,8 @@ public class Pursuit
         PVector start = drivePath.pathPoints.get(currentSegment);
         end = drivePath.pathPoints.get(currentSegment + 1);
 
+//        telemetry.addData("Going to: ", end);
+
         double theMaxSpeed = drivePath.maxSpeeds.get(currentSegment + 1);
         double theTargetHeading = drivePath.targetHeadings.get(currentSegment + 1);
 
@@ -167,7 +169,7 @@ public class Pursuit
             currentSegment++;
         }
 
-//        telemetry.addData("Target loc: ", target);
+        telemetry.addData("Target loc: ", target);
         arrive(target, theMaxSpeed);
         point(theTargetHeading, 100);
 
@@ -205,7 +207,7 @@ public class Pursuit
 
         // steerAcceleration is the amount of needed change in velocity
         PVector steerAcceleration = PVector.sub(desiredVelocity, velocity);
-//        telemetry.addData("Robot Velocity: ", velocity);
+        telemetry.addData("Robot Velocity: ", velocity);
 
 //        telemetry.addData("v.steerAcceleration: ", steerAcceleration);
 

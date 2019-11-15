@@ -21,17 +21,22 @@ public class CameraAction extends RobotAction
     int count;
 
     /** Creates a new object from the supplied parameters. */
-    CameraAction(String id, String nextAction, Boolean shutdown) //default nextAction to center
+    CameraAction(String id, String nextAction, double timeout, Boolean shutdown) //default nextAction to center
     {
-        super( id, nextAction, 2.5);
+
+        super( id, nextAction, timeout);
         theShutdown = shutdown;
+
     }
 
     /** Takes the parameters from the CSV file, converts them appropriately, and calls the
      * parameterized constructor */
     CameraAction(String[] params)
     {
-        this(params[0], params[1], Boolean.parseBoolean(params[3]));
+        this(params[0],
+             params[1],
+             Double.parseDouble(params[2]),
+             Boolean.parseBoolean(params[3]));
     }
 
 
@@ -71,7 +76,7 @@ public class CameraAction extends RobotAction
             telemetry.addData("SS Position: ", ssPosition);
             done = true;
         }
-        if(ssPosition.equals("CENTER"))
+        else if(ssPosition.equals("CENTER"))
         {
             theNextAction = "centerPosition";
             telemetry.addData("SS Position: ", ssPosition);
@@ -83,33 +88,6 @@ public class CameraAction extends RobotAction
             telemetry.addData("SS Position: ", ssPosition);
             done = true;
         }
-//        else if(ssPosition.equals("tweakRight"))
-//        {
-//            theNextAction = "tweakRight";
-//            done = false;
-//        }
-//        else if(ssPosition.equals("tweakLeft"))
-//        {
-//            theNextAction = "tweakLeft";
-//            done  =  false;
-//        }
-//        else if(ssPosition.equals("checkRight") && !alreadyChecked)
-//        {
-//            theNextAction = "checkRight";
-//            telemetry.addData("Gold Position: ", ssPosition);
-//            done = true;
-//            if(theShutdown)
-//            {
-//                theShutdown = false;
-//            }
-//            alreadyChecked = true;
-//        }
-//        else if(alreadyChecked && ssPosition.equals("checkRight"))
-//        {
-//            telemetry.addData("Gold Position: ", ssPosition);
-//            theNextAction = "centerPosition";
-//            done = true;
-//        }
         else
         {
             done = false;

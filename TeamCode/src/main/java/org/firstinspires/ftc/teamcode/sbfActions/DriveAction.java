@@ -20,9 +20,10 @@ public class DriveAction extends RobotAction
     double theGain;
     /** The distance the robot will drive. */
     double theDistance;
+    boolean theIntake;
 
     /** Creates a new object from the supplied parameters. */
-    DriveAction(String id, String nextAction, double duration, double power, double direction, double distance)
+    DriveAction(String id, String nextAction, double duration, double power, double direction, double distance, boolean intake)
     {
         super(id, nextAction, duration);
 
@@ -30,6 +31,7 @@ public class DriveAction extends RobotAction
         theDirection = direction;
         theGain = .01;
         theDistance = distance;
+        theIntake = intake;
 //        timeout = duration;
 //        theId = id;
 //
@@ -52,7 +54,8 @@ public class DriveAction extends RobotAction
              Double.parseDouble(params[2]),
              Double.parseDouble(params[3]),
              Double.parseDouble(params[4]),
-             Double.parseDouble(params[5]));
+             Double.parseDouble(params[5]),
+             Boolean.parseBoolean(params[6]));
     }
 
     /** Placeholder for initialization. Currently only calls the parent init method. */
@@ -74,8 +77,7 @@ public class DriveAction extends RobotAction
     public boolean execute()
     {
 //        telemetry.addData("distance ", theDistance);
-        return robot.drive(thePower, theDirection, theGain, theDistance, timeout);
-//        return true;  // FIXME
+        return robot.drive(thePower, theDirection, theGain, theDistance, timeout, theIntake);
     }
 
 
@@ -84,6 +86,7 @@ public class DriveAction extends RobotAction
     public void exit()
     {
         robot.stop();
+        robot.intakeStop();
         super.exit();
     }
 

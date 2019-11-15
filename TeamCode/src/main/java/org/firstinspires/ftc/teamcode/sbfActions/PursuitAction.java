@@ -17,25 +17,24 @@ public class PursuitAction extends RobotAction
     Path thePath = new Path();
 
     /** The robot's power. */
-//    double thePower;
+    double thePower;
     /** The number by which the robot will correct error. */
-    double theGain;
+//    double theGain;
     /** The distance the robot will drive. */
-//    double xPoint;
-//    double yPoint;
-//    double theHeading;
+    double xPoint;
+    double yPoint;
+    double theHeading;
     Pursuit thePursuit;
-    Path drivePath;
 
     /** Creates a new object from the supplied parameters. */
-    PursuitAction(String id, String nextAction, double duration)
+    PursuitAction(String id, String nextAction, double duration, double power, double heading, double x, double y)
     {
         super(id, nextAction, duration);
-//        thePower = power;
+        thePower = power;
 //        theGain = .01;
-//        xPoint = x;
-//        yPoint = y;
-//        theHeading = heading;
+        xPoint = x;
+        yPoint = y;
+        theHeading = heading;
 //        timeout = duration;
 //        theId = id;
 //
@@ -53,16 +52,16 @@ public class PursuitAction extends RobotAction
      * parameterized constructor */
     PursuitAction(String[] params)
     {
-//        this(params[0],
-//             params[1],
-//             Double.parseDouble(params[2]),
-//             Double.parseDouble(params[3]),
-//             Double.parseDouble(params[4]),
-//             Double.parseDouble(params[5]),
-//             Double.parseDouble(params[6]));
         this(params[0],
              params[1],
-             Double.parseDouble(params[2]));
+             Double.parseDouble(params[2]),
+             Double.parseDouble(params[3]),
+             Double.parseDouble(params[4]),
+             Double.parseDouble(params[5]),
+             Double.parseDouble(params[6]));
+//        this(params[0],
+//             params[1],
+//             Double.parseDouble(params[2]));
 
         // use addPoint here
         this.addPoint(params);
@@ -72,8 +71,8 @@ public class PursuitAction extends RobotAction
     @Override
     public void init(Telemetry telem, Robot theRobot)
     {
-//        thePursuit = new Pursuit((float)xPoint, (float)yPoint, telem);
-//        drivePath= new Path();
+        thePursuit = new Pursuit((float)xPoint, (float)yPoint, telem);
+//        thePath= new Path();
         super.init(telem, theRobot);
 
     }
@@ -82,7 +81,7 @@ public class PursuitAction extends RobotAction
     @Override
     public void entry()
     {
-//        drivePath.addPoint((float)xPoint, (float)yPoint, thePower, theHeading);
+        thePath.addPoint((float)xPoint, (float)yPoint, thePower, theHeading);
         super.entry();
     }
 
@@ -91,7 +90,7 @@ public class PursuitAction extends RobotAction
     public boolean execute()
     {
 //        telemetry.addData("distance ", theDistance);
-        thePursuit.follow(drivePath);
+        thePursuit.follow(thePath);
         robot.updateMotors(thePursuit.desiredVelocity.copy(), thePursuit.joystickAngularVelocity);
         return thePursuit.getDone();
     }

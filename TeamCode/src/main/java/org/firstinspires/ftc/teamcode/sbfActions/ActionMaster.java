@@ -97,9 +97,15 @@ public class ActionMaster
                     myAction.init(telemetry, robot);
                     this.addAction(myAction);
                 }
+                else if(type.equalsIgnoreCase("FOUNDATIONACTION"))
+                {
+                    myAction = new FoundationAction(params);
+                    myAction.init(telemetry, robot);
+                    this.addAction(myAction);
+                }
                 else if(type.equalsIgnoreCase("PURSUITACTION"))
                 {
-                    if(!actionMap.containsKey(type))
+                    if(!actionMap.containsKey(params[0]))
                     {
                         myAction = new PursuitAction(params);
                         myAction.init(telemetry, robot);
@@ -107,10 +113,12 @@ public class ActionMaster
                     }
                     else
                     {
-                        myAction = actionMap.get(type);
+                        myAction = actionMap.get(params[0]);
                         if(myAction != null)
                         {
                             ((PursuitAction)myAction).addPoint(params);
+                            telemetry.addData("Adding pursuit point to ", params[0]);
+
                         }
                         else
                         {
