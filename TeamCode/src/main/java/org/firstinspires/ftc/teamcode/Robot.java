@@ -4,6 +4,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
@@ -182,12 +183,12 @@ public class Robot
         xEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "xEncoder");
        // xEncoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         xEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        xEncoder.setDirection((DcMotorEx.Direction.FORWARD));
+        xEncoder.setDirection((DcMotorEx.Direction.REVERSE));
 
         yEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "yEncoder");
         //yEncoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         yEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        yEncoder.setDirection((DcMotorEx.Direction.FORWARD));
+        yEncoder.setDirection((DcMotorEx.Direction.REVERSE ));
 
         xTicksPerRad = xEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
         yTicksPerRad = yEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
