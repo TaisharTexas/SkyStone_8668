@@ -125,7 +125,7 @@ public class Robot
     /** The encoder ticks per inch ( (ticks per mtr rev*10)/(13*4*3.14159) ).
      * Used in converting inches to encoder ticks. Allows the programmer to code in inches while
      * the motor measures in encoder ticks.*/
-    final double COUNTS_PER_INCH = (1120*10)/(13*4*3.14159);
+    final double COUNTS_PER_INCH = (1120*10)/(17.333*4*Math.PI);
 
     /** An int variable used in drive, tankDrive, and pointTurn to capture the encoder position before each move. */
     double initialPosition;
@@ -168,15 +168,22 @@ public class Robot
         /* TODO: add try/catch for the items in the hardware map */
         RF = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "rf");
         RF.setDirection(DcMotorEx.Direction.FORWARD);
+        RF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         RR = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "rr");
         RR.setDirection(DcMotorEx.Direction.FORWARD);
+        RR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         LF = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "lf");
         LF.setDirection(DcMotorEx.Direction.FORWARD);
+        LF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         LR = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "lr");
         LR.setDirection(DcMotorEx.Direction.FORWARD);
+        LR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
 
 
@@ -398,10 +405,17 @@ public class Robot
             rightRear = rightRear / max *powerLimit;
         }
 
-        RF.setVelocity(rightFront * 15.7, AngleUnit.RADIANS);
-        RR.setVelocity(rightRear * 15.7, AngleUnit.RADIANS);
-        LF.setVelocity(leftFront * 15.7, AngleUnit.RADIANS);
-        LR.setVelocity(leftRear * 15.7, AngleUnit.RADIANS);
+//        RF.setVelocity(rightFront * 15.7, AngleUnit.RADIANS);
+//        RR.setVelocity(rightRear * 15.7, AngleUnit.RADIANS);
+//        LF.setVelocity(leftFront * 15.7, AngleUnit.RADIANS);
+//        LR.setVelocity(leftRear * 15.7, AngleUnit.RADIANS);
+
+
+        RF.setPower(rightFront);
+        RR.setPower(rightRear);
+        LF.setPower(leftFront);
+        LR.setPower(leftRear);
+
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -538,7 +552,7 @@ public class Robot
             resetStartTime();
             moving = true;
         }
-//        telemetry.addData("initial position: ", initialPosition);
+        telemetry.addData("initial position: ", initialPosition);
 
         if (Math.abs(initialHeading) > 130  &&  actual < 0.0)
         {
@@ -553,10 +567,10 @@ public class Robot
 //        telemetry.addData("Right Motor DD: ", Math.abs(rFrontMotor.getCurrentPosition() - initialPosition));
 //        telemetry.addData("Left Motor DD:", Math.abs(lFrontMotor.getCurrentPosition() - initialPosition));
 
-//        telemetry.addData("Drive Distance: ", driveDistance);
-//        double tmpDistance = Math.abs(encoderMotor.getCurrentPosition() - initialPosition);
-//        telemetry.addData("Distance Driven:", tmpDistance);
-//        telemetry.addData("getRuntime() = ", getRuntime());
+        telemetry.addData("Drive Distance: ", driveDistance);
+        double tmpDistance = Math.abs(encoderMotor.getCurrentPosition() - initialPosition);
+        telemetry.addData("Distance Driven:", tmpDistance);
+        telemetry.addData("getRuntime() = ", getRuntime());
 //        telemetry.addData("time = ", time);
 
         joystickDrive(lStickX, lStickY, -correction, 0.0, power);
@@ -587,7 +601,7 @@ public class Robot
         power = Math.abs(power);
 
         update();
-
+        telemetry.addData("currentHeading: ", currentHeading);
 //        double currentHeading = getHeading();
 
         if (Math.abs(targetHeading) > 170  &&  currentHeading < 0.0)
@@ -623,11 +637,11 @@ public class Robot
                 directionalPower = -error * 0.01;
                 if (directionalPower > 0 )
                 {
-                    directionalPower = Range.clip( directionalPower, 0.15, power);
+                    directionalPower = Range.clip( directionalPower, 0.25, power);
                 }
                 else
                 {
-                    directionalPower = Range.clip(directionalPower, -power, -0.15);
+                    directionalPower = Range.clip(directionalPower, -power, -0.25);
                 }
             }
 
@@ -635,8 +649,10 @@ public class Robot
             resetStartTime();
             moving = true;
         }
+        telemetry.addData("error: ", error);
+        telemetry.addData("directionalPower: ", directionalPower);
 
-        joystickDrive(0.0, 0.0, directionalPower, 0.0, power);
+        joystickDrive(0.0, 0.0, -directionalPower, 0.0, power);
 
         if(Math.abs(currentHeading - targetHeading) < 4.0 || getRuntime() > time)
         {
@@ -696,21 +712,21 @@ public class Robot
 
 
 
-    public void intakeIn()
+    public void intakeIn(double power)
     {
 //        xEncoder.setPower(-1.0);
-        leftIntake.setPower(-0.75);
+        leftIntake.setPower(-power * 0.6);
 //        yEncoder.setPower(1.0);
-        rightIntake.setPower(0.67);
+        rightIntake.setPower(power * 0.6);
 
     }
 
-    public void intakeOut()
+    public void intakeOut(double power)
     {
 //        xEncoder.setPower(1.0);
-        leftIntake.setPower(0.75);
+        leftIntake.setPower(power * 0.6);
 //        yEncoder.setPower(-1.0);
-        rightIntake.setPower(-0.67);
+        rightIntake.setPower(-power * 0.6);
 
     }
 

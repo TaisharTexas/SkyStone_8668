@@ -14,7 +14,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-@TeleOp(name="teleop", group="pure")
+@TeleOp(name="SBF Teleop", group="Amazing")
 
 public class Teleop extends OpMode
 {
@@ -107,28 +107,28 @@ public class Teleop extends OpMode
         lift.verticalDrive(gamepad2.left_stick_y);
 
         //intake controls
-        if(gamepad2.left_bumper)
+        if(gamepad2.left_trigger != 0)
         {
-            robot.intakeIn();
+            robot.intakeIn(gamepad2.left_trigger);
         }
-        else if(gamepad2.right_bumper)
+        else if(gamepad2.right_trigger != 0)
         {
-            robot.intakeOut();
+            robot.intakeOut(gamepad2.right_trigger);
         }
         else
         {
             robot.intakeStop();
         }
 
-        if(gamepad2.x)
+        if(gamepad1.x)
         {
             robot.grabFoundation();
         }
-        else if(gamepad2.y)
+        else if(gamepad1.y)
         {
             robot.releaseFoundation();
         }
-        else if(gamepad2.a)
+        else if(gamepad1.a)
         {
             robot.pointFive();
         }

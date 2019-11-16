@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.sbfActions.ActionMaster;
 
 import java.io.File;
 
-@Autonomous(name="pursuit run", group="pure")
+@Autonomous(name="SBF Autonomous", group="Yeltron")
 @Config
 public class AutoPursuit extends OpMode
 {
@@ -21,14 +21,25 @@ public class AutoPursuit extends OpMode
     Robot robot = new Robot();
     Path drivePath = new Path();
 
+    public File autoFile = null;
+
+    public AutoPursuit()
+    {
+
+    }
+
 
     public void init()
     {
 //        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        robot.init(telemetry, hardwareMap, true);
+        robot.init(telemetry, hardwareMap, false);
 
-        File autoFile = new File("/storage/9016-4EF8/auto.csv");
+//        autoFile = new File("/storage/9016-4EF8/autoRun.csv");
+//        autoFile = new File ("/storage/9016-4EF8/B_FoundationLinePark.csv");
+
+        telemetry.addData("autofile: ", autoFile);
+
         theMaster.init(telemetry, autoFile, robot);
 
         robot.getEncoderTelem();
@@ -43,9 +54,9 @@ public class AutoPursuit extends OpMode
 //        drivePath.addPoint(0,0,15,0);
 
        // Attempt to map out getting 1 stone in red alliance autonomous
-        drivePath.addPoint(39,9,25,-90);
-        drivePath.addPoint( 43,55,20,-90);
-        drivePath.addPoint( 30,55,20,-90);
+//        drivePath.addPoint(39,9,25,-90);
+//        drivePath.addPoint( 43,55,20,-90);
+//        drivePath.addPoint( 30,55,20,-90);
 //        drivePath.addPoint( 60,18,25,-90);
 //        drivePath.addPoint(90, 25, 30, -45);
 //        drivePath.addPoint( 121,40,20,0);
@@ -75,25 +86,25 @@ public class AutoPursuit extends OpMode
 
         ////////////////////////////////////////////////////////////////////////////////////////////
 
-        pursuit.updatePosition(robot.getLocationChange());
-        pursuit.updateVelocity(robot.getVelocity());
-
-
-//        telemetry.addData("mp.global velocity: ", bot.velocity);
-        pursuit.currentHeading = robot.getHeading();
-        pursuit.currentAngularVelocity = robot.getAngularVelocity();
-
-//        telemetry.addData("mp.currentAngularVelocity: ", bot.currentAngularVelocity);
-
-        pursuit.elapsedTime = getRuntime();
-        pursuit.follow(drivePath);
-
-        robot.updateMotors(pursuit.desiredVelocity.copy(), pursuit.joystickAngularVelocity);
+//        pursuit.updatePosition(robot.getLocationChange());
+//        pursuit.updateVelocity(robot.getVelocity());
+//
+//
+////        telemetry.addData("mp.global velocity: ", bot.velocity);
+//        pursuit.currentHeading = robot.getHeading();
+//        pursuit.currentAngularVelocity = robot.getAngularVelocity();
+//
+////        telemetry.addData("mp.currentAngularVelocity: ", bot.currentAngularVelocity);
+//
+//        pursuit.elapsedTime = getRuntime();
+//        pursuit.follow(drivePath);
+//
+//        robot.updateMotors(pursuit.desiredVelocity.copy(), pursuit.joystickAngularVelocity);
 
         ////////////////////////////////////////////////////////////////////////////////////////////
 
 
-//        theMaster.execute();
+        theMaster.execute();
 
     }
 
