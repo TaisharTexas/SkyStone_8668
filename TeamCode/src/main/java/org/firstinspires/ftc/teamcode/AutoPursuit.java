@@ -36,7 +36,7 @@ public class AutoPursuit extends OpMode
         robot.init(telemetry, hardwareMap, false);
 
 //        autoFile = new File("/storage/9016-4EF8/autoRun.csv");
-//        autoFile = new File ("/storage/9016-4EF8/B_FoundationLinePark.csv");
+//        autoFile = new File ("/storage/9016-4EF8/RedFoundationNav.csv");
 
         telemetry.addData("autofile: ", autoFile);
 

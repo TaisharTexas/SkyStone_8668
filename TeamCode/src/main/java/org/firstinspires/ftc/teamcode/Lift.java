@@ -19,9 +19,11 @@ public class Lift
     private ExpansionHubMotor leftVertical = null;
     private ExpansionHubMotor rightVertical = null;
 
-//    private Servo horizontal = null;
-//    private Servo claw = null;
-//    private Servo wrist = null;
+    public Servo horizontal = null;
+    public Servo claw = null;
+    public Servo wrist = null;
+
+    double thePosition;
 
 
     public void init(Telemetry telem, HardwareMap hwmap)
@@ -38,33 +40,36 @@ public class Lift
         touchL = hardwareMap.get(RevTouchSensor.class, "touchL");
         touchR = hardwareMap.get(RevTouchSensor.class, "touchR");
 
-//        try
-//        {
-//            horizontal = hardwareMap.get(Servo.class, "horizontal");
-//        }
-//        catch (Exception p_exeception)
-//        {
-//            telemetry.addData("horizontal not found in config file", 0);
-//            horizontal = null;
-//        }
-//        try
-//        {
-//            claw = hardwareMap.get(Servo.class, "claw");
-//        }
-//        catch (Exception p_exeception)
-//        {
-//            telemetry.addData("claw not found in config file", 0);
-//            claw = null;
-//        }
-//        try
-//        {
-//            wrist = hardwareMap.get(Servo.class, "wrist");
-//        }
-//        catch (Exception p_exeception)
-//        {
-//            telemetry.addData("wrist not found in config file", 0);
-//            wrist = null;
-//        }
+        try
+        {
+            horizontal = hardwareMap.get(Servo.class, "horizontal");
+            horizontal.setDirection(Servo.Direction.FORWARD);
+        }
+        catch (Exception p_exeception)
+        {
+            telemetry.addData("horizontal not found in config file", 0);
+            horizontal = null;
+        }
+        try
+        {
+            claw = hardwareMap.get(Servo.class, "claw");
+            claw.setDirection(Servo.Direction.FORWARD);
+        }
+        catch (Exception p_exeception)
+        {
+            telemetry.addData("claw not found in config file", 0);
+            claw = null;
+        }
+        try
+        {
+            wrist = hardwareMap.get(Servo.class, "wrist");
+            wrist.setDirection(Servo.Direction.FORWARD);
+        }
+        catch (Exception p_exeception)
+        {
+            telemetry.addData("wrist not found in config file", 0);
+            wrist = null;
+        }
 
     }
 
@@ -75,7 +80,7 @@ public class Lift
             leftVertical.setPower(-0.2);
             rightVertical.setPower(0.2);
         }
-        else if(power > .035 || power < -.035)
+        else if(power > .01 || power < -.01)
         {
             leftVertical.setPower(power);
             rightVertical.setPower(-power);
@@ -86,5 +91,29 @@ public class Lift
             rightVertical.setPower(0.0);
         }
     }
+
+    public void horizontalDrive(double position)
+    {
+        horizontal.setPosition(position);
+    }
+
+    public void grabClaw()
+    {
+        claw.setPosition(.9);
+    }
+    public void releaseClaw()
+    {
+        claw.setPosition(.5);
+    }
+
+    public void wristDeploy()
+    {
+        wrist.setPosition(.9);
+    }
+    public void wristRetract()
+    {
+        wrist.setPosition(.135);
+    }
+
 
 }

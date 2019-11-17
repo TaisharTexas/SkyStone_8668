@@ -7,6 +7,7 @@ import android.os.storage.StorageManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.sbfUtil.DataLogger;
 
@@ -33,6 +34,8 @@ public class Teleop extends OpMode
     /** The y-axis of the right joystick on the gamepad. Used for chassis control*/
     double rStickY;
 
+    double shoulderPos;
+
 
 
 
@@ -51,13 +54,18 @@ public class Teleop extends OpMode
         robot.init(telemetry, hardwareMap, false);
         lift.init(telemetry, hardwareMap);
 
-        robot.pointFive();
+        robot.releaseFoundation();
+        shoulderPos = .99;
+//        lift.horizontal.setPosition(.7);
 
 //        myData = new DataLogger("8668_Robot_Data");
 //        myData.addField("elapsedTime");
 //        myData.addField("xEncoderPos");
 //        myData.addField("yEncoderPos");
 //        myData.newLine();
+
+
+
 
 
     }
@@ -74,8 +82,10 @@ public class Teleop extends OpMode
     {
         telemetry.addData("heading: ", robot.getHeading());
 
+
         telemetry.addData("path: ", Environment.getExternalStorageDirectory().getPath() + "/");
         telemetry.addData("path external: ", getExternalStoragePath(hardwareMap.appContext, true) );
+
 
 
     }
@@ -84,11 +94,17 @@ public class Teleop extends OpMode
     {
         robot.start();
         resetStartTime();
+//        lift.wrist.setPosition(.9);
+//        lift.claw.setPosition(.1);
     }
 
     public void loop()
     {
         robot.update();
+
+        telemetry.addData("horiz", lift.horizontal.getPosition());
+        telemetry.addData("d up", gamepad2.dpad_up);
+        telemetry.addData("d down", gamepad2.dpad_down);
 
         /* Chassis Control */
         /** The x-axis of the left joystick on the gamepad. Used for chassis control*/
@@ -103,8 +119,20 @@ public class Teleop extends OpMode
         /* Tell the robot to move */
         robot.joystickDrive(-lStickX, lStickY, rStickX, rStickY, afterburners());
 
-        //lift controls
-        lift.verticalDrive(gamepad2.left_stick_y);
+//        lift controls
+        lift.verticalDrive(gamepad2.right_stick_y*.8);
+
+        if(gamepad2.dpad_down)
+        {
+            shoulderPos += .005;
+        }
+        else if(gamepad2.dpad_up)
+        {
+            shoulderPos -= .005;
+        }
+        shoulderPos = Range.clip(shoulderPos, .65, .99);
+        lift.horizontal.setPosition(shoulderPos);
+
 
         //intake controls
         if(gamepad2.left_trigger != 0)
@@ -128,9 +156,23 @@ public class Teleop extends OpMode
         {
             robot.releaseFoundation();
         }
-        else if(gamepad1.a)
+
+        if(gamepad2.a)
         {
-            robot.pointFive();
+            lift.grabClaw();
+        }
+        else if(gamepad2.y)
+        {
+            lift.releaseClaw();
+        }
+
+        if(gamepad2.b)
+        {
+            lift.wristDeploy();
+        }
+        else if(gamepad2.x)
+        {
+            lift.wristRetract();
         }
 
 
