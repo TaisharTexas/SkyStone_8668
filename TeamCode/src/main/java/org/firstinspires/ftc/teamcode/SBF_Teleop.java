@@ -6,9 +6,12 @@ import android.os.storage.StorageManager;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.sbfHardware.CameraVision;
+import org.firstinspires.ftc.teamcode.sbfHardware.Lift;
+import org.firstinspires.ftc.teamcode.sbfHardware.Robot;
+import org.firstinspires.ftc.teamcode.sbfHardware.SbfJoystick;
 import org.firstinspires.ftc.teamcode.sbfUtil.DataLogger;
 
 import java.lang.reflect.Array;
@@ -17,32 +20,19 @@ import java.lang.reflect.Method;
 
 @TeleOp(name="SBF Teleop", group="Amazing")
 
-public class Teleop extends OpMode
+public class SBF_Teleop extends OpMode
 {
     Pursuit pursuit = new Pursuit(0, 0, telemetry);
     Robot robot = new Robot();
     Lift lift = new Lift();
+    SbfJoystick customPad = new SbfJoystick();
     CameraVision camera = new CameraVision();
 
-    /* Chassis Control */
-    /** The x-axis of the left joystick on the gamepad. Used for chassis control*/
-    double lStickX;
-    /** The x-axis of the right joystick on the gamepad. Used for chassis control*/
-    double rStickX;
-    /** The y-axis of the left joystick on the gamepad. Used for chassis control*/
-    double lStickY;
-    /** The y-axis of the right joystick on the gamepad. Used for chassis control*/
-    double rStickY;
-
     double shoulderPos;
-
-
-
 
     int currentXEncoder = 0;
     int currentYEncoder = 0;
     double currentHeading = 0;
-
 
     double loopTime=0;
 
@@ -53,6 +43,7 @@ public class Teleop extends OpMode
     {
         robot.init(telemetry, hardwareMap, false);
         lift.init(telemetry, hardwareMap);
+        customPad.init(telemetry, hardwareMap, gamepad1, gamepad2);
 
         robot.releaseFoundation();
         shoulderPos = .99;
@@ -63,10 +54,6 @@ public class Teleop extends OpMode
 //        myData.addField("xEncoderPos");
 //        myData.addField("yEncoderPos");
 //        myData.newLine();
-
-
-
-
 
     }
 
@@ -86,8 +73,6 @@ public class Teleop extends OpMode
         telemetry.addData("path: ", Environment.getExternalStorageDirectory().getPath() + "/");
         telemetry.addData("path external: ", getExternalStoragePath(hardwareMap.appContext, true) );
 
-
-
     }
 
     public void start()
@@ -103,30 +88,25 @@ public class Teleop extends OpMode
         robot.update();
 
         telemetry.addData("horiz", lift.horizontal.getPosition());
-        telemetry.addData("d up", gamepad2.dpad_up);
-        telemetry.addData("d down", gamepad2.dpad_down);
+        telemetry.addData("d up", customPad.get2DpadUp());
+        telemetry.addData("d down", customPad.get2DpadDown());
 
-        /* Chassis Control */
-        /** The x-axis of the left joystick on the gamepad. Used for chassis control*/
-        lStickX = -gamepad1.left_stick_x;
-        /** The x-axis of the right joystick on the gamepad. Used for chassis control*/
-        rStickX = -gamepad1.right_stick_x;
-        /** The y-axis of the left joystick on the gamepad. Used for chassis control*/
-        lStickY = gamepad1.left_stick_y;
-        /** The y-axis of the right joystick on the gamepad. Used for chassis control*/
-        rStickY = gamepad1.right_stick_y;
 
-        /* Tell the robot to move */
-        robot.joystickDrive(-lStickX, lStickY, rStickX, rStickY, afterburners());
+        /*Chassis control */
+        robot.joystickDrive(customPad.get1LeftStickX(),
+                            customPad.get1LeftStickY(),
+                            customPad.get1RightStickX(),
+                            customPad.get1RightStickY(),
+                            afterburners());
 
 //        lift controls
-        lift.verticalDrive(gamepad2.right_stick_y*.8);
+        lift.verticalDrive(customPad.get2RightStickY()*.8);
 
-        if(gamepad2.dpad_down)
+        if(customPad.get2DpadDown())
         {
             shoulderPos += .005;
         }
-        else if(gamepad2.dpad_up)
+        else if(customPad.get2DpadUp())
         {
             shoulderPos -= .005;
         }
@@ -135,42 +115,42 @@ public class Teleop extends OpMode
 
 
         //intake controls
-        if(gamepad2.left_trigger != 0)
+        if(customPad.get2LeftTrigger() != 0)
         {
-            robot.intakeIn(gamepad2.left_trigger);
+            robot.intakeIn(customPad.get2LeftTrigger());
         }
-        else if(gamepad2.right_trigger != 0)
+        else if(customPad.get2RightTrigger() != 0)
         {
-            robot.intakeOut(gamepad2.right_trigger);
+            robot.intakeOut(customPad.get2RightTrigger());
         }
         else
         {
             robot.intakeStop();
         }
 
-        if(gamepad1.x)
+        if(customPad.get1x())
         {
             robot.grabFoundation();
         }
-        else if(gamepad1.y)
+        else if(customPad.get1y())
         {
             robot.releaseFoundation();
         }
 
-        if(gamepad2.a)
+        if(customPad.get2a())
         {
             lift.grabClaw();
         }
-        else if(gamepad2.y)
+        else if(customPad.get2y())
         {
             lift.releaseClaw();
         }
 
-        if(gamepad2.b)
+        if(customPad.get2b())
         {
             lift.wristDeploy();
         }
-        else if(gamepad2.x)
+        else if(customPad.get2x())
         {
             lift.wristRetract();
         }
@@ -184,8 +164,8 @@ public class Teleop extends OpMode
         loopTime = getRuntime();
         resetStartTime();
         telemetry.addData("Loop Time ", "%.3f", loopTime);
-        telemetry.addData("Gamepad left stick x, Left Stick X", "%.3f, %.3f", gamepad1.left_stick_x, lStickX);
-        telemetry.addData("Gamepad left stick y, Left Stick Y", "%.3f, %.3f", gamepad1.left_stick_y, lStickY);
+        telemetry.addData("Gamepad left stick x, Left Stick X", "%.3f, %.3f", gamepad1.left_stick_x, customPad.get1LeftStickX());
+        telemetry.addData("Gamepad left stick y, Left Stick Y", "%.3f, %.3f", gamepad1.left_stick_y, customPad.get1LeftStickY());
         telemetry.addData("Heading ", "%.3f", robot.currentHeading);
 //        telemetry.addData("Robot Location: ", "%.3f","%.3f", robot.);
 
@@ -197,7 +177,7 @@ public class Teleop extends OpMode
     {
         double maximumSpeed;
 
-        if(gamepad1.right_bumper)
+        if(customPad.get1RightBumper())
         {
             maximumSpeed = 1;
         }

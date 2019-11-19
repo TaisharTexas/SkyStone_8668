@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.sbfAutonomousClasses;
 
-import org.firstinspires.ftc.teamcode.AutoPursuit;
+import org.firstinspires.ftc.teamcode.SBF_Autonomous;
 import java.io.File;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -10,9 +10,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * actions.  It lands, samples, goes to the depot, drops the marker, and comes back to the crater.
  *
  * @author Andrew, SBF Robotics
- * @see AutoPursuit
+ * @see SBF_Autonomous
  * */
-public class RedNav extends AutoPursuit
+public class RedNav extends SBF_Autonomous
 {
     /** Calls the init methods for needed classes and locates the correct file path to the CSV file
      * for the crater face drive path. */

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.sbfHardware;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
@@ -14,6 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.sbfUtil.PVector;
 import org.openftc.revextensions2.ExpansionHubEx;
 import org.openftc.revextensions2.ExpansionHubMotor;
 import org.openftc.revextensions2.RevBulkData;
@@ -168,21 +169,23 @@ public class Robot
         /* TODO: add try/catch for the items in the hardware map */
         RF = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "rf");
         RF.setDirection(DcMotorEx.Direction.FORWARD);
-        RF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        RF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         RR = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "rr");
         RR.setDirection(DcMotorEx.Direction.FORWARD);
-        RR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        RR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
 
         LF = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "lf");
-        LF.setDirection(DcMotorEx.Direction.FORWARD);
-        LF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        LF.setDirection(DcMotorSimple.Direction.FORWARD);
+        LF.setDirection(DcMotorEx.Direction.REVERSE);
+        LF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
 
         LR = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "lr");
-        LR.setDirection(DcMotorEx.Direction.FORWARD);
-        LR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        LR.setDirection(DcMotorSimple.Direction.FORWARD);
+        LR.setDirection(DcMotorEx.Direction.REVERSE);
+        LR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
 
 
@@ -314,7 +317,7 @@ public class Robot
     public double updateHeading()
     {
         Orientation angles = gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        return -AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle));
+        return AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle));
     }
 
 
@@ -360,7 +363,7 @@ public class Robot
         double x = neededVelocity.mag()*Math.sin(Math.toRadians(rotation)) / 40.0; //bot.maxSpeed; //max speed is 31.4 in/sec
         double y = neededVelocity.mag()*Math.cos(Math.toRadians(rotation)) / 40.0; // bot.maxSpeed;
 
-        telemetry.addData("Joystick x, y: ", "%.3f, %.3f", x, y );
+        telemetry.addData("SbfJoystick x, y: ", "%.3f, %.3f", x, y );
 
         double turn = -spin / 343;
 
@@ -374,10 +377,15 @@ public class Robot
               - The left joystick controls moving straight forward/backward and straight sideways.
               - The right joystick control turning.
         */
-        double rightFront = (-leftStickY+rightStickX+leftStickX);
-        double leftFront = (leftStickY+rightStickX+leftStickX);
-        double rightRear=  (-leftStickY+rightStickX-leftStickX);
-        double leftRear = (leftStickY+rightStickX-leftStickX);
+
+        double forward = -leftStickY;
+        double right = leftStickX;
+        double clockwise = rightStickX;
+
+        double leftFront = (forward + clockwise + right);
+        double rightFront = (forward - clockwise - right);
+        double leftRear = (forward + clockwise - right);
+        double rightRear = (forward - clockwise + right);
 
 
         //Find the largest command value given and assign it to max.
@@ -534,6 +542,11 @@ public class Robot
 
         if (!moving)
         {
+            LF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            LR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            RF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            RR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
             initialHeading = currentHeading;
             if (Math.abs(initialHeading) > 130  &&  initialHeading < 0.0)
             {
@@ -580,8 +593,14 @@ public class Robot
         {
             stop();
             intakeStop();
-            moving = false;
+
+            LR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            LF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            RR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            RF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
             encoderMotor = LF;
+            moving = false;
         }
 
         return !moving;
@@ -712,21 +731,21 @@ public class Robot
 
 
 
-    public void intakeIn(double power)
+    public void intakeOut(double power)
     {
 //        xEncoder.setPower(-1.0);
-        leftIntake.setPower(-power * 1);
+        leftIntake.setPower(-power * .45);
 //        yEncoder.setPower(1.0);
-        rightIntake.setPower(power * .9);
+        rightIntake.setPower(power * .45);
 
     }
 
-    public void intakeOut(double power)
+    public void intakeIn(double power)
     {
 //        xEncoder.setPower(1.0);
-        leftIntake.setPower(power * 0.45);
+        leftIntake.setPower(power * .85);
 //        yEncoder.setPower(-1.0);
-        rightIntake.setPower(-power * 0.45);
+        rightIntake.setPower(-power * 1);
 
     }
 

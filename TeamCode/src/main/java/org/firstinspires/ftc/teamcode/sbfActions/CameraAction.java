@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.sbfActions;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.sbfHardware.Robot;
 
 /**
  * Loaded into the run map as an action that uses the camera. Each action is parameterized by the CSV file.

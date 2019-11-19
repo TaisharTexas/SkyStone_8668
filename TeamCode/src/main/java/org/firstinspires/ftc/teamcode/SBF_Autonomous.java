@@ -3,16 +3,15 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 
 import org.firstinspires.ftc.teamcode.sbfActions.ActionMaster;
+import org.firstinspires.ftc.teamcode.sbfHardware.Robot;
 
 import java.io.File;
 
 @Autonomous(name="SBF Autonomous", group="Yeltron")
 @Config
-public class AutoPursuit extends OpMode
+public class SBF_Autonomous extends OpMode
 {
     ActionMaster theMaster = new ActionMaster();
 
@@ -23,7 +22,7 @@ public class AutoPursuit extends OpMode
 
     public File autoFile = null;
 
-    public AutoPursuit()
+    public SBF_Autonomous()
     {
 
     }
