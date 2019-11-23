@@ -373,11 +373,10 @@ public class Robot
     public void joystickDrive(double leftStickX, double leftStickY, double rightStickX, double rightStickY, double powerLimit)
     {
         /*
-            These are the calculations need to make a simple mecaccnum drive.
+            These are the calculations needed to make a simple mecaccnum drive.
               - The left joystick controls moving straight forward/backward and straight sideways.
               - The right joystick control turning.
         */
-
         double forward = -leftStickY;
         double right = leftStickX;
         double clockwise = rightStickX;
@@ -397,6 +396,7 @@ public class Robot
 
         //Set the minimum and maximum power allowed for drive moves and compare it to the parameter powerLimit.
         powerLimit = Range.clip(powerLimit, .05, 1);
+
         //If max still equals zero after checking all four motors, then set the max to 1
         if (max == 0.0)
         {
@@ -407,10 +407,10 @@ public class Robot
         // values stay below the magnitude of the power limit.
         if (max > powerLimit)
         {
-            leftFront = leftFront / max * powerLimit;
+            leftFront  = leftFront  / max * powerLimit;
             rightFront = rightFront / max * powerLimit;
-            leftRear = leftRear / max * powerLimit;
-            rightRear = rightRear / max *powerLimit;
+            leftRear   = leftRear   / max * powerLimit;
+            rightRear  = rightRear  / max * powerLimit;
         }
 
 //        RF.setVelocity(rightFront * 15.7, AngleUnit.RADIANS);
@@ -542,10 +542,7 @@ public class Robot
 
         if (!moving)
         {
-            LF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            LR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            RF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            RR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            setZeroBehavior("BRAKE");
 
             initialHeading = currentHeading;
             if (Math.abs(initialHeading) > 130  &&  initialHeading < 0.0)
@@ -588,16 +585,13 @@ public class Robot
 
         joystickDrive(lStickX, lStickY, -correction, 0.0, power);
 
-        if (((Math.abs(bulkData.getMotorCurrentPosition(encoderMotor)- initialPosition)) >= driveDistance) || (getRuntime() > time))
-//        if (((Math.abs(encoderMotor.getCurrentPosition() - initialPosition)) >= driveDistance) || (getRuntime() > time))
+//        if (((Math.abs(bulkData.getMotorCurrentPosition(encoderMotor)- initialPosition)) >= driveDistance) || (getRuntime() > time))
+        if (((Math.abs(encoderMotor.getCurrentPosition() - initialPosition)) >= driveDistance) || (getRuntime() > time))
         {
             stop();
             intakeStop();
 
-            LR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-            LF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-            RR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-            RF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            setZeroBehavior("FLOAT");
 
             encoderMotor = LF;
             moving = false;
@@ -630,6 +624,8 @@ public class Robot
 
         if (!moving)
         {
+            setZeroBehavior("BRAKE");
+
             initialHeading = currentHeading;
             error = initialHeading - targetHeading;
 
@@ -676,6 +672,9 @@ public class Robot
         if(Math.abs(currentHeading - targetHeading) < 4.0 || getRuntime() > time)
         {
             stop();
+
+            setZeroBehavior("FLOAT");
+
             moving = false;
         }
 
@@ -789,6 +788,25 @@ public class Robot
     {
         rightFoundation.setPosition(.15);
         leftFoundation.setPosition(.15);
+    }
+
+
+    public void setZeroBehavior(String mode)
+    {
+        if(mode.equalsIgnoreCase("FLOAT"))
+        {
+            LR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            LF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            RR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            RF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        }
+        else if(mode.equalsIgnoreCase("BRAKE"))
+        {
+            LF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            LR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            RF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            RR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        }
     }
 
 
