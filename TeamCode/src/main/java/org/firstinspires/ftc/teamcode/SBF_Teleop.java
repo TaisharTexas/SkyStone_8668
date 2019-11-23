@@ -12,7 +12,6 @@ import org.firstinspires.ftc.teamcode.sbfHardware.CameraVision;
 import org.firstinspires.ftc.teamcode.sbfHardware.Lift;
 import org.firstinspires.ftc.teamcode.sbfHardware.Robot;
 import org.firstinspires.ftc.teamcode.sbfHardware.SbfJoystick;
-import org.firstinspires.ftc.teamcode.sbfUtil.DataLogger;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
@@ -25,7 +24,8 @@ public class SBF_Teleop extends OpMode
     Pursuit pursuit = new Pursuit(0, 0, telemetry);
     Robot robot = new Robot();
     Lift lift = new Lift();
-    SbfJoystick customPad = new SbfJoystick();
+    SbfJoystick customPad1 = new SbfJoystick();
+    SbfJoystick customPad2 = new SbfJoystick();
     CameraVision camera = new CameraVision();
 
     double shoulderPos;
@@ -36,24 +36,17 @@ public class SBF_Teleop extends OpMode
 
     double loopTime=0;
 
-    private DataLogger myData;
-
 
     public void init()
     {
         robot.init(telemetry, hardwareMap, false);
         lift.init(telemetry, hardwareMap);
-        customPad.init(telemetry, hardwareMap, gamepad1, gamepad2);
+        customPad1.init(telemetry, hardwareMap, gamepad1);
+        customPad2.init(telemetry, hardwareMap, gamepad2);
 
         robot.releaseFoundation();
         shoulderPos = .99;
 //        lift.horizontal.setPosition(.7);
-
-//        myData = new DataLogger("8668_Robot_Data");
-//        myData.addField("elapsedTime");
-//        myData.addField("xEncoderPos");
-//        myData.addField("yEncoderPos");
-//        myData.newLine();
 
     }
 
@@ -88,25 +81,25 @@ public class SBF_Teleop extends OpMode
         robot.update();
 
         telemetry.addData("horiz", lift.horizontal.getPosition());
-        telemetry.addData("d up", customPad.get2DpadUp());
-        telemetry.addData("d down", customPad.get2DpadDown());
+        telemetry.addData("d up", customPad2.getDpadUp());
+        telemetry.addData("d down", customPad2.getDpadDown());
 
 
         /*Chassis control */
-        robot.joystickDrive(customPad.get1LeftStickX(),
-                            customPad.get1LeftStickY(),
-                            customPad.get1RightStickX(),
-                            customPad.get1RightStickY(),
+        robot.joystickDrive(customPad1.getLeftStickX(),
+                            customPad1.getLeftStickY(),
+                            customPad1.getRightStickX(),
+                            customPad1.getRightStickY(),
                             afterburners());
 
 //        lift controls
-        lift.verticalDrive(customPad.get2RightStickY()*.8);
+        lift.verticalDrive(customPad2.getRightStickY()*.8);
 
-        if(customPad.get2DpadDown())
+        if(customPad2.getDpadDown())
         {
             shoulderPos += .005;
         }
-        else if(customPad.get2DpadUp())
+        else if(customPad2.getDpadUp())
         {
             shoulderPos -= .005;
         }
@@ -115,57 +108,52 @@ public class SBF_Teleop extends OpMode
 
 
         //intake controls
-        if(customPad.get2LeftTrigger() != 0)
+        if(customPad2.getLeftTrigger() != 0)
         {
-            robot.intakeIn(customPad.get2LeftTrigger());
+            robot.intakeIn(customPad2.getLeftTrigger());
         }
-        else if(customPad.get2RightTrigger() != 0)
+        else if(customPad2.getRightTrigger() != 0)
         {
-            robot.intakeOut(customPad.get2RightTrigger());
+            robot.intakeOut(customPad2.getRightTrigger());
         }
         else
         {
             robot.intakeStop();
         }
 
-        if(customPad.get1x())
+        if(customPad1.getX())
         {
             robot.grabFoundation();
         }
-        else if(customPad.get1y())
+        else if(customPad1.getY())
         {
             robot.releaseFoundation();
         }
 
-        if(customPad.get2a())
+        if(customPad2.getA())
         {
             lift.grabClaw();
         }
-        else if(customPad.get2y())
+        else if(customPad2.getY())
         {
             lift.releaseClaw();
         }
 
-        if(customPad.get2b())
+        if(customPad2.getB())
         {
             lift.wristDeploy();
         }
-        else if(customPad.get2x())
+        else if(customPad2.getX())
         {
             lift.wristRetract();
         }
 
 
-//        myData.addField(loopTime);
-//        myData.addField(xEncoderChange);
-//        myData.addField(yEncoderChange);
-//        myData.newLine();
-
         loopTime = getRuntime();
         resetStartTime();
         telemetry.addData("Loop Time ", "%.3f", loopTime);
-        telemetry.addData("Gamepad left stick x, Left Stick X", "%.3f, %.3f", gamepad1.left_stick_x, customPad.get1LeftStickX());
-        telemetry.addData("Gamepad left stick y, Left Stick Y", "%.3f, %.3f", gamepad1.left_stick_y, customPad.get1LeftStickY());
+        telemetry.addData("Gamepad left stick x, Left Stick X", "%.3f, %.3f", gamepad1.left_stick_x, customPad1.getLeftStickX());
+        telemetry.addData("Gamepad left stick y, Left Stick Y", "%.3f, %.3f", gamepad1.left_stick_y, customPad1.getLeftStickY());
         telemetry.addData("Heading ", "%.3f", robot.currentHeading);
 //        telemetry.addData("Robot Location: ", "%.3f","%.3f", robot.);
 
@@ -177,7 +165,7 @@ public class SBF_Teleop extends OpMode
     {
         double maximumSpeed;
 
-        if(customPad.get1RightBumper())
+        if(customPad1.getRightBumper())
         {
             maximumSpeed = 1;
         }

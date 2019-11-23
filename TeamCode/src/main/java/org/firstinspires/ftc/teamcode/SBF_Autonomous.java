@@ -22,6 +22,8 @@ public class SBF_Autonomous extends OpMode
 
     public File autoFile = null;
 
+    String ssPos = "NULL";
+
     public SBF_Autonomous()
     {
 
@@ -66,10 +68,13 @@ public class SBF_Autonomous extends OpMode
     {
         robot.init_loop();
         super.init_loop();
+        ssPos = robot.getSkyStonePosition();
+
     }
 
     public void start()
     {
+        theMaster.setFirstAction(ssPos);
         resetStartTime();
         pursuit.elapsedTime = 0;
         robot.start();

@@ -424,43 +424,6 @@ public class Robot
         LF.setPower(leftFront);
         LR.setPower(leftRear);
 
-
-
-//////////////////////////////////////////////////////////////////////////
-//    ////////if the robot is not moving, instruct the motors to hold their current position.///////
-//        if(rightFront == 0 && leftFront == 0)
-//        {
-//            setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//            double rf = rFrontMotor.getCurrentPosition();
-//            double lf = lFrontMotor.getCurrentPosition();
-//            double rr = rRearMotor.getCurrentPosition();
-//            double lr = lRearMotor.getCurrentPosition();
-//            if (rFrontMotor != null)
-//            {
-//                rFrontMotor.setTargetPosition( (int) rf);
-//            }
-//
-//            if (lFrontMotor != null)
-//            {
-//                lFrontMotor.setTargetPosition( (int) lf);
-//            }
-//
-//            if (rRearMotor != null)
-//            {
-//                rRearMotor.setTargetPosition( (int) rr);
-//            }
-//
-//            if (lRearMotor != null)
-//            {
-//                lRearMotor.setTargetPosition( (int) lr);
-//            }
-//        }
-//        else
-//        {
-//            setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        }
-//////////////////////////////////////////////////////////////////////////////////
-
     }
 
 
@@ -721,7 +684,14 @@ public class Robot
 
     public String getSkyStonePosition()
     {
-        return eyeOfSauron.getSkyStonePosition();
+        if (useCamera)
+        {
+            return eyeOfSauron.getSkyStonePosition();
+        }
+        else
+        {
+            return "LEFT";
+        }
     }
     public void stopCamera()
     {

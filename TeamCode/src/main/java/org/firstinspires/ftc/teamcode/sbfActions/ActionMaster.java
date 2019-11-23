@@ -35,6 +35,7 @@ public class ActionMaster
     Telemetry telemetry;
     /** A truth value is is whether or not a method has run before or not. */
     boolean firstRun = true;
+    String firstAction = "One";
 
     /** Initializes telemetry. */
     public void init(Telemetry telem, File autoFile, Robot robot)
@@ -131,7 +132,7 @@ public class ActionMaster
                 
                 telemetry.addData("TheAction: ", myAction);
             }
-            this.addRunAction("One");
+//            this.addRunAction("One");
         }
         catch(FileNotFoundException e)
         {
@@ -157,6 +158,11 @@ public class ActionMaster
                 }
             }
         }
+    }
+
+    public void setFirstAction( String id )
+    {
+        this.addRunAction(id);
     }
 
     /** The body of the code to execute: Creates a run list of actions to do, executes the current

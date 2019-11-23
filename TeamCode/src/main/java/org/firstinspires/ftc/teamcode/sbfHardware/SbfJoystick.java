@@ -15,101 +15,102 @@ public class SbfJoystick
     Telemetry telemetry;
     HardwareMap hardwareMap;
 
-    Gamepad gamepad1;
-    Gamepad gamepad2;
+    Gamepad myGamepad;
+    //Gamepad gamepad2;
 
-    public void init(Telemetry telem, HardwareMap hwMap, Gamepad theGamepad1, Gamepad theGamepad2)
+//    public void init(Telemetry telem, HardwareMap hwMap, Gamepad theGamepad1, Gamepad theGamepad2)
+    public void init(Telemetry telem, HardwareMap hwMap, Gamepad theGamepad )
     {
         hardwareMap = hwMap;
         telemetry = telem;
-        gamepad1 = theGamepad1;
-        gamepad2 = theGamepad2;
+        myGamepad = theGamepad;
+       // gamepad2 = theGamepad2;
 
     }
 
     //GAMEPAD 1
-    public double get1LeftStickX()
+    public double getLeftStickX()
     {
-        telemetry.addData("1, left stick x: ", gamepad1.left_stick_x);
-        return gamepad1.left_stick_x;
+        telemetry.addData("1, left stick x: ", myGamepad.left_stick_x);
+        return myGamepad.left_stick_x;
     }
 
-    public double get1LeftStickY()
+    public double getLeftStickY()
     {
-        telemetry.addData("1, left stick y: ", gamepad1.left_stick_y);
-        return gamepad1.left_stick_y;
+        telemetry.addData("1, left stick y: ", myGamepad.left_stick_y);
+        return myGamepad.left_stick_y;
     }
 
-    public double get1RightStickX()
+    public double getRightStickX()
     {
-        telemetry.addData("1, right stick x: ", gamepad1.right_stick_x);
-        return gamepad1.right_stick_x;
+        telemetry.addData("1, right stick x: ", myGamepad.right_stick_x);
+        return myGamepad.right_stick_x;
     }
 
-    public double get1RightStickY()
+    public double getRightStickY()
     {
-        telemetry.addData("1, right stick y: ", gamepad1.right_stick_y);
-        return gamepad1.right_stick_y;
+        telemetry.addData("1, right stick y: ", myGamepad.right_stick_y);
+        return myGamepad.right_stick_y;
     }
 
-    public boolean get1RightBumper()
+    public boolean getRightBumper()
     {
-        return gamepad1.right_bumper;
+        return myGamepad.right_bumper;
     }
 
-    public boolean get1x()
+    public boolean getX()
     {
-        return gamepad1.x;
+        return myGamepad.x;
     }
 
-    public boolean get1y()
+    public boolean getY()
     {
-        return gamepad1.y;
+        return myGamepad.y;
     }
 
 
     // GAMEPAD 2
-    public double get2RightStickY()
+//    public double get2RightStickY()
+//    {
+//        telemetry.addData("2, right stick y: ", gamepad2.right_stick_y);
+//        return gamepad2.right_stick_y;
+//    }
+
+    public double getLeftTrigger()
     {
-        telemetry.addData("2, right stick y: ", gamepad2.right_stick_y);
-        return gamepad2.right_stick_y;
+        return myGamepad.left_trigger;
     }
 
-    public double get2LeftTrigger()
+    public double getRightTrigger()
     {
-        return gamepad2.left_trigger;
+        return myGamepad.right_trigger;
     }
 
-    public double get2RightTrigger()
+    public boolean getDpadDown()
     {
-        return gamepad2.right_trigger;
+        return myGamepad.dpad_down;
     }
 
-    public boolean get2DpadDown()
+    public boolean getDpadUp()
     {
-        return gamepad2.dpad_down;
+        return myGamepad.dpad_up;
     }
 
-    public boolean get2DpadUp()
+    public boolean getA()
     {
-        return gamepad2.dpad_up;
+        return myGamepad.a;
     }
-
-    public boolean get2a()
+    public boolean getB()
     {
-        return gamepad2.a;
+        return myGamepad.b;
     }
-    public boolean get2b()
-    {
-        return gamepad2.b;
-    }
-    public boolean get2x()
-    {
-        return gamepad2.x;
-    }
-    public boolean get2y()
-    {
-        return  gamepad2.y;
-    }
+//    public boolean getX()
+//    {
+//        return gamepad2.x;
+//    }
+//    public boolean get2y()
+//    {
+//        return  gamepad2.y;
+//    }
 
 }
