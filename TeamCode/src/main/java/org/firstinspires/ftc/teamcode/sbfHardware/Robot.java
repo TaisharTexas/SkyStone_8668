@@ -317,7 +317,7 @@ public class Robot
     public double updateHeading()
     {
         Orientation angles = gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        return AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle));
+        return -AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle));
     }
 
 
@@ -378,7 +378,7 @@ public class Robot
               - The right joystick control turning.
         */
         double forward = -leftStickY;
-        double right = leftStickX;
+        double right = -leftStickX;
         double clockwise = rightStickX;
 
         double leftFront = (forward + clockwise + right);
@@ -590,7 +590,7 @@ public class Robot
             setZeroBehavior("BRAKE");
 
             initialHeading = currentHeading;
-            error = initialHeading - targetHeading;
+            error = targetHeading - initialHeading;
 
             if (error > 180)
             {
@@ -612,7 +612,7 @@ public class Robot
 
             if ( Math.abs(error) < 60 )
             {
-                directionalPower = -error * 0.01;
+                directionalPower = error * 0.01;
                 if (directionalPower > 0 )
                 {
                     directionalPower = Range.clip( directionalPower, 0.25, power);
@@ -630,9 +630,9 @@ public class Robot
         telemetry.addData("error: ", error);
         telemetry.addData("directionalPower: ", directionalPower);
 
-        joystickDrive(0.0, 0.0, -directionalPower, 0.0, power);
+        joystickDrive(0.0, 0.0, directionalPower, 0.0, power);
 
-        if(Math.abs(currentHeading - targetHeading) < 4.0 || getRuntime() > time)
+        if(Math.abs(targetHeading - currentHeading) < 4.0 || getRuntime() > time)
         {
             stop();
 

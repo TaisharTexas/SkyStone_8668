@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.SBF_Autonomous;
 
 import java.io.File;
 
-@Disabled
+
 @Autonomous(name="autoRun", group="Zombie")
 /** The autonomous class that handles autonomous from the crater side of the lander.
  * This class loads data from a spreadsheet and uses the data to create a sequential list of robot

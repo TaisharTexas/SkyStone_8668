@@ -31,25 +31,25 @@ public class SbfJoystick
     //GAMEPAD 1
     public double getLeftStickX()
     {
-        telemetry.addData("1, left stick x: ", myGamepad.left_stick_x);
+//        telemetry.addData("1, left stick x: ", myGamepad.left_stick_x);
         return myGamepad.left_stick_x;
     }
 
     public double getLeftStickY()
     {
-        telemetry.addData("1, left stick y: ", myGamepad.left_stick_y);
+//        telemetry.addData("1, left stick y: ", myGamepad.left_stick_y);
         return myGamepad.left_stick_y;
     }
 
     public double getRightStickX()
     {
-        telemetry.addData("1, right stick x: ", myGamepad.right_stick_x);
+//        telemetry.addData("1, right stick x: ", myGamepad.right_stick_x);
         return myGamepad.right_stick_x;
     }
 
     public double getRightStickY()
     {
-        telemetry.addData("1, right stick y: ", myGamepad.right_stick_y);
+//        telemetry.addData("1, right stick y: ", myGamepad.right_stick_y);
         return myGamepad.right_stick_y;
     }
 

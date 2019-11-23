@@ -22,7 +22,7 @@ public class SBF_Autonomous extends OpMode
 
     public File autoFile = null;
 
-    String ssPos = "NULL";
+    String ssPos = "One";
 
     public SBF_Autonomous()
     {
