@@ -38,7 +38,7 @@ public class SbfJoystick
     public double getLeftStickY()
     {
 //        telemetry.addData("1, left stick y: ", myGamepad.left_stick_y);
-        return myGamepad.left_stick_y;
+        return -myGamepad.left_stick_y;
     }
 
     public double getRightStickX()

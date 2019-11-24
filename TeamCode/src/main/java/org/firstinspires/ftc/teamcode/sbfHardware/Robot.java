@@ -193,12 +193,12 @@ public class Robot
         xEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "xEncoder");
        // xEncoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         xEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        xEncoder.setDirection((DcMotorEx.Direction.REVERSE));
+        xEncoder.setDirection((DcMotorEx.Direction.FORWARD));
 
         yEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "yEncoder");
         //yEncoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         yEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        yEncoder.setDirection((DcMotorEx.Direction.REVERSE ));
+        yEncoder.setDirection((DcMotorEx.Direction.FORWARD ));
 
         xTicksPerRad = xEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
         yTicksPerRad = yEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
@@ -367,7 +367,7 @@ public class Robot
 
         double turn = -spin / 343;
 
-        joystickDrive(x, -y, turn, 0, 1);
+        joystickDrive(x, y, turn, 0, 1);
     }
 
     public void joystickDrive(double leftStickX, double leftStickY, double rightStickX, double rightStickY, double powerLimit)
@@ -377,7 +377,7 @@ public class Robot
               - The left joystick controls moving straight forward/backward and straight sideways.
               - The right joystick control turning.
         */
-        double forward = -leftStickY;
+        double forward = leftStickY;
         double right = -leftStickX;
         double clockwise = rightStickX;
 
@@ -603,11 +603,11 @@ public class Robot
 
             if (error < 0)
             {
-                directionalPower = power;
+                directionalPower = -power;
             }
             else
             {
-                directionalPower = -power;
+                directionalPower = power;
             }
 
             if ( Math.abs(error) < 60 )

@@ -185,7 +185,7 @@ public class Pursuit
     public void arrive(PVector target, double theMaxSpeed)
     {
         //converts the 0-1 power scale of the csv file to the 0-30 power scale used by the pursuit algorithm
-        theMaxSpeed = theMaxSpeed * 30.0;
+//        theMaxSpeed = theMaxSpeed * 30.0;
 
         //find the needed velocity to move to target and call it desiredVelocity
         desiredVelocity = PVector.sub(target, location);
