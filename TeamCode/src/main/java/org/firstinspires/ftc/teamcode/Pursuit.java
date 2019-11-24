@@ -50,9 +50,9 @@ public class Pursuit
         desiredVelocity = new PVector(0,0);
         endZone = 6; //inch
 
-        // 30 in/sec correlates to maximum unloaded motor speed //
+        //  30 in/sec correlates to maximum unloaded motor speed
+        //  30.615 in/sec = 15.7 rad/sec * 1.3 gearing * 1.5 in wheel radius
         maxSpeed = 13; //inches/second
-        //30.615 in/sec = 15.7 rad/sec * 1.3 gearing * 1.5 in wheel radius
 
         gainValue = 2.8;
         maxAccel = maxSpeed * gainValue;
@@ -77,8 +77,8 @@ public class Pursuit
         double theMaxSpeed = drivePath.maxSpeeds.get(currentSegment + 1);
         double theTargetHeading = drivePath.targetHeadings.get(currentSegment + 1);
 
-        double radius = maxSpeed / 1.5;
-        radius = Range.clip(radius,5,radius);
+        double radius = theMaxSpeed / 6.0;
+        radius = Range.clip(radius,1.0,radius);
 
 
         if(theMaxSpeed >= 20 && theMaxSpeed < 26)
@@ -172,7 +172,7 @@ public class Pursuit
 
         telemetry.addData("Target loc: ", target);
         arrive(target, theMaxSpeed);
-        point(theTargetHeading, 100);
+        point(theTargetHeading, 300);
 
         if(lastSegment && location.dist(end) <= .5)
         {
@@ -197,7 +197,7 @@ public class Pursuit
 
         if(location.dist(end) < endZone)
         {
-            float m = scaleVector(speed, 0, (float)endZone, 0.1f, (float)theMaxSpeed);
+            float m = scaleVector(speed, 0, (float)endZone, 0.3f, (float)theMaxSpeed);
             desiredVelocity.setMag(m);
         }
         else
@@ -245,20 +245,21 @@ public class Pursuit
         double desiredAngularVelocity = (targetHeading-currentHeading);
 
 
-        double slowDown = 20;
+        double slowDown = 60;
 
         if(Math.abs(desiredAngularVelocity) < slowDown)
         {
             double wantedAngularVelocity = Math.abs(desiredAngularVelocity);
 //            float m = scaleVector((float)wantedAngularVelocity, 0,60,0,(float)theMaxTurnSpeed);
             float m = (float)(theMaxTurnSpeed * (wantedAngularVelocity/slowDown));
+            m = Range.clip(m, 60, (float)theMaxTurnSpeed);
             desiredAngularVelocity = m * Math.signum(desiredAngularVelocity);
         }
         else
         {
             desiredAngularVelocity = theMaxTurnSpeed * Math.signum(desiredAngularVelocity);
         }
-//        telemetry.addData("mp.desiredAngularVel: ", desiredAngularVelocity);
+        telemetry.addData("mp.desiredAngularVel: ", desiredAngularVelocity);
 
 //        telemetry.addData("mp.currentAngularVel: ", currentAngularVelocity);
         double requiredAngularAccel = desiredAngularVelocity - currentAngularVelocity;
@@ -267,7 +268,7 @@ public class Pursuit
 //        telemetry.addData("mp.requiredAngularAccel: ", requiredAngularAccel);
 
         joystickAngularVelocity = currentAngularVelocity + requiredAngularAccel;
-//        telemetry.addData("mp.joystickAngularVelocity: ", joystickAngularVelocity);
+        telemetry.addData("mp.joystickAngularVelocity: ", joystickAngularVelocity);
 
     }
 

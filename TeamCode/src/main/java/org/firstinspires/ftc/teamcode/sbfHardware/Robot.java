@@ -4,7 +4,6 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
@@ -26,8 +25,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Robot
 {
 
-    // TODO: look at drive method imported; check reference to encoder ticks and other things.  Update
-    // for the new bulk data transfer.
+    /*
+     * Hardware items on robot
+     */
     private Telemetry telemetry;
     private HardwareMap hardwareMap;
 
@@ -49,9 +49,6 @@ public class Robot
 
     private Servo leftFoundation = null;
     private Servo rightFoundation = null;
-    private boolean servoDone = false;
-
-
 
     /** The dc motor whose encoder is being used for distance measurements. */
     ExpansionHubMotor encoderMotor;
@@ -60,18 +57,24 @@ public class Robot
     private ExpansionHubMotor yEncoder = null;
     private BNO055IMU gyro;
 
-    private double xTicksPerRad;
-    private double yTicksPerRad;
-    private double xTicksPerSecond;
-    private double yTicksPerSecond;
-    private double xInPerSec;
-    private double yInPerSec;
-    private final double encoderWheelRadius = 1.0; //in inches
-    private final double tickPerRotation = 2400;
-    private final double distanceConstant = 195.5/192; //calibrated over 16' & 12' on foam tiles -- 9/13/19
-    private final double inchesPerRotation = 2.0 * encoderWheelRadius * Math.PI * distanceConstant; // this is the encoder wheel distancd
+    /*
+     * Encoder information used in odometry
+     */
+    private double xEncTicksPerRad;
+    private double yEncTicksPerRad;
+    private double xEncTicksPerSecond;
+    private double yEncTicksPerSecond;
+    private double xEncInPerSec;
+    private double yEncInPerSec;
+
+
+    private final double encWheelRadius = 1.0; //in inches
+    private final double encTickPerRotation = 2400;
+    private final double encDistanceConstant = 195.5/192; //calibrated over 16' & 12' on foam tiles -- 9/13/19
+    private final double encInchesPerRotation = 2.0 * encWheelRadius * Math.PI * encDistanceConstant; // this is the encoder wheel distancd
     private final double gearRatio = 1.733333333;
-    private final double ticksPerInch = tickPerRotation / ( inchesPerRotation );
+    private final double encTicksPerInch = encTickPerRotation / (encInchesPerRotation);
+
     private double xPrev = 0;
     private double yPrev = 0;
 
@@ -79,8 +82,9 @@ public class Robot
     public int prevYEncoder = 0;
     public int xEncoderChange = 0;
     public int yEncoderChange = 0;
-    public double currentHeading = 0;
 
+    public double currentHeading = 0;
+    private boolean servoDone = false;
 
     /** Directional variables used to simulate joystick commands in autonomous.
      * Simulates a forward drive command.*/
@@ -111,10 +115,6 @@ public class Robot
      * Used in converting inches to encoder ticks. Allows the programmer to code in inches while
      * the motor measures in encoder ticks.*/
     final double COUNTS_PER_MOTOR_REV = 1120;
-    /** The drive gear reduction currently being used on the robot drive modules.
-     * Used in converting inches to encoder ticks. Allows the programmer to code in inches while
-     * the motor measures in encoder ticks.*/
-    final double DRIVE_GEAR_REDUCTION = 1.3;
     /** The wheel diameter of the mecanum wheel currently on the robot.
      * Used in converting inches to encoder ticks. Allows the programmer to code in inches while
      * the motor measures in encoder ticks.*/
@@ -122,11 +122,11 @@ public class Robot
     /** The inches traveled per wheel rotation for the 4" diameter mecanum wheels currently on the robot.
      * Used in converting inches to encoder ticks. Allows the programmer to code in inches while
      * the motor measures in encoder ticks.*/
-    final double INCH_PER_REV = WHEEL_DIAMETER_INCHES * 3.14159;
+    final double INCH_PER_REV = WHEEL_DIAMETER_INCHES * Math.PI;
     /** The encoder ticks per inch ( (ticks per mtr rev*10)/(13*4*3.14159) ).
      * Used in converting inches to encoder ticks. Allows the programmer to code in inches while
      * the motor measures in encoder ticks.*/
-    final double COUNTS_PER_INCH = (1120*10)/(17.333*4*Math.PI);
+    final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV)/(gearRatio*INCH_PER_REV);
 
     /** An int variable used in drive, tankDrive, and pointTurn to capture the encoder position before each move. */
     double initialPosition;
@@ -177,13 +177,11 @@ public class Robot
 
 
         LF = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "lf");
-//        LF.setDirection(DcMotorSimple.Direction.FORWARD);
         LF.setDirection(DcMotorEx.Direction.REVERSE);
         LF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
 
         LR = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "lr");
-//        LR.setDirection(DcMotorSimple.Direction.FORWARD);
         LR.setDirection(DcMotorEx.Direction.REVERSE);
         LR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
@@ -191,17 +189,16 @@ public class Robot
 
 
         xEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "xEncoder");
-       // xEncoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         xEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         xEncoder.setDirection((DcMotorEx.Direction.FORWARD));
 
         yEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "yEncoder");
-        //yEncoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         yEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         yEncoder.setDirection((DcMotorEx.Direction.FORWARD ));
 
-        xTicksPerRad = xEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
-        yTicksPerRad = yEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
+        xEncTicksPerRad = xEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
+        yEncTicksPerRad = yEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
+
 
         leftIntake = hardwareMap.get(DcMotor.class, "yEncoder");
         leftIntake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -270,7 +267,6 @@ public class Robot
 //        telemetry.addData("gyro status ", gyro.getSystemStatus());
     }
 
-
     public void start()
     {
 
@@ -288,11 +284,11 @@ public class Robot
         /*
          * Update the velocity as read by the encoders
          */
-        xTicksPerSecond = bulkDataAux.getMotorVelocity(xEncoder) / gearRatio;
-        yTicksPerSecond = bulkDataAux.getMotorVelocity(yEncoder) / gearRatio;
+        xEncTicksPerSecond = bulkDataAux.getMotorVelocity(xEncoder) / gearRatio;
+        yEncTicksPerSecond = bulkDataAux.getMotorVelocity(yEncoder) / gearRatio;
 
-        xInPerSec = xTicksPerSecond / ticksPerInch;
-        yInPerSec = yTicksPerSecond / ticksPerInch;
+        xEncInPerSec = xEncTicksPerSecond / encTicksPerInch;
+        yEncInPerSec = yEncTicksPerSecond / encTicksPerInch;
 
         /*
          * Update the position change since the last time as read by the encoders
@@ -320,7 +316,6 @@ public class Robot
         return -AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle));
     }
 
-
     public double getHeading()
     {
         return currentHeading;
@@ -334,25 +329,24 @@ public class Robot
         getYLinearVelocity();
     }
 
-
     public float getXChange()
     {
-        double inchesX = (((xEncoderChange) / tickPerRotation) * inchesPerRotation) * Math.cos(Math.toRadians(currentHeading)) +
-                         (((yEncoderChange) / tickPerRotation) * inchesPerRotation) * Math.sin(Math.toRadians(currentHeading));
+        double inchesX = (((xEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.cos(Math.toRadians(currentHeading)) +
+                         (((yEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.sin(Math.toRadians(currentHeading));
         return (float)inchesX;
     }
 
     public float getYChange()
     {
-        double inchesY = ((-(xEncoderChange) / tickPerRotation) * inchesPerRotation) * Math.sin(Math.toRadians(currentHeading)) +
-                         (((yEncoderChange) / tickPerRotation) * inchesPerRotation) * Math.cos(Math.toRadians(currentHeading));
+        double inchesY = ((-(xEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.sin(Math.toRadians(currentHeading)) +
+                         (((yEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.cos(Math.toRadians(currentHeading));
         return (float)inchesY;
     }
 
     public PVector getLocationChange()
     {
-        PVector location = new PVector(getXChange(), getYChange());
-        return location;
+        return new PVector(getXChange(), getYChange());
+//        return location;
     }
 
     public void updateMotors(PVector neededVelocity, double spin)
@@ -418,14 +412,12 @@ public class Robot
 //        LF.setVelocity(leftFront * 15.7, AngleUnit.RADIANS);
 //        LR.setVelocity(leftRear * 15.7, AngleUnit.RADIANS);
 
-
         RF.setPower(rightFront);
         RR.setPower(rightRear);
         LF.setPower(leftFront);
         LR.setPower(leftRear);
 
     }
-
 
     public double getAngularVelocity()
     {
@@ -437,22 +429,21 @@ public class Robot
 
     public float getXLinearVelocity()
     {
-        double linearX = xInPerSec * Math.cos(Math.toRadians(currentHeading)) +
-                yInPerSec * Math.sin(Math.toRadians(currentHeading));
+        double linearX = xEncInPerSec * Math.cos(Math.toRadians(currentHeading)) +
+                yEncInPerSec * Math.sin(Math.toRadians(currentHeading));
         return (float)linearX;
     }
 
     public float getYLinearVelocity()
     {
-        double linearY = -xInPerSec * Math.sin(Math.toRadians(currentHeading)) +
-                ( yInPerSec ) * Math.cos(Math.toRadians(currentHeading));
+        double linearY = -xEncInPerSec * Math.sin(Math.toRadians(currentHeading)) +
+                (yEncInPerSec) * Math.cos(Math.toRadians(currentHeading));
         return (float)linearY;
     }
 
     public PVector getVelocity()
     {
-        PVector velocity = new PVector(getXLinearVelocity(), getYLinearVelocity());
-        return velocity;
+        return new PVector(getXLinearVelocity(), getYLinearVelocity());
     }
 
     public void stop()
@@ -468,8 +459,6 @@ public class Robot
         }
 
     }
-
-
 
     /**
      * The mecanumDrive method moves the four drive motors on the robot and will move the robot forward,
@@ -644,8 +633,6 @@ public class Robot
         return !moving;
     }
 
-
-
     /**
      * Get the number of seconds this op mode has been running
      * <p>
@@ -664,7 +651,6 @@ public class Robot
     {
         startTime = System.nanoTime();
     }
-
 
     /**
      * setMode sets all four drive motors to a specified mode. There are three mode choices:
@@ -697,8 +683,6 @@ public class Robot
     {
         eyeOfSauron.stopCamera();
     }
-
-
 
     public void intakeOut(double power)
     {
@@ -747,7 +731,6 @@ public class Robot
         leftFoundation.setPosition(.9);
     }
 
-
     public void pointFive()
     {
         rightFoundation.setPosition(.5);
@@ -759,7 +742,6 @@ public class Robot
         rightFoundation.setPosition(.15);
         leftFoundation.setPosition(.15);
     }
-
 
     public void setZeroBehavior(String mode)
     {
@@ -778,8 +760,5 @@ public class Robot
             RR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
     }
-
-
-
 
 }
