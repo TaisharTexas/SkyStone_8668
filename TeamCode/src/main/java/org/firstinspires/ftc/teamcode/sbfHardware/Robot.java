@@ -687,18 +687,18 @@ public class Robot
     public void intakeOut(double power)
     {
 //        xEncoder.setPower(-1.0);
-        leftIntake.setPower(-power * .45);
+        leftIntake.setPower(power * .45);
 //        yEncoder.setPower(1.0);
-        rightIntake.setPower(power * .45);
+        rightIntake.setPower(-power * .45);
 
     }
 
     public void intakeIn(double power)
     {
 //        xEncoder.setPower(1.0);
-        leftIntake.setPower(power * .85);
+        leftIntake.setPower(-power * .85);
 //        yEncoder.setPower(-1.0);
-        rightIntake.setPower(-power * 1);
+        rightIntake.setPower(power * 1);
 
     }
 

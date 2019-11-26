@@ -94,25 +94,41 @@ public class Lift
 
     public void horizontalDrive(double position)
     {
-        horizontal.setPosition(position);
+        if(horizontal != null)
+        {
+            telemetry.addData("horizontal: ", horizontal.getPosition());
+            horizontal.setPosition(position);
+        }
     }
 
     public void grabClaw()
     {
-        claw.setPosition(.9);
+        if(claw != null)
+        {
+            claw.setPosition(.9);
+        }
     }
     public void releaseClaw()
     {
-        claw.setPosition(.5);
+        if(claw != null)
+        {
+            claw.setPosition(.5);
+        }
     }
 
     public void wristDeploy()
     {
-        wrist.setPosition(.9);
+        if(wrist != null)
+        {
+            wrist.setPosition(.9);
+        }
     }
     public void wristRetract()
     {
-        wrist.setPosition(.135);
+        if(wrist != null)
+        {
+            wrist.setPosition(.135);
+        }
     }
 
 
