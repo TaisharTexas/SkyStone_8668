@@ -244,21 +244,19 @@ public class Pursuit
     {
         double desiredAngularVelocity = (targetHeading-currentHeading);
 
-
-        double slowDown = 60;
+        double slowDown = 20;
 
         if(Math.abs(desiredAngularVelocity) < slowDown)
         {
             double wantedAngularVelocity = Math.abs(desiredAngularVelocity);
-//            float m = scaleVector((float)wantedAngularVelocity, 0,60,0,(float)theMaxTurnSpeed);
             float m = (float)(theMaxTurnSpeed * (wantedAngularVelocity/slowDown));
-            m = Range.clip(m, 60, (float)theMaxTurnSpeed);
             desiredAngularVelocity = m * Math.signum(desiredAngularVelocity);
         }
         else
         {
             desiredAngularVelocity = theMaxTurnSpeed * Math.signum(desiredAngularVelocity);
         }
+
         telemetry.addData("mp.desiredAngularVel: ", desiredAngularVelocity);
 
 //        telemetry.addData("mp.currentAngularVel: ", currentAngularVelocity);
@@ -316,6 +314,15 @@ public class Pursuit
         velocity.set(currentVelocity.x, currentVelocity.y);
     }
 
+    public void updateAngularVelocity( double angularVelocity )
+    {
+        currentAngularVelocity = angularVelocity;
+    }
+
+    public void updateHeading( double heading )
+    {
+        currentHeading = heading;
+    }
     public boolean getDone()
     {
         return done;

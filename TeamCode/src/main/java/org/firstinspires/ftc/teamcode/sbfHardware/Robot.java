@@ -354,12 +354,18 @@ public class Robot
         float rotation = (float)(90-currentHeading) - (float)Math.toDegrees(neededVelocity.heading());
         telemetry.addData("currHdg, needHdg, rotation ", "%.2f, %.2f, %.2f", 90-currentHeading, Math.toDegrees(neededVelocity.heading()), rotation);
 
+
         double x = neededVelocity.mag()*Math.sin(Math.toRadians(rotation)) / 40.0; //bot.maxSpeed; //max speed is 31.4 in/sec
         double y = neededVelocity.mag()*Math.cos(Math.toRadians(rotation)) / 40.0; // bot.maxSpeed;
 
+        neededVelocity.rotate((float)Math.toRadians(currentHeading));
+         x = neededVelocity.x / 40.0; //bot.maxSpeed; //max speed is 31.4 in/sec
+         y = neededVelocity.y / 40.0; // bot.maxSpeed;
+
+
         telemetry.addData("SbfJoystick x, y: ", "%.3f, %.3f", x, y );
 
-        double turn = -spin / 343;
+        double turn = spin / 343;
 
         joystickDrive(x, y, turn, 0, 1);
     }
@@ -423,8 +429,8 @@ public class Robot
     {
         AngularVelocity gyroReading;
         gyroReading = gyro.getAngularVelocity();
-//        telemetry.addData("mp.rot rate: ", -gyroReading.xRotationRate);
-        return -gyroReading.xRotationRate;
+        telemetry.addData("mp.rot rate: ", -gyroReading.zRotationRate);
+        return -gyroReading.zRotationRate;
     }
 
     public float getXLinearVelocity()
@@ -696,9 +702,9 @@ public class Robot
     public void intakeIn(double power)
     {
 //        xEncoder.setPower(1.0);
-        leftIntake.setPower(-power * .85);
+        leftIntake.setPower(-power * .50);
 //        yEncoder.setPower(-1.0);
-        rightIntake.setPower(power * 1);
+        rightIntake.setPower(power * .55);
 
     }
 
@@ -759,6 +765,10 @@ public class Robot
             RF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             RR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
+    }
+    public void setCameraDeviceName( String device )
+    {
+        eyeOfSauron.setCamDeviceName( device );
     }
 
 }

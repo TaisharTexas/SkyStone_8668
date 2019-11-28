@@ -130,6 +130,13 @@ public class Lift
             wrist.setPosition(.135);
         }
     }
+    public void wristDrive( double position )
+    {
+        if(horizontal != null)
+        {
+            wrist.setPosition(position);
+        }
+    }
 
 
 }

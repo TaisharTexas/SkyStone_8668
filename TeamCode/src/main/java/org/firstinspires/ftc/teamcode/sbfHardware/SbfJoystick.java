@@ -96,6 +96,16 @@ public class SbfJoystick
         return myGamepad.dpad_up;
     }
 
+    public boolean getDpadLeft()
+    {
+        return myGamepad.dpad_left;
+    }
+
+    public boolean getDpadRight()
+    {
+        return myGamepad.dpad_right;
+    }
+
     public boolean getA()
     {
         return myGamepad.a;

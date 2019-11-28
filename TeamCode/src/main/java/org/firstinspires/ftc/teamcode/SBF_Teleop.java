@@ -29,6 +29,7 @@ public class SBF_Teleop extends OpMode
     CameraVision camera = new CameraVision();
 
     double shoulderPos;
+    double wristPos;
 
     int currentXEncoder = 0;
     int currentYEncoder = 0;
@@ -47,6 +48,8 @@ public class SBF_Teleop extends OpMode
         robot.releaseFoundation();
         shoulderPos = .89;
 //        lift.horizontal.setPosition(.7);
+        wristPos = 0.135;
+
 
     }
 
@@ -93,7 +96,7 @@ public class SBF_Teleop extends OpMode
                             afterburners());
 
 //        lift controls
-        lift.verticalDrive(customPad2.getRightStickY()*.8);
+        lift.verticalDrive(customPad2.getRightStickY()*.5);
 
         if(customPad2.getDpadDown())
         {
@@ -121,6 +124,8 @@ public class SBF_Teleop extends OpMode
             robot.intakeStop();
         }
 
+
+        //foundation grabber controls
         if(customPad1.getX())
         {
             robot.grabFoundation();
@@ -130,6 +135,7 @@ public class SBF_Teleop extends OpMode
             robot.releaseFoundation();
         }
 
+        //claw controls
         if(customPad2.getA())
         {
             lift.grabClaw();
@@ -139,6 +145,7 @@ public class SBF_Teleop extends OpMode
             lift.releaseClaw();
         }
 
+        //wrist controls
         if(customPad2.getX())
         {
             lift.wristDeploy();
@@ -146,6 +153,18 @@ public class SBF_Teleop extends OpMode
         else if(customPad2.getB())
         {
             lift.wristRetract();
+        }
+        else if(customPad2.getDpadLeft())
+        {
+            wristPos += 0.005;
+            wristPos = Range.clip( wristPos, 0.135, 0.9);
+            lift.wristDrive(wristPos);
+        }
+        else if ( customPad2.getDpadRight())
+        {
+            wristPos -= 0.005;
+            wristPos = Range.clip( wristPos, 0.135, 0.9);
+            lift.wristDrive(wristPos);
         }
 
 
@@ -172,7 +191,7 @@ public class SBF_Teleop extends OpMode
         }
         else
         {
-            maximumSpeed = .75;
+            maximumSpeed = .6;
         }
 
         return maximumSpeed;

@@ -9,9 +9,10 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
-import org.openftc.easyopencv.OpenCvWebcam;
+//import org.openftc.easyopencv.OpenCvWebcam;
 
 public class CameraVision
 {
@@ -19,12 +20,13 @@ public class CameraVision
 
     CameraVision.StageSwitchingPipeline stageSwitchingPipeline;
 
+    String camDeviceName = "leftCam";
+
     public void init(HardwareMap hwMap)
     {
         int cameraMonitorViewId = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName());
 //        webCam = new OpenCvWebcam(hwMap.get(WebcamName.class, "rightCam"), cameraMonitorViewId);
-        webCam = new OpenCvWebcam(hwMap.get(WebcamName.class, "leftCam"), cameraMonitorViewId);
-//        webCam = new OpenCvInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+        webCam = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, camDeviceName), cameraMonitorViewId);
         webCam.openCameraDevice();
         stageSwitchingPipeline = new CameraVision.StageSwitchingPipeline();
         webCam.setPipeline(stageSwitchingPipeline);
@@ -208,4 +210,8 @@ public class CameraVision
         webCam.stopStreaming();
     }
 
+    public void setCamDeviceName(String camDeviceName)
+    {
+        this.camDeviceName = camDeviceName;
+    }
 }

@@ -92,6 +92,8 @@ public class PursuitAction extends RobotAction
 //        telemetry.addData("distance ", theDistance);
         thePursuit.updateVelocity(robot.getVelocity());
         thePursuit.updatePosition(robot.getLocationChange());
+        thePursuit.updateHeading(robot.getHeading());
+        thePursuit.updateAngularVelocity(robot.getAngularVelocity());
         thePursuit.follow(thePath);
         robot.updateMotors(thePursuit.desiredVelocity.copy(), thePursuit.joystickAngularVelocity);
         return thePursuit.getDone();

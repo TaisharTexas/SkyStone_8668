@@ -14,7 +14,9 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 import org.openftc.easyopencv.OpenCvPipeline;
-import org.openftc.easyopencv.OpenCvWebcam;
+//import org.openftc.easyopencv.OpenCvWebcam;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+
 
 import java.security.SecureClassLoader;
 import java.util.ArrayList;
@@ -43,7 +45,8 @@ public class PipelineStageSwitchingExample extends LinearOpMode
          */
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        phoneCam = new OpenCvWebcam(hardwareMap.get(WebcamName.class, "rightCam"), cameraMonitorViewId);
+        phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+
         phoneCam.openCameraDevice();
         stageSwitchingPipeline = new StageSwitchingPipeline();
         phoneCam.setPipeline(stageSwitchingPipeline);
@@ -54,6 +57,8 @@ public class PipelineStageSwitchingExample extends LinearOpMode
         while (opModeIsActive())
         {
             telemetry.addData("position: ",stageSwitchingPipeline.SSposition);
+            telemetry.addData("Num contours found", stageSwitchingPipeline.getNumContoursFound());
+
             telemetry.update();
             sleep(100);
         }
@@ -69,6 +74,9 @@ public class PipelineStageSwitchingExample extends LinearOpMode
     {
         Mat yCbCrChan2Mat = new Mat();
         Mat thresholdMat = new Mat();
+        Mat contoursOnFrameMat = new Mat();
+        List<MatOfPoint> contoursList = new ArrayList<>();
+        int numContoursFound;
 
         double leftSum = 0;
         double centerSum = 0;
@@ -80,6 +88,7 @@ public class PipelineStageSwitchingExample extends LinearOpMode
         {
             YCbCr_CHAN2,
             THRESHOLD,
+            CONTOURS_OVERLAYED_ON_FRAME,
             RAW_IMAGE,
         }
 
@@ -132,6 +141,11 @@ public class PipelineStageSwitchingExample extends LinearOpMode
             Imgproc.cvtColor(input, yCbCrChan2Mat, Imgproc.COLOR_RGB2YCrCb);
             Core.extractChannel(yCbCrChan2Mat, yCbCrChan2Mat, 2);
             Imgproc.threshold(yCbCrChan2Mat, thresholdMat, 102, 255, Imgproc.THRESH_BINARY_INV);
+            Imgproc.findContours(thresholdMat, contoursList, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+            numContoursFound = contoursList.size();
+            input.copyTo(contoursOnFrameMat);
+            Imgproc.drawContours(contoursOnFrameMat, contoursList, -1, new Scalar(0, 0, 255), 3, 8);
+
 
             for(int c = (int)(thresholdMat.cols()*leftL); c < (int)(thresholdMat.cols()*leftR); c++)
             {
@@ -218,6 +232,11 @@ public class PipelineStageSwitchingExample extends LinearOpMode
                     return thresholdMat;
                 }
 
+                case CONTOURS_OVERLAYED_ON_FRAME:
+                {
+                    return contoursOnFrameMat;
+                }
+
                 case RAW_IMAGE:
                 {
                     return input;
@@ -228,6 +247,10 @@ public class PipelineStageSwitchingExample extends LinearOpMode
                     return input;
                 }
             }
+        }
+        public int getNumContoursFound()
+        {
+            return numContoursFound;
         }
     }
 }
