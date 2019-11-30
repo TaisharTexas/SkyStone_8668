@@ -14,8 +14,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * @see OpMode
  * */
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
 @Autonomous(name="Normal OpMode Testing", group="Pushbot")
 public class EncoderNormalOpmode extends OpMode
 {
@@ -91,12 +89,12 @@ public class EncoderNormalOpmode extends OpMode
                 //calculating how many encoder ticks will be required to move desired number of inches.
                 newBackRightTarget = robot.backRight.getCurrentPosition() + (int)(targetDistanceInches * COUNTS_PER_INCH);
                 //setting all drive motors to .5 power
-                setDriveMotorPower(.5);
+                robot.setDriveMotorPower(.5);
                 //once the current position of the robot reaches the desired target, stop the motors
                 if(robot.backRight.getCurrentPosition() >= newBackRightTarget)
                 {
                     //set drive motors to 0 power
-                    setDriveMotorPower(0.0);
+                    robot.setDriveMotorPower(0.0);
                     //reset runtime timer
                     runtime.reset();
                     //increment state value to the next value
@@ -107,10 +105,10 @@ public class EncoderNormalOpmode extends OpMode
             case 2:
                 targetDistanceInches = 20;
                 newBackRightTarget = robot.backRight.getCurrentPosition() + (int)(targetDistanceInches*COUNTS_PER_INCH);
-                setDriveMotorPower(1);
+                robot.setDriveMotorPower(1);
                 if(robot.backRight.getCurrentPosition() >= newBackRightTarget)
                 {
-                    setDriveMotorPower(0.0);
+                    robot.setDriveMotorPower(0.0);
                     runtime.reset();
                     state++;
                 }
@@ -140,14 +138,6 @@ public class EncoderNormalOpmode extends OpMode
 
         }
 
-    }
-
-    public void setDriveMotorPower(double power)
-    {
-        robot.frontRight.setPower(power);
-        robot.frontLeft.setPower(power);
-        robot.backRight.setPower(power);
-        robot.backLeft.setPower(power);
     }
 
 }

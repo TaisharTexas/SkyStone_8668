@@ -119,5 +119,13 @@ public class hardwarefile2
         leftFoundation.setPosition(0);
 
     }
+
+    public void setDriveMotorPower(double power)
+    {
+        frontRight.setPower(power);
+        frontLeft.setPower(power);
+        backRight.setPower(power);
+        backLeft.setPower(power);
+    }
 }
 
