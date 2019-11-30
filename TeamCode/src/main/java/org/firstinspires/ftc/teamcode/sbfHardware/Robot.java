@@ -31,11 +31,12 @@ public class Robot
     private Telemetry telemetry;
     private HardwareMap hardwareMap;
 
+    public Lift lift = new Lift();
     CameraVision eyeOfSauron = new CameraVision();
     boolean useCamera;
 
     RevBulkData bulkData;
-    RevBulkData bulkDataAux;
+    public RevBulkData bulkDataAux;
     ExpansionHubEx expansionHub;
     ExpansionHubEx expansionHubAux;
 
@@ -157,6 +158,8 @@ public class Robot
         {
             eyeOfSauron.init(hwmap);
         }
+
+        lift.init(telemetry, hardwareMap);
 
         expansionHub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 2");
         expansionHubAux = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 3");
@@ -299,6 +302,9 @@ public class Robot
         telemetry.addData("xEncoder", bulkDataAux.getMotorCurrentPosition(xEncoder));
         telemetry.addData("yEncoder", bulkDataAux.getMotorCurrentPosition(yEncoder));
 
+        telemetry.addData("left position: ", bulkDataAux.getMotorCurrentPosition(lift.leftVertical));
+        telemetry.addData("right position: ", bulkDataAux.getMotorCurrentPosition(lift.rightVertical));
+        lift.encoder = bulkDataAux.getMotorCurrentPosition(lift.leftVertical);
 
         /* store the current value to use as the previous value the next time around */
         prevXEncoder = bulkDataAux.getMotorCurrentPosition(xEncoder);

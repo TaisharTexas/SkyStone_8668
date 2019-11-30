@@ -23,7 +23,6 @@ public class SBF_Teleop extends OpMode
 {
     Pursuit pursuit = new Pursuit(0, 0, telemetry);
     Robot robot = new Robot();
-    Lift lift = new Lift();
     SbfJoystick customPad1 = new SbfJoystick();
     SbfJoystick customPad2 = new SbfJoystick();
     CameraVision camera = new CameraVision();
@@ -41,7 +40,6 @@ public class SBF_Teleop extends OpMode
     public void init()
     {
         robot.init(telemetry, hardwareMap, false);
-        lift.init(telemetry, hardwareMap);
         customPad1.init(telemetry, hardwareMap, gamepad1);
         customPad2.init(telemetry, hardwareMap, gamepad2);
 
@@ -83,9 +81,10 @@ public class SBF_Teleop extends OpMode
     {
         robot.update();
 
-        telemetry.addData("horiz", lift.horizontal.getPosition());
+        telemetry.addData("horiz", robot.lift.horizontal.getPosition());
         telemetry.addData("d up", customPad2.getDpadUp());
         telemetry.addData("d down", customPad2.getDpadDown());
+
 
 
         /*Chassis control */
@@ -96,18 +95,18 @@ public class SBF_Teleop extends OpMode
                             afterburners());
 
 //        lift controls
-        lift.verticalDrive(customPad2.getRightStickY()*.5);
+        robot.lift.verticalDrive(customPad2.getRightStickY()*.75);
 
         if(customPad2.getDpadDown())
         {
-            shoulderPos += .005;
+            shoulderPos += .01;
         }
         else if(customPad2.getDpadUp())
         {
-            shoulderPos -= .005;
+            shoulderPos -= .01;
         }
         shoulderPos = Range.clip(shoulderPos, .62, .89);
-        lift.horizontalDrive(shoulderPos);
+        robot.lift.horizontalDrive(shoulderPos);
 
 
         //intake controls
@@ -138,33 +137,35 @@ public class SBF_Teleop extends OpMode
         //claw controls
         if(customPad2.getA())
         {
-            lift.grabClaw();
+            robot.lift.grabClaw();
         }
         else if(customPad2.getY())
         {
-            lift.releaseClaw();
+            robot.lift.releaseClaw();
         }
 
         //wrist controls
         if(customPad2.getX())
         {
-            lift.wristDeploy();
+            robot.lift.wristDeploy();
+            wristPos = 0.9;
         }
         else if(customPad2.getB())
         {
-            lift.wristRetract();
+            robot.lift.wristRetract();
+            wristPos = 0.135;
         }
         else if(customPad2.getDpadLeft())
         {
-            wristPos += 0.005;
+            wristPos += 0.01;
             wristPos = Range.clip( wristPos, 0.135, 0.9);
-            lift.wristDrive(wristPos);
+            robot.lift.wristDrive(wristPos);
         }
         else if ( customPad2.getDpadRight())
         {
-            wristPos -= 0.005;
+            wristPos -= 0.01;
             wristPos = Range.clip( wristPos, 0.135, 0.9);
-            lift.wristDrive(wristPos);
+            robot.lift.wristDrive(wristPos);
         }
 
 
