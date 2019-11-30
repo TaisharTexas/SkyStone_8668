@@ -169,45 +169,89 @@ public class Robot
 //        expansionHub.setAllI2cBusSpeeds(ExpansionHubEx.I2cBusSpeed.FAST_400K);
 //        telemetry.addLine("Setting speed of all I2C buses");
 
-        /* TODO: add try/catch for the items in the hardware map */
-        RF = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "rf");
-        RF.setDirection(DcMotorEx.Direction.FORWARD);
-        RF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        try
+        {
+            RF = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "rf");
+            RF.setDirection(DcMotorEx.Direction.FORWARD);
+            RF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        }
+        catch(Exception p_exception)
+        {
+            telemetry.addData("RF not foundd in config file", "");
+        }
+        try
+        {
+            RR = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "rr");
+            RR.setDirection(DcMotorEx.Direction.FORWARD);
+            RR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        }
+        catch (Exception p_exception)
+        {
+            telemetry.addData("RR not found in config file", "");
+        }
+        try
+        {
+            LF = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "lf");
+            LF.setDirection(DcMotorEx.Direction.REVERSE);
+            LF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        }
+        catch (Exception p_exception)
+        {
+            telemetry.addData("LF not found in config file", "");
+        }
+        try
+        {
+            LR = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "lr");
+            LR.setDirection(DcMotorEx.Direction.REVERSE);
+            LR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        }
+        catch (Exception p_exception)
+        {
+            telemetry.addData("LR not found in config file","");
+        }
 
-        RR = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "rr");
-        RR.setDirection(DcMotorEx.Direction.FORWARD);
-        RR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-
-
-        LF = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "lf");
-        LF.setDirection(DcMotorEx.Direction.REVERSE);
-        LF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-
-
-        LR = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "lr");
-        LR.setDirection(DcMotorEx.Direction.REVERSE);
-        LR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-
-
-
-
-        xEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "xEncoder");
-        xEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        xEncoder.setDirection((DcMotorEx.Direction.FORWARD));
-
-        yEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "yEncoder");
-        yEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        yEncoder.setDirection((DcMotorEx.Direction.FORWARD ));
+        try
+        {
+            xEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "xEncoder");
+            xEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            xEncoder.setDirection((DcMotorEx.Direction.FORWARD));
+        }
+        catch(Exception p_exception)
+        {
+            telemetry.addData("x encoder not found in config file", "");
+        }
+        try
+        {
+            yEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "yEncoder");
+            yEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            yEncoder.setDirection((DcMotorEx.Direction.FORWARD ));
+        }
+        catch(Exception p_exception)
+        {
+            telemetry.addData("y encoder not found in config file", "");
+        }
 
         xEncTicksPerRad = xEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
         yEncTicksPerRad = yEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
 
-
-        leftIntake = hardwareMap.get(DcMotor.class, "yEncoder");
-        leftIntake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightIntake = hardwareMap.get(DcMotor.class, "xEncoder");
-        rightIntake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
+        try
+        {
+            leftIntake = hardwareMap.get(DcMotor.class, "yEncoder");
+            leftIntake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
+        catch (Exception p_exception)
+        {
+            telemetry.addData("left intake not found in config file","");
+        }
+        try
+        {
+            rightIntake = hardwareMap.get(DcMotor.class, "xEncoder");
+            rightIntake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
+        catch (Exception p_exception)
+        {
+            telemetry.addData("right intake not found in config file", "");
+        }
         try
         {
             leftFoundation = hardwareMap.get(Servo.class, "leftFoundation");
@@ -424,10 +468,18 @@ public class Robot
 //        LF.setVelocity(leftFront * 15.7, AngleUnit.RADIANS);
 //        LR.setVelocity(leftRear * 15.7, AngleUnit.RADIANS);
 
-        RF.setPower(rightFront);
-        RR.setPower(rightRear);
-        LF.setPower(leftFront);
-        LR.setPower(leftRear);
+        if(checkForNull())
+        {
+            RF.setPower(rightFront);
+            RR.setPower(rightRear);
+            LF.setPower(leftFront);
+            LR.setPower(leftRear);
+        }
+        else
+        {
+                telemetry.addData("A drive motor is not configured properly", "");
+        }
+
 
     }
 
@@ -460,10 +512,17 @@ public class Robot
 
     public void stop()
     {
-        RF.setPower(0.0);
-        RR.setPower(0.0);
-        LF.setPower(0.0);
-        LR.setPower(0.0);
+        if(checkForNull())
+        {
+            RF.setPower(0.0);
+            RR.setPower(0.0);
+            LF.setPower(0.0);
+            LR.setPower(0.0);
+        }
+        {
+            telemetry.addData("A drive motor is not configured properly", "");
+        }
+
 
         if (useCamera)
         {
@@ -717,17 +776,47 @@ public class Robot
     public void intakeStop()
     {
 //        xEncoder.setPower(0.0);
-        leftIntake.setPower(0.0);
+        if(leftIntake != null)
+        {
+            leftIntake.setPower(0.0);
+
+        }
+        else
+        {
+            telemetry.addData("left intake is null", "cannot use");
+        }
 //        yEncoder.setPower(0.0);
-        rightIntake.setPower(0.0);
+        if(rightIntake != null)
+        {
+            rightIntake.setPower(0.0);
+        }
+        else
+        {
+            telemetry.addData("right intake is null", "cannot use");
+        }
 
     }
 
     public boolean foundationDrive(double position)
     {
 
-        rightFoundation.setPosition(position);
-        leftFoundation.setPosition(position);
+        if(rightFoundation != null)
+        {
+            rightFoundation.setPosition(position);
+        }
+        else
+        {
+            telemetry.addData("right foundation is null", "cannot use");
+        }
+
+        if(leftFoundation != null)
+        {
+            leftFoundation.setPosition(position);
+        }
+        else
+        {
+            telemetry.addData("right foundation is null", "cannot use");
+        }
 
         if(rightFoundation.getPosition()==position && leftFoundation.getPosition()==position)
         {
@@ -739,20 +828,65 @@ public class Robot
 
     public void releaseFoundation()
     {
-        rightFoundation.setPosition(.9);
-        leftFoundation.setPosition(.9);
+        if(rightFoundation != null)
+        {
+            rightFoundation.setPosition(.9);
+        }
+        else
+        {
+            telemetry.addData("right foundation is null", "cannot use");
+        }
+
+        if(leftFoundation != null)
+        {
+            leftFoundation.setPosition(.9);
+        }
+        else
+        {
+            telemetry.addData("right foundation is null", "cannot use");
+        }
     }
 
     public void pointFive()
     {
-        rightFoundation.setPosition(.5);
-        leftFoundation.setPosition(.5);
+        if(rightFoundation != null)
+        {
+            rightFoundation.setPosition(.5);
+        }
+        else
+        {
+            telemetry.addData("right foundation is null", "cannot use");
+        }
+
+        if(leftFoundation != null)
+        {
+            leftFoundation.setPosition(.5);
+        }
+        else
+        {
+            telemetry.addData("right foundation is null", "cannot use");
+        }
     }
 
     public void grabFoundation()
     {
-        rightFoundation.setPosition(.15);
-        leftFoundation.setPosition(.15);
+        if(rightFoundation != null)
+        {
+            rightFoundation.setPosition(.15);
+        }
+        else
+        {
+            telemetry.addData("right foundation is null", "cannot use");
+        }
+
+        if(leftFoundation != null)
+        {
+            leftFoundation.setPosition(.15);
+        }
+        else
+        {
+            telemetry.addData("right foundation is null", "cannot use");
+        }
     }
 
     public void setZeroBehavior(String mode)
@@ -777,4 +911,22 @@ public class Robot
         eyeOfSauron.setCamDeviceName( device );
     }
 
+    public boolean checkForNull()
+    {
+        boolean done = false;
+        if(RF != null)
+        {
+            if(RR != null)
+            {
+                if(LF != null)
+                {
+                    if (LR != null)
+                    {
+                        done = true;
+                    }
+                }
+            }
+        }
+        return done;
+    }
 }
