@@ -25,49 +25,49 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Robot
 {
 
-    /*
-     * Hardware items on robot
-     */
+    // Robot - Generic Items
     private Telemetry telemetry;
     private HardwareMap hardwareMap;
 
+    // Lift Class
     public Lift lift = new Lift();
-    CameraVision eyeOfSauron = new CameraVision();
+
+    // Vision System Items
+    private CameraVision eyeOfSauron = new CameraVision();
     boolean useCamera;
 
-    RevBulkData bulkData;
-    public RevBulkData bulkDataAux;
-    ExpansionHubEx expansionHub;
-    ExpansionHubEx expansionHubAux;
+    // Robot - REV Hub Items
+    private RevBulkData bulkData;
+    private RevBulkData bulkDataAux;
+    private ExpansionHubEx expansionHub;
+    private ExpansionHubEx expansionHubAux;
 
+    // Chassis Items
     private ExpansionHubMotor RF = null;
     private ExpansionHubMotor RR = null;
     private ExpansionHubMotor LF = null;
     private ExpansionHubMotor LR = null;
-
-    private DcMotor leftIntake = null;
-    private DcMotor rightIntake = null;
-
-    private Servo leftFoundation = null;
-    private Servo rightFoundation = null;
-
+    private BNO055IMU gyro;
     /** The dc motor whose encoder is being used for distance measurements. */
     ExpansionHubMotor encoderMotor;
 
+    // Intake Items
+    private DcMotor leftIntake = null;
+    private DcMotor rightIntake = null;
+
+    // Foundation Fingers Items
+    private Servo leftFoundation = null;
+    private Servo rightFoundation = null;
+
+    // Robot - Odometry Items
     private ExpansionHubMotor xEncoder = null;
     private ExpansionHubMotor yEncoder = null;
-    private BNO055IMU gyro;
 
     /*
-     * Encoder information used in odometry
+     * Robot - Encoder information used in odometry
      */
-    private double xEncTicksPerRad;
-    private double yEncTicksPerRad;
-    private double xEncTicksPerSecond;
-    private double yEncTicksPerSecond;
     private double xEncInPerSec;
     private double yEncInPerSec;
-
 
     private final double encWheelRadius = 1.0; //in inches
     private final double encTickPerRotation = 2400;
@@ -76,15 +76,12 @@ public class Robot
     private final double gearRatio = 1.733333333;
     private final double encTicksPerInch = encTickPerRotation / (encInchesPerRotation);
 
-    private double xPrev = 0;
-    private double yPrev = 0;
+    private int prevXEncoder = 0;
+    private int prevYEncoder = 0;
+    private int xEncoderChange = 0;
+    private int yEncoderChange = 0;
 
-    public int prevXEncoder = 0;
-    public int prevYEncoder = 0;
-    public int xEncoderChange = 0;
-    public int yEncoderChange = 0;
-
-    public double currentHeading = 0;
+    private double currentHeading = 0;
     private boolean servoDone = false;
 
     /** Directional variables used to simulate joystick commands in autonomous.
@@ -139,14 +136,26 @@ public class Robot
     double error;
     /** A double that stores the starting heading of the robot for use in reseting the robot's
      * heading to its start heading. */
-    double resetHeading;
-    boolean moving;
+    private double resetHeading;
+    private boolean moving;
     private long startTime = 0; // in nanoseconds
     /** A double that is the number of nanoseconds per second. */
     double NANOSECONDS_PER_SECOND = TimeUnit.SECONDS.toNanos(1);
 
+    //
+    // Robot Public Interface
+    //
 
-
+    /**
+     *  Robot - Triggers the initialization of the selected classes.  Intended to be used  when the INIT
+     *  button is pressed in an OpMode.  Loads the hardware items from the HardwareMap and gets
+     *  things ready to start.
+     *
+     * @param telem  An instance of Telemetry which allows the use of Telemtry in this class.
+     * @param hwmap  An instance of the FIRST-provided HardwareMap which is passed onto more
+     *               specific classes for initializing hardware.
+     * @param useVision A boolean flag which tells the class whether or not the camera should be used.
+     * */
     public void init(Telemetry telem, HardwareMap hwmap, boolean useVision )
     {
         telemetry = telem;
@@ -231,9 +240,6 @@ public class Robot
             telemetry.addData("y encoder not found in config file", "");
         }
 
-        xEncTicksPerRad = xEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
-        yEncTicksPerRad = yEncoder.getMotorType().getTicksPerRev() / 2.0 / Math.PI;
-
         try
         {
             leftIntake = hardwareMap.get(DcMotor.class, "yEncoder");
@@ -309,30 +315,44 @@ public class Robot
 
     }
 
+    /**
+     * Robot - Method that is intended to be called repeatedly after the INIT button is pressed and handled
+     * in an OpMode.  If there is something which should happen repeatedly after INIT but before
+     * START, call this method from the init_loop() method in the OpMode.
+     */
     public void init_loop()
     {
 //        telemetry.addData("gyro status ", gyro.getSystemStatus());
     }
 
+    /**
+     * Robot - Method that is intended to be called when the START button is pressed and handled
+     * in an OpMode.  If there is something which should happen when start() is called in the
+     * OpMode, put it in this method.
+     */
     public void start()
     {
 
     }
 
+    /**
+     * Robot - Queries the REV Hub using bulk data transfer of the OpenFTC REVExtnesions2 tools.  Updates
+     * the heading and position values for the chassis and lift systems.
+     */
     public void update()
     {
         /*
          * Update the sensor data using bulk transferes from the Rev Hubs
          */
-        currentHeading = updateHeading();
+        currentHeading = updateHeadingInternal();
         bulkData = expansionHub.getBulkInputData();
         bulkDataAux = expansionHubAux.getBulkInputData();
 
         /*
          * Update the velocity as read by the encoders
          */
-        xEncTicksPerSecond = bulkDataAux.getMotorVelocity(xEncoder) / gearRatio;
-        yEncTicksPerSecond = bulkDataAux.getMotorVelocity(yEncoder) / gearRatio;
+        double xEncTicksPerSecond = bulkDataAux.getMotorVelocity(xEncoder) / gearRatio;
+        double yEncTicksPerSecond = bulkDataAux.getMotorVelocity(yEncoder) / gearRatio;
 
         xEncInPerSec = xEncTicksPerSecond / encTicksPerInch;
         yEncInPerSec = yEncTicksPerSecond / encTicksPerInch;
@@ -356,49 +376,29 @@ public class Robot
     }
 
     /**
-     * Used to get the robot's heading.
-     *
-     * @return  the robot's heading as an double
+     * Robot - Used to get the heading value of the robot.
+     * @return  the robot's heading as a double.
      */
-    public double updateHeading()
-    {
-        Orientation angles = gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        return -AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle));
-    }
-
     public double getHeading()
     {
         return currentHeading;
     }
 
-    public void getEncoderTelem()
-    {
-        getXChange();
-        getYChange();
-        getXLinearVelocity();
-        getYLinearVelocity();
-    }
-
-    public float getXChange()
-    {
-        double inchesX = (((xEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.cos(Math.toRadians(currentHeading)) +
-                         (((yEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.sin(Math.toRadians(currentHeading));
-        return (float)inchesX;
-    }
-
-    public float getYChange()
-    {
-        double inchesY = ((-(xEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.sin(Math.toRadians(currentHeading)) +
-                         (((yEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.cos(Math.toRadians(currentHeading));
-        return (float)inchesY;
-    }
-
+    /**
+     * Robot - calculate the amount of distance the robot has travelled since the last time this was called
+     * @return PVector indicating the number of inches traveled in x,y
+     */
     public PVector getLocationChange()
     {
         return new PVector(getXChange(), getYChange());
-//        return location;
     }
 
+    /**
+     * Robot - command the Chassis to move according to the desired linear velocity and spin calculated
+     * by the pursuit code.
+     * @param neededVelocity PVector that indicates the linear velocity needed by the robot to continue pursuit
+     * @param spin double indicating the angular velocity needed by the robot to continue pursuit
+     */
     public void updateMotors(PVector neededVelocity, double spin)
     {
         float rotation = (float)(90-currentHeading) - (float)Math.toDegrees(neededVelocity.heading());
@@ -409,8 +409,8 @@ public class Robot
         double y = neededVelocity.mag()*Math.cos(Math.toRadians(rotation)) / 40.0; // bot.maxSpeed;
 
         neededVelocity.rotate((float)Math.toRadians(currentHeading));
-         x = neededVelocity.x / 40.0; //bot.maxSpeed; //max speed is 31.4 in/sec
-         y = neededVelocity.y / 40.0; // bot.maxSpeed;
+        x = neededVelocity.x / 40.0; //bot.maxSpeed; //max speed is 31.4 in/sec
+        y = neededVelocity.y / 40.0; // bot.maxSpeed;
 
 
         telemetry.addData("SbfJoystick x, y: ", "%.3f, %.3f", x, y );
@@ -420,6 +420,153 @@ public class Robot
         joystickDrive(x, y, turn, 0, 1);
     }
 
+    public void getEncoderTelem()
+    {
+        getXChange();
+        getYChange();
+        getXLinearVelocity();
+        getYLinearVelocity();
+    }
+
+    /**
+     * Robot - Accesses the current angular velocity of the robot as read from the IMU.
+     * @return double that represents the angular velocity in deg/sec
+     */
+    public double getAngularVelocity()
+    {
+        AngularVelocity gyroReading;
+        gyroReading = gyro.getAngularVelocity();
+        telemetry.addData("mp.rot rate: ", -gyroReading.zRotationRate);
+        return -gyroReading.zRotationRate;
+    }
+
+    /**
+     * Robot - Get the robot's current linear velocity
+     * @return PVector which captures the current x,y velocity of the robot.
+     */
+    public PVector getVelocity()
+    {
+        return new PVector(getXLinearVelocity(), getYLinearVelocity());
+    }
+
+    /**
+     * Robot - Kill the Chassis and the Vision System
+     */
+    public void stop()
+    {
+        if(checkForNull())
+        {
+            RF.setPower(0.0);
+            RR.setPower(0.0);
+            LF.setPower(0.0);
+            LR.setPower(0.0);
+        }
+        {
+            telemetry.addData("A drive motor is not configured properly", "");
+        }
+
+
+        if (useCamera)
+        {
+            eyeOfSauron.stopCamera();
+        }
+
+    }
+
+    //
+    // Robot Private Methods
+    //
+
+    /**
+     * Robot - Used to query the IMU and get the robot's heading.  Internal method only.
+     *
+     * @return  the robot's heading as an double
+     */
+    private double updateHeadingInternal()
+    {
+        Orientation angles = gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        return -AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle));
+    }
+
+    /**
+     * Robot - calculate the amount of X distance the robot has travelled since the last time this was called
+     * @return float indicating the number of inches traveled
+     */
+    private float getXChange()
+    {
+        double inchesX = (((xEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.cos(Math.toRadians(currentHeading)) +
+                         (((yEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.sin(Math.toRadians(currentHeading));
+        return (float)inchesX;
+    }
+
+    /**
+     * Robot - calculate the amount of Y distance the robot has travelled since the last time this was called
+     * @return float indicating the number of inches traveled
+     */
+    private float getYChange()
+    {
+        double inchesY = ((-(xEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.sin(Math.toRadians(currentHeading)) +
+                         (((yEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.cos(Math.toRadians(currentHeading));
+        return (float)inchesY;
+    }
+
+    /**
+     * Robot - Access the current linear velocity in the X direction.
+     * @return float representing the X linear velocity in in/sec
+     */
+    private float getXLinearVelocity()
+    {
+        double linearX = xEncInPerSec * Math.cos(Math.toRadians(currentHeading)) +
+                yEncInPerSec * Math.sin(Math.toRadians(currentHeading));
+        return (float)linearX;
+    }
+
+    /**
+     * Robot - Access the current linear velocity in the Y direction.
+     * @return float representing the Y linear velocity in in/sec
+     */
+    private float getYLinearVelocity()
+    {
+        double linearY = -xEncInPerSec * Math.sin(Math.toRadians(currentHeading)) +
+                (yEncInPerSec) * Math.cos(Math.toRadians(currentHeading));
+        return (float)linearY;
+    }
+
+    /**
+     * Robot - Get the number of seconds this op mode has been running
+     * <p>
+     * This method has sub millisecond accuracy.
+     * @return number of seconds this op mode has been running
+     */
+    private double getRuntime()
+    {
+        return (System.nanoTime() - startTime) / NANOSECONDS_PER_SECOND;
+    }
+
+    /**
+     * Robot - Reset the internal timer to zero.
+     */
+    private void resetStartTime()
+    {
+        startTime = System.nanoTime();
+    }
+
+    //
+    // Chassis Public Interface
+    //
+
+    /**
+     * Chassis - Uses joystick-type inputs to drive the robot. Allows for omnidirectional movement and has a
+     * selectable max power.
+     *
+     * @param leftStickX  The x-axis of the left joystick on the primary gamepad. Controls side to
+     *                    side movement.
+     * @param leftStickY  The y-axis of the left joystick on the primary gamepad. Controls forward
+     *                    and backward movement.
+     * @param rightStickX  The x-axis of the right joystick on the primary gamepad. Controls rotation.
+     * @param rightStickY  The y-axis of the right joystick on the primary gamepad. N/A
+     * @param powerLimit  The maximum power value.
+     * */
     public void joystickDrive(double leftStickX, double leftStickY, double rightStickX, double rightStickY, double powerLimit)
     {
         /*
@@ -483,56 +630,8 @@ public class Robot
 
     }
 
-    public double getAngularVelocity()
-    {
-        AngularVelocity gyroReading;
-        gyroReading = gyro.getAngularVelocity();
-        telemetry.addData("mp.rot rate: ", -gyroReading.zRotationRate);
-        return -gyroReading.zRotationRate;
-    }
-
-    public float getXLinearVelocity()
-    {
-        double linearX = xEncInPerSec * Math.cos(Math.toRadians(currentHeading)) +
-                yEncInPerSec * Math.sin(Math.toRadians(currentHeading));
-        return (float)linearX;
-    }
-
-    public float getYLinearVelocity()
-    {
-        double linearY = -xEncInPerSec * Math.sin(Math.toRadians(currentHeading)) +
-                (yEncInPerSec) * Math.cos(Math.toRadians(currentHeading));
-        return (float)linearY;
-    }
-
-    public PVector getVelocity()
-    {
-        return new PVector(getXLinearVelocity(), getYLinearVelocity());
-    }
-
-    public void stop()
-    {
-        if(checkForNull())
-        {
-            RF.setPower(0.0);
-            RR.setPower(0.0);
-            LF.setPower(0.0);
-            LR.setPower(0.0);
-        }
-        {
-            telemetry.addData("A drive motor is not configured properly", "");
-        }
-
-
-        if (useCamera)
-        {
-            eyeOfSauron.stopCamera();
-        }
-
-    }
-
     /**
-     * The mecanumDrive method moves the four drive motors on the robot and will move the robot forward,
+     * Chassis - The mecanum Drive method moves the four drive motors on the robot and will move the robot forward,
      * backward, left, right, or at a 45 degree angle in any direction.
      *
      * @param power  How fast the robot will drive.
@@ -624,7 +723,7 @@ public class Robot
     }
 
     /**
-     * The pointTurn method turns the robot to a target heading, automatically picking the turn
+     * Chassis - The pointTurn method turns the robot to a target heading, automatically picking the turn
      * direction that is the shortest distance to turn to arrive at the target.
      *
      * @param targetHeading  The direction in which the robot will move.
@@ -704,27 +803,12 @@ public class Robot
         return !moving;
     }
 
-    /**
-     * Get the number of seconds this op mode has been running
-     * <p>
-     * This method has sub millisecond accuracy.
-     * @return number of seconds this op mode has been running
-     */
-    public double getRuntime()
-    {
-        return (System.nanoTime() - startTime) / NANOSECONDS_PER_SECOND;
-    }
+    //
+    // Chassis Private Methods
+    //
 
     /**
-     * Reset the internal timer to zero.
-     */
-    public void resetStartTime()
-    {
-        startTime = System.nanoTime();
-    }
-
-    /**
-     * setMode sets all four drive motors to a specified mode. There are three mode choices:
+     * Chassis - setMode sets all four drive motors to a specified mode. There are three mode choices:
      * 1) RUN_USING_ENCODERS,
      * 2) RUN_WITHOUT_ENCODERS, and
      * 3) RUN_TO_POSITION.
@@ -739,6 +823,59 @@ public class Robot
         if (LR != null)  { LR.setMode(mode); }
     }
 
+    /**
+     * Chassis - Tell the chassis motors what to do when power is set to 0
+     * @param mode - which indicates the desired behavior
+     */
+    private void setZeroBehavior(String mode)
+    {
+        if(mode.equalsIgnoreCase("FLOAT"))
+        {
+            LR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            LF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            RR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            RF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        }
+        else if(mode.equalsIgnoreCase("BRAKE"))
+        {
+            LF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            LR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            RF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            RR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        }
+    }
+
+    /**
+     * Chassis - check to ensure that all of the chassis motors are initialized properly.
+     * @return boolean indicating good init (true) or not (false)
+     */
+    private boolean checkForNull()
+    {
+        boolean done = false;
+        if(RF != null)
+        {
+            if(RR != null)
+            {
+                if(LF != null)
+                {
+                    if (LR != null)
+                    {
+                        done = true;
+                    }
+                }
+            }
+        }
+        return done;
+    }
+
+    //
+    // Vision System Public Interface
+    //
+
+    /**
+     * Vision System - get the current position of the SkyStone
+     * @return String that describes the position of the 3 stones in view of the camera.
+     */
     public String getSkyStonePosition()
     {
         if (useCamera)
@@ -750,11 +887,28 @@ public class Robot
             return "LEFT";
         }
     }
+
+    /**
+     * Vision System - Turn off the camera to save power.
+     */
     public void stopCamera()
     {
         eyeOfSauron.stopCamera();
     }
 
+    public void setCameraDeviceName( String device )
+    {
+        eyeOfSauron.setCamDeviceName( device );
+    }
+
+    //
+    // Intake Public Interface
+    //
+
+    /**
+     * Intake - Rotate the intake wheels to reverse a stone out of the intake.
+     * @param power
+     */
     public void intakeOut(double power)
     {
 //        xEncoder.setPower(-1.0);
@@ -764,6 +918,10 @@ public class Robot
 
     }
 
+    /**
+     * Intake - Rotate the intake wheels to take in a stone into the intake.
+     * @param power
+     */
     public void intakeIn(double power)
     {
 //        xEncoder.setPower(1.0);
@@ -773,6 +931,9 @@ public class Robot
 
     }
 
+    /**
+     * Intake - stop the intake wheels
+     */
     public void intakeStop()
     {
 //        xEncoder.setPower(0.0);
@@ -797,6 +958,15 @@ public class Robot
 
     }
 
+    //
+    // Foundation Fingers Public Interface
+    //
+
+    /**
+     * Foundation Fingers - Set the fingers to a particuar position
+     * @param position - the servo position to set the fingers
+     * @return boolean to indicate that the fingers are at the commanded position
+     */
     public boolean foundationDrive(double position)
     {
 
@@ -826,6 +996,9 @@ public class Robot
         return true;
     }
 
+    /**
+     * Foundation Fingers - Pull back the fingers to release the Foundation
+     */
     public void releaseFoundation()
     {
         if(rightFoundation != null)
@@ -847,27 +1020,9 @@ public class Robot
         }
     }
 
-    public void pointFive()
-    {
-        if(rightFoundation != null)
-        {
-            rightFoundation.setPosition(.5);
-        }
-        else
-        {
-            telemetry.addData("right foundation is null", "cannot use");
-        }
-
-        if(leftFoundation != null)
-        {
-            leftFoundation.setPosition(.5);
-        }
-        else
-        {
-            telemetry.addData("right foundation is null", "cannot use");
-        }
-    }
-
+    /**
+     * Foundation Fingers - Extend the fingers to the position where the Foundation is engaged
+     */
     public void grabFoundation()
     {
         if(rightFoundation != null)
@@ -889,44 +1044,4 @@ public class Robot
         }
     }
 
-    public void setZeroBehavior(String mode)
-    {
-        if(mode.equalsIgnoreCase("FLOAT"))
-        {
-            LR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-            LF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-            RR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-            RF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        }
-        else if(mode.equalsIgnoreCase("BRAKE"))
-        {
-            LF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            LR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            RF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            RR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        }
-    }
-    public void setCameraDeviceName( String device )
-    {
-        eyeOfSauron.setCamDeviceName( device );
-    }
-
-    public boolean checkForNull()
-    {
-        boolean done = false;
-        if(RF != null)
-        {
-            if(RR != null)
-            {
-                if(LF != null)
-                {
-                    if (LR != null)
-                    {
-                        done = true;
-                    }
-                }
-            }
-        }
-        return done;
-    }
 }
