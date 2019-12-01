@@ -21,7 +21,12 @@ import java.util.concurrent.TimeUnit;
 import com.qualcomm.robotcore.hardware.Servo;
 
 
-
+/**
+ * Defines the robot. Has objects needed for each mechanism in use on the robot and contains the all
+ * the methods used by the robot.
+ *
+ * @author Andrew, SBF Robotics, Team 8668
+ */
 public class Robot
 {
 
