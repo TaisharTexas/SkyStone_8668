@@ -1,7 +1,9 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.sbfHardware;
 
 import com.qualcomm.hardware.rev.RevTouchSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -16,12 +18,14 @@ public class Lift
     private RevTouchSensor touchL = null;
     private RevTouchSensor touchR = null;
 
-    private ExpansionHubMotor leftVertical = null;
-    private ExpansionHubMotor rightVertical = null;
+    public ExpansionHubMotor leftVertical = null;
+    public ExpansionHubMotor rightVertical = null;
 
     public Servo horizontal = null;
     public Servo claw = null;
     public Servo wrist = null;
+
+    public int encoder = 0;
 
     double thePosition;
 
@@ -31,11 +35,35 @@ public class Lift
         telemetry = telem;
         hardwareMap = hwmap;
 
-        leftVertical = (ExpansionHubMotor) hardwareMap.get(DcMotorEx .class, "leftV");
-        leftVertical.setDirection(DcMotorEx.Direction.FORWARD);
+        try
+        {
+            leftVertical = (ExpansionHubMotor) hardwareMap.get(DcMotorEx .class, "leftV");
+            leftVertical.setDirection(DcMotorEx.Direction.REVERSE);
+            leftVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            leftVertical.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        rightVertical = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "rightV");
-        rightVertical.setDirection(DcMotorEx.Direction.FORWARD);
+        }
+        catch (Exception p_execption)
+        {
+            leftVertical = null;
+            telemetry.addData("left vertical not found in config file", "");
+        }
+
+        try
+        {
+            rightVertical = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "rightV");
+            rightVertical.setDirection(DcMotorEx.Direction.FORWARD);
+            rightVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightVertical.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+        catch (Exception p_execption)
+        {
+            rightVertical = null;
+            telemetry.addData("right vertical not found in config file", "");
+        }
+
+
+
 
         touchL = hardwareMap.get(RevTouchSensor.class, "touchL");
         touchR = hardwareMap.get(RevTouchSensor.class, "touchR");
@@ -75,44 +103,80 @@ public class Lift
 
     public void verticalDrive(double power)
     {
-        if(touchR.isPressed() || touchL.isPressed())
+        if ( encoder > 4700 && power < 0 ) {
+            leftVertical.setPower(0.0);
+            rightVertical.setPower(0.0);
+        }
+        else if(touchR.isPressed() || touchL.isPressed())
         {
-            leftVertical.setPower(-0.2);
+            leftVertical.setPower(0.2);
             rightVertical.setPower(0.2);
         }
+        else if ( encoder < 400  && power > 0)
+        {
+            leftVertical.setPower(-0.15);
+            rightVertical.setPower(-0.15);
+        }
+
         else if(power > .01 || power < -.01)
         {
-            leftVertical.setPower(power);
+            leftVertical.setPower(-power);
             rightVertical.setPower(-power);
         }
+
         else
         {
             leftVertical.setPower(0.0);
             rightVertical.setPower(0.0);
         }
+
+
     }
 
     public void horizontalDrive(double position)
     {
-        horizontal.setPosition(position);
+        if(horizontal != null)
+        {
+            telemetry.addData("horizontal: ", horizontal.getPosition());
+            horizontal.setPosition(position);
+        }
     }
 
     public void grabClaw()
     {
-        claw.setPosition(.9);
+        if(claw != null)
+        {
+            claw.setPosition(.9);
+        }
     }
     public void releaseClaw()
     {
-        claw.setPosition(.5);
+        if(claw != null)
+        {
+            claw.setPosition(.5);
+        }
     }
 
     public void wristDeploy()
     {
-        wrist.setPosition(.9);
+        if(wrist != null)
+        {
+            wrist.setPosition(.9);
+        }
     }
     public void wristRetract()
     {
-        wrist.setPosition(.135);
+        if(wrist != null)
+        {
+            wrist.setPosition(.135);
+        }
+    }
+    public void wristDrive( double position )
+    {
+        if(horizontal != null)
+        {
+            wrist.setPosition(position);
+        }
     }
 
 

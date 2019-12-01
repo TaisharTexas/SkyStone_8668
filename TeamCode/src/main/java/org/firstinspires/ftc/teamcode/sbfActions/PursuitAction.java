@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.sbfActions;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Pursuit;
-import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.sbfHardware.Robot;
 import org.firstinspires.ftc.teamcode.Path;
 
 
@@ -90,6 +90,10 @@ public class PursuitAction extends RobotAction
     public boolean execute()
     {
 //        telemetry.addData("distance ", theDistance);
+        thePursuit.updateVelocity(robot.getVelocity());
+        thePursuit.updatePosition(robot.getLocationChange());
+        thePursuit.updateHeading(robot.getHeading());
+        thePursuit.updateAngularVelocity(robot.getAngularVelocity());
         thePursuit.follow(thePath);
         robot.updateMotors(thePursuit.desiredVelocity.copy(), thePursuit.joystickAngularVelocity);
         return thePursuit.getDone();

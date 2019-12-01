@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.sbfUtil.PVector;
 
 /**
  * Credit:
@@ -49,9 +50,9 @@ public class Pursuit
         desiredVelocity = new PVector(0,0);
         endZone = 6; //inch
 
-        // 30 in/sec correlates to maximum unloaded motor speed //
+        //  30 in/sec correlates to maximum unloaded motor speed
+        //  30.615 in/sec = 15.7 rad/sec * 1.3 gearing * 1.5 in wheel radius
         maxSpeed = 13; //inches/second
-        //30.615 in/sec = 15.7 rad/sec * 1.3 gearing * 1.5 in wheel radius
 
         gainValue = 2.8;
         maxAccel = maxSpeed * gainValue;
@@ -76,8 +77,8 @@ public class Pursuit
         double theMaxSpeed = drivePath.maxSpeeds.get(currentSegment + 1);
         double theTargetHeading = drivePath.targetHeadings.get(currentSegment + 1);
 
-        double radius = maxSpeed / 1.5;
-        radius = Range.clip(radius,5,radius);
+        double radius = theMaxSpeed / 6.0;
+        radius = Range.clip(radius,1.0,radius);
 
 
         if(theMaxSpeed >= 20 && theMaxSpeed < 26)
@@ -171,7 +172,7 @@ public class Pursuit
 
         telemetry.addData("Target loc: ", target);
         arrive(target, theMaxSpeed);
-        point(theTargetHeading, 100);
+        point(theTargetHeading, 300);
 
         if(lastSegment && location.dist(end) <= .5)
         {
@@ -183,6 +184,9 @@ public class Pursuit
 
     public void arrive(PVector target, double theMaxSpeed)
     {
+        //converts the 0-1 power scale of the csv file to the 0-30 power scale used by the pursuit algorithm
+//        theMaxSpeed = theMaxSpeed * 30.0;
+
         //find the needed velocity to move to target and call it desiredVelocity
         desiredVelocity = PVector.sub(target, location);
         telemetry.addData("Robot Loc: ", location );
@@ -193,7 +197,7 @@ public class Pursuit
 
         if(location.dist(end) < endZone)
         {
-            float m = scaleVector(speed, 0, (float)endZone, 0.1f, (float)theMaxSpeed);
+            float m = scaleVector(speed, 0, (float)endZone, 0.3f, (float)theMaxSpeed);
             desiredVelocity.setMag(m);
         }
         else
@@ -232,20 +236,19 @@ public class Pursuit
         //make sure final velocity isn't too fast
         desiredVelocity.limit(theMaxSpeed);
 
-
     }
+
+
 
     public void point(double targetHeading, double theMaxTurnSpeed)
     {
         double desiredAngularVelocity = (targetHeading-currentHeading);
-
 
         double slowDown = 20;
 
         if(Math.abs(desiredAngularVelocity) < slowDown)
         {
             double wantedAngularVelocity = Math.abs(desiredAngularVelocity);
-//            float m = scaleVector((float)wantedAngularVelocity, 0,60,0,(float)theMaxTurnSpeed);
             float m = (float)(theMaxTurnSpeed * (wantedAngularVelocity/slowDown));
             desiredAngularVelocity = m * Math.signum(desiredAngularVelocity);
         }
@@ -253,7 +256,8 @@ public class Pursuit
         {
             desiredAngularVelocity = theMaxTurnSpeed * Math.signum(desiredAngularVelocity);
         }
-//        telemetry.addData("mp.desiredAngularVel: ", desiredAngularVelocity);
+
+        telemetry.addData("mp.desiredAngularVel: ", desiredAngularVelocity);
 
 //        telemetry.addData("mp.currentAngularVel: ", currentAngularVelocity);
         double requiredAngularAccel = desiredAngularVelocity - currentAngularVelocity;
@@ -262,7 +266,7 @@ public class Pursuit
 //        telemetry.addData("mp.requiredAngularAccel: ", requiredAngularAccel);
 
         joystickAngularVelocity = currentAngularVelocity + requiredAngularAccel;
-//        telemetry.addData("mp.joystickAngularVelocity: ", joystickAngularVelocity);
+        telemetry.addData("mp.joystickAngularVelocity: ", joystickAngularVelocity);
 
     }
 
@@ -310,6 +314,15 @@ public class Pursuit
         velocity.set(currentVelocity.x, currentVelocity.y);
     }
 
+    public void updateAngularVelocity( double angularVelocity )
+    {
+        currentAngularVelocity = angularVelocity;
+    }
+
+    public void updateHeading( double heading )
+    {
+        currentHeading = heading;
+    }
     public boolean getDone()
     {
         return done;

@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.sbfActions;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.sbfHardware.Robot;
 
 import java.util.concurrent.TimeUnit;
 

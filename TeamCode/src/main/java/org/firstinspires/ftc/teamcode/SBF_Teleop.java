@@ -6,10 +6,12 @@ import android.os.storage.StorageManager;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.sbfUtil.DataLogger;
+import org.firstinspires.ftc.teamcode.sbfHardware.CameraVision;
+import org.firstinspires.ftc.teamcode.sbfHardware.Lift;
+import org.firstinspires.ftc.teamcode.sbfHardware.Robot;
+import org.firstinspires.ftc.teamcode.sbfHardware.SbfJoystick;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
@@ -17,55 +19,34 @@ import java.lang.reflect.Method;
 
 @TeleOp(name="SBF Teleop", group="Amazing")
 
-public class Teleop extends OpMode
+public class SBF_Teleop extends OpMode
 {
     Pursuit pursuit = new Pursuit(0, 0, telemetry);
     Robot robot = new Robot();
-    Lift lift = new Lift();
+    SbfJoystick customPad1 = new SbfJoystick();
+    SbfJoystick customPad2 = new SbfJoystick();
     CameraVision camera = new CameraVision();
 
-    /* Chassis Control */
-    /** The x-axis of the left joystick on the gamepad. Used for chassis control*/
-    double lStickX;
-    /** The x-axis of the right joystick on the gamepad. Used for chassis control*/
-    double rStickX;
-    /** The y-axis of the left joystick on the gamepad. Used for chassis control*/
-    double lStickY;
-    /** The y-axis of the right joystick on the gamepad. Used for chassis control*/
-    double rStickY;
-
     double shoulderPos;
-
-
-
+    double wristPos;
 
     int currentXEncoder = 0;
     int currentYEncoder = 0;
     double currentHeading = 0;
 
-
     double loopTime=0;
-
-    private DataLogger myData;
 
 
     public void init()
     {
         robot.init(telemetry, hardwareMap, false);
-        lift.init(telemetry, hardwareMap);
+        customPad1.init(telemetry, hardwareMap, gamepad1);
+        customPad2.init(telemetry, hardwareMap, gamepad2);
 
         robot.releaseFoundation();
-        shoulderPos = .99;
+        shoulderPos = .89;
 //        lift.horizontal.setPosition(.7);
-
-//        myData = new DataLogger("8668_Robot_Data");
-//        myData.addField("elapsedTime");
-//        myData.addField("xEncoderPos");
-//        myData.addField("yEncoderPos");
-//        myData.newLine();
-
-
-
+        wristPos = 0.135;
 
 
     }
@@ -86,8 +67,6 @@ public class Teleop extends OpMode
         telemetry.addData("path: ", Environment.getExternalStorageDirectory().getPath() + "/");
         telemetry.addData("path external: ", getExternalStoragePath(hardwareMap.appContext, true) );
 
-
-
     }
 
     public void start()
@@ -102,91 +81,101 @@ public class Teleop extends OpMode
     {
         robot.update();
 
-        telemetry.addData("horiz", lift.horizontal.getPosition());
-        telemetry.addData("d up", gamepad2.dpad_up);
-        telemetry.addData("d down", gamepad2.dpad_down);
+        telemetry.addData("horiz", robot.lift.horizontal.getPosition());
+        telemetry.addData("d up", customPad2.getDpadUp());
+        telemetry.addData("d down", customPad2.getDpadDown());
 
-        /* Chassis Control */
-        /** The x-axis of the left joystick on the gamepad. Used for chassis control*/
-        lStickX = -gamepad1.left_stick_x;
-        /** The x-axis of the right joystick on the gamepad. Used for chassis control*/
-        rStickX = -gamepad1.right_stick_x;
-        /** The y-axis of the left joystick on the gamepad. Used for chassis control*/
-        lStickY = gamepad1.left_stick_y;
-        /** The y-axis of the right joystick on the gamepad. Used for chassis control*/
-        rStickY = gamepad1.right_stick_y;
 
-        /* Tell the robot to move */
-        robot.joystickDrive(-lStickX, lStickY, rStickX, rStickY, afterburners());
+
+        /*Chassis control */
+        robot.joystickDrive(customPad1.getLeftStickX(),
+                            customPad1.getLeftStickY(),
+                            customPad1.getRightStickX(),
+                            customPad1.getRightStickY(),
+                            afterburners());
 
 //        lift controls
-        lift.verticalDrive(gamepad2.right_stick_y*.8);
+        robot.lift.verticalDrive(customPad2.getRightStickY()*.75);
 
-        if(gamepad2.dpad_down)
+        if(customPad2.getDpadDown())
         {
-            shoulderPos += .005;
+            shoulderPos += .01;
         }
-        else if(gamepad2.dpad_up)
+        else if(customPad2.getDpadUp())
         {
-            shoulderPos -= .005;
+            shoulderPos -= .01;
         }
-        shoulderPos = Range.clip(shoulderPos, .65, .99);
-        lift.horizontal.setPosition(shoulderPos);
+        shoulderPos = Range.clip(shoulderPos, .62, .89);
+        robot.lift.horizontalDrive(shoulderPos);
 
 
         //intake controls
-        if(gamepad2.left_trigger != 0)
+        if(customPad1.getLeftTrigger() != 0)
         {
-            robot.intakeIn(gamepad2.left_trigger);
+            robot.intakeIn(customPad1.getLeftTrigger());
         }
-        else if(gamepad2.right_trigger != 0)
+        else if(customPad1.getRightTrigger() != 0)
         {
-            robot.intakeOut(gamepad2.right_trigger);
+            robot.intakeOut(customPad1.getRightTrigger());
         }
         else
         {
             robot.intakeStop();
         }
 
-        if(gamepad1.x)
+
+        //foundation grabber controls
+        if(customPad1.getX())
         {
             robot.grabFoundation();
         }
-        else if(gamepad1.y)
+        else if(customPad1.getY())
         {
             robot.releaseFoundation();
         }
 
-        if(gamepad2.a)
+        //claw controls
+        if(customPad2.getA())
         {
-            lift.grabClaw();
+            robot.lift.grabClaw();
         }
-        else if(gamepad2.y)
+        else if(customPad2.getY())
         {
-            lift.releaseClaw();
-        }
-
-        if(gamepad2.b)
-        {
-            lift.wristDeploy();
-        }
-        else if(gamepad2.x)
-        {
-            lift.wristRetract();
+            robot.lift.releaseClaw();
         }
 
+        //wrist controls
+        if(customPad2.getX())
+        {
+            robot.lift.wristDeploy();
+            wristPos = 0.9;
+        }
+        else if(customPad2.getB())
+        {
+            robot.lift.wristRetract();
+            wristPos = 0.135;
+        }
+        else if(customPad2.getDpadLeft())
+        {
+            wristPos += 0.01;
+            wristPos = Range.clip( wristPos, 0.135, 0.9);
+            robot.lift.wristDrive(wristPos);
+        }
+        else if ( customPad2.getDpadRight())
+        {
+            wristPos -= 0.01;
+            wristPos = Range.clip( wristPos, 0.135, 0.9);
+            robot.lift.wristDrive(wristPos);
+        }
 
-//        myData.addField(loopTime);
-//        myData.addField(xEncoderChange);
-//        myData.addField(yEncoderChange);
-//        myData.newLine();
 
         loopTime = getRuntime();
         resetStartTime();
         telemetry.addData("Loop Time ", "%.3f", loopTime);
-        telemetry.addData("Gamepad left stick x, Left Stick X", "%.3f, %.3f", gamepad1.left_stick_x, lStickX);
-        telemetry.addData("Gamepad left stick y, Left Stick Y", "%.3f, %.3f", gamepad1.left_stick_y, lStickY);
-        telemetry.addData("Heading ", "%.3f", robot.currentHeading);
+        telemetry.addData("Gamepad left stick x, Left Stick X", "%.3f, %.3f", gamepad1.left_stick_x, customPad1.getLeftStickX());
+        telemetry.addData("Gamepad left stick y, Left Stick Y", "%.3f, %.3f", gamepad1.left_stick_y, customPad1.getLeftStickY());
+        telemetry.addData("Gamepad right stick x: ", "%.3f", customPad1.getRightStickX());
+        telemetry.addData("Heading ", "%.3f", robot.getHeading());
 //        telemetry.addData("Robot Location: ", "%.3f","%.3f", robot.);
 
 //        telemetry.addData("SS Position: ", robot.eyeOfSauron.getSkyStonePosition());
@@ -197,13 +186,13 @@ public class Teleop extends OpMode
     {
         double maximumSpeed;
 
-        if(gamepad1.right_bumper)
+        if(customPad1.getRightBumper())
         {
             maximumSpeed = 1;
         }
         else
         {
-            maximumSpeed = .5;
+            maximumSpeed = .6;
         }
 
         return maximumSpeed;

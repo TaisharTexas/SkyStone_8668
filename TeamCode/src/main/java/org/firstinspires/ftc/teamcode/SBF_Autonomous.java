@@ -3,16 +3,15 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 
 import org.firstinspires.ftc.teamcode.sbfActions.ActionMaster;
+import org.firstinspires.ftc.teamcode.sbfHardware.Robot;
 
 import java.io.File;
 
 @Autonomous(name="SBF Autonomous", group="Yeltron")
 @Config
-public class AutoPursuit extends OpMode
+public class SBF_Autonomous extends OpMode
 {
     ActionMaster theMaster = new ActionMaster();
 
@@ -23,7 +22,9 @@ public class AutoPursuit extends OpMode
 
     public File autoFile = null;
 
-    public AutoPursuit()
+    String ssPos = "One";
+
+    public SBF_Autonomous()
     {
 
     }
@@ -67,10 +68,13 @@ public class AutoPursuit extends OpMode
     {
         robot.init_loop();
         super.init_loop();
+        ssPos = robot.getSkyStonePosition();
+
     }
 
     public void start()
     {
+        theMaster.setFirstAction(ssPos);
         resetStartTime();
         pursuit.elapsedTime = 0;
         robot.start();
@@ -81,7 +85,7 @@ public class AutoPursuit extends OpMode
 
         // TODO: get rid of the pursuit items here and use the PursuitAction and the ActionMaster.
         robot.update();
-        telemetry.addData("Robot Heading: ", robot.currentHeading);
+        telemetry.addData("Robot Heading: ", robot.getHeading());
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////
