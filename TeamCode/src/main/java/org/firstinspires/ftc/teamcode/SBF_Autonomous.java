@@ -85,7 +85,7 @@ public class SBF_Autonomous extends OpMode
 
         // TODO: get rid of the pursuit items here and use the PursuitAction and the ActionMaster.
         robot.update();
-        telemetry.addData("Robot Heading: ", robot.currentHeading);
+        telemetry.addData("Robot Heading: ", robot.getHeading());
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////
