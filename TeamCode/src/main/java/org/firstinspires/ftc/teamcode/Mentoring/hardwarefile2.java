@@ -28,8 +28,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  *
  * @author Robo Sapiens FTC
  */
-public class hardwarefile2
-{
+public class hardwarefile2 {
     /* Public OpMode members. */
     DcMotor frontLeft = null;
     DcMotor frontRight = null;
@@ -48,21 +47,21 @@ public class hardwarefile2
     DcMotor LeftCollector = null;
     DcMotor RightCollector = null;
     Servo Grabber = null;
-    Servo Rotation = null;DcMotor LinearSlide = null;
+    Servo Rotation = null;
+    DcMotor LinearSlide = null;
 
 
     /* local OpMode members. */
-    HardwareMap hwMap           =  null;
-    private ElapsedTime period  = new ElapsedTime();
+    HardwareMap hwMap = null;
+    private ElapsedTime period = new ElapsedTime();
 
     /* Constructor */
-    public hardwarefile2(){
+    public hardwarefile2() {
 
     }
 
     /* Initialize standard Hardware interfaces */
-    public void init(HardwareMap ahwMap, Telemetry telem)
-    {
+    public void init(HardwareMap ahwMap, Telemetry telem) {
         // Save reference to Hardware map
 
         hwMap = ahwMap;
@@ -74,8 +73,7 @@ public class hardwarefile2
             frontLeft = hwMap.get(DcMotor.class, "front_left");
             frontLeft.setDirection(DcMotor.Direction.REVERSE);
             frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
-        catch (Exception p_exception) {
+        } catch (Exception p_exception) {
             telem.addData("frontleft is not found in config file", "");
         }
         try {
@@ -83,8 +81,7 @@ public class hardwarefile2
             frontRight.setDirection(DcMotor.Direction.FORWARD);
             frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        }
-        catch (Exception p_exception) {
+        } catch (Exception p_exception) {
             telem.addData("frontright is not found in config file", "");
         }
         try {
@@ -92,8 +89,7 @@ public class hardwarefile2
             backLeft.setDirection(DcMotor.Direction.REVERSE);
             backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        }
-        catch (Exception p_exception) {
+        } catch (Exception p_exception) {
             telem.addData("backLeft is not found in config file", "");
         }
         try {
@@ -101,8 +97,7 @@ public class hardwarefile2
             backRight.setDirection(DcMotor.Direction.FORWARD);
             backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        }
-        catch (Exception p_exception) {
+        } catch (Exception p_exception) {
             telem.addData("backright is not found in config file", "");
         }
 
@@ -120,12 +115,95 @@ public class hardwarefile2
 
     }
 
-    public void setDriveMotorPower(double power)
+    //I changed the if statment logic in setDriveMotorPower and setDriveMotorPowerSideways from
+    // using a == sign to using the .equalsIgnoreCase() method.
+
+    // I did this because in java, you're not supposed to use the == sign to compare strings,
+    // rather you're supposed to use the .equals() method. .equalsIgnoreCase is the same as a normal
+    // .equals() but with the added feature of not worrying about the capitalization of the strings
+    // being compared.
+    // That way you don't have to worry about remembering whether or not "forward"
+    // or "left" starts with a capitol letter or not (I noticed "Left" and "Right" are capitalized
+    // while "forward" and "backward" are not.
+
+    public void setDriveMotorPower(String Direction, double power) {
+        if (Direction.equalsIgnoreCase("forward")) {
+            frontRight.setPower(power);
+            frontLeft.setPower(power);
+            backRight.setPower(power);
+            backLeft.setPower(power);
+
+        } else if (Direction.equalsIgnoreCase("backward")) {
+            frontRight.setPower(-power);
+            frontLeft.setPower(-power);
+            backRight.setPower(-power);
+            backLeft.setPower(-power);
+
+        }
+
+
+    }
+
+    public void setDriveMotorPowerSideways(String Direction, double power) {
+        if (Direction.equalsIgnoreCase("Left")) {
+            backRight.setDirection(DcMotor.Direction.REVERSE);
+            backLeft.setDirection(DcMotor.Direction.FORWARD);
+            frontRight.setDirection(DcMotor.Direction.REVERSE);
+            frontLeft.setDirection(DcMotor.Direction.FORWARD);
+            frontRight.setPower(-power);
+            frontLeft.setPower(power);
+            backRight.setPower(power);
+            backLeft.setPower(-power);
+        } else if (Direction.equalsIgnoreCase("Right")) {
+            backRight.setDirection(DcMotor.Direction.REVERSE);
+            backLeft.setDirection(DcMotor.Direction.FORWARD);
+            frontRight.setDirection(DcMotor.Direction.REVERSE);
+            frontLeft.setDirection(DcMotor.Direction.FORWARD);
+            backRight.setPower(power);
+            backLeft.setPower(-power);
+            frontLeft.setPower(power);
+            frontRight.setPower(-power);
+        }
+
+    }
+
+    public void TurnS(boolean ValueT, double powerL, double powerR) {
+
+        if (ValueT) {
+            //initialPositionR = backRight.getCurrentPosition();
+            telemetry.addData("Turning Right", "Good Job");
+            telemetry.update();
+            backRight.setDirection(DcMotor.Direction.REVERSE);
+            frontLeft.setDirection(DcMotor.Direction.FORWARD);
+            frontRight.setDirection(DcMotor.Direction.REVERSE);
+            backLeft.setDirection(DcMotor.Direction.FORWARD);
+
+            telemetry.update();
+            backLeft.setPower(powerL);
+            backRight.setPower(powerR);
+            frontLeft.setPower(powerL);
+            frontRight.setPower(powerR);
+        }else {
+            telemetry.addData("Turning Left", "Good Job");
+            telemetry.update();
+            backLeft.setDirection(DcMotor.Direction.REVERSE);
+            frontRight.setDirection(DcMotor.Direction.FORWARD);
+            frontLeft.setDirection(DcMotor.Direction.REVERSE);
+            backRight.setDirection(DcMotor.Direction.FORWARD);
+
+            backLeft.setPower(powerL);
+            backRight.setPower(powerR);
+            frontLeft.setPower(powerL);
+            frontRight.setPower(powerR);
+        }
+    }
+    public void stopDriveMotors()
     {
-        frontRight.setPower(power);
-        frontLeft.setPower(power);
-        backRight.setPower(power);
-        backLeft.setPower(power);
+        frontRight.setPower(0);
+        frontLeft.setPower(0);
+        backRight.setPower(0);
+        backLeft.setPower(0);
     }
 }
+
 
