@@ -96,6 +96,8 @@ public class SBF_Teleop extends OpMode
 
 //        lift controls
         robot.lift.verticalDrive(customPad2.getRightStickY()*.75);
+        telemetry.addData("right vertical: ", robot.lift.rightVertical.getCurrentPosition());
+        telemetry.addData("left vertical: ", robot.lift.leftVertical.getCurrentPosition());
 
         if(customPad2.getDpadDown())
         {
@@ -188,11 +190,11 @@ public class SBF_Teleop extends OpMode
 
         if(customPad1.getRightBumper())
         {
-            maximumSpeed = 1;
+            maximumSpeed = .9;
         }
         else
         {
-            maximumSpeed = .6;
+            maximumSpeed = .55;
         }
 
         return maximumSpeed;

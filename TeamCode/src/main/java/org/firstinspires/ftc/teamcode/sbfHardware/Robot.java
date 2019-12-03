@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.sbfHardware;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -59,6 +60,8 @@ public class Robot
     // Intake Items
     private DcMotor leftIntake = null;
     private DcMotor rightIntake = null;
+    private CRServo leftInSupport = null;
+    private CRServo rightInSupport = null;
 
     // Foundation Fingers Items
     private Servo leftFoundation = null;
@@ -285,6 +288,29 @@ public class Robot
             telemetry.addData("rightFoundation not found in config file", 0);
             rightFoundation = null;
         }
+        try
+        {
+            leftInSupport = hardwareMap.get(CRServo.class, "leftIn");
+            leftInSupport.setDirection(CRServo.Direction.REVERSE);
+//            rightFoundation.scaleRange();
+        }
+        catch (Exception p_exeception)
+        {
+            telemetry.addData("leftIn not found in config file", 0);
+            leftInSupport = null;
+        }
+        try
+        {
+            rightInSupport = hardwareMap.get(CRServo.class, "rightIn");
+            rightInSupport.setDirection(CRServo.Direction.REVERSE);
+//            rightFoundation.scaleRange();
+        }
+        catch (Exception p_exeception)
+        {
+            telemetry.addData("rightIn not found in config file", 0);
+            rightInSupport = null;
+        }
+
 
         try
         {
@@ -918,8 +944,10 @@ public class Robot
     {
 //        xEncoder.setPower(-1.0);
         leftIntake.setPower(power * .45);
+        leftInSupport.setPower(1);
 //        yEncoder.setPower(1.0);
         rightIntake.setPower(-power * .45);
+        rightInSupport.setPower(-1);
 
     }
 
@@ -930,9 +958,11 @@ public class Robot
     public void intakeIn(double power)
     {
 //        xEncoder.setPower(1.0);
-        leftIntake.setPower(-power * .50);
+        leftIntake.setPower(-power * .9);
+        leftInSupport.setPower(-1);
 //        yEncoder.setPower(-1.0);
-        rightIntake.setPower(power * .55);
+        rightIntake.setPower(power * .7);
+        rightInSupport.setPower(1);
 
     }
 
@@ -945,6 +975,7 @@ public class Robot
         if(leftIntake != null)
         {
             leftIntake.setPower(0.0);
+            leftInSupport.setPower(0.0);
 
         }
         else
@@ -955,6 +986,7 @@ public class Robot
         if(rightIntake != null)
         {
             rightIntake.setPower(0.0);
+            rightInSupport.setPower(0.0);
         }
         else
         {
