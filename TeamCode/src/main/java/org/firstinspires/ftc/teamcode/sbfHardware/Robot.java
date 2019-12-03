@@ -432,17 +432,9 @@ public class Robot
      */
     public void updateMotors(PVector neededVelocity, double spin)
     {
-        float rotation = (float)(90-currentHeading) - (float)Math.toDegrees(neededVelocity.heading());
-        telemetry.addData("currHdg, needHdg, rotation ", "%.2f, %.2f, %.2f", 90-currentHeading, Math.toDegrees(neededVelocity.heading()), rotation);
-
-
-        double x = neededVelocity.mag()*Math.sin(Math.toRadians(rotation)) / 40.0; //bot.maxSpeed; //max speed is 31.4 in/sec
-        double y = neededVelocity.mag()*Math.cos(Math.toRadians(rotation)) / 40.0; // bot.maxSpeed;
-
         neededVelocity.rotate((float)Math.toRadians(currentHeading));
-        x = neededVelocity.x / 40.0; //bot.maxSpeed; //max speed is 31.4 in/sec
-        y = neededVelocity.y / 40.0; // bot.maxSpeed;
-
+        double x = neededVelocity.x / 40.0; //bot.maxSpeed; //max speed is 31.4 in/sec
+        double y = neededVelocity.y / 40.0; // bot.maxSpeed;
 
         telemetry.addData("SbfJoystick x, y: ", "%.3f, %.3f", x, y );
 
@@ -485,7 +477,7 @@ public class Robot
      */
     public void stop()
     {
-        if(checkForNull())
+        if(motorsValid())
         {
             RF.setPower(0.0);
             RR.setPower(0.0);
@@ -646,7 +638,7 @@ public class Robot
 //        LF.setVelocity(leftFront * 15.7, AngleUnit.RADIANS);
 //        LR.setVelocity(leftRear * 15.7, AngleUnit.RADIANS);
 
-        if(checkForNull())
+        if(motorsValid())
         {
             RF.setPower(rightFront);
             RR.setPower(rightRear);
@@ -880,7 +872,7 @@ public class Robot
      * Chassis - check to ensure that all of the chassis motors are initialized properly.
      * @return boolean indicating good init (true) or not (false)
      */
-    private boolean checkForNull()
+    private boolean motorsValid()
     {
         boolean done = false;
         if(RF != null)
