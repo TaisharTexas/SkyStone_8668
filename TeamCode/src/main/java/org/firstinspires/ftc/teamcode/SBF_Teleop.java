@@ -125,6 +125,10 @@ public class SBF_Teleop extends OpMode
             robot.intakeStop();
         }
 
+        if(customPad1.getLeftBumper())
+        {
+            robot.servosIn();
+        }
 
         //foundation grabber controls
         if(customPad1.getX())
@@ -157,13 +161,13 @@ public class SBF_Teleop extends OpMode
             robot.lift.wristRetract();
             wristPos = 0.135;
         }
-        else if(customPad2.getDpadLeft())
+        else if(customPad2.getLeftBumper())
         {
             wristPos += 0.01;
             wristPos = Range.clip( wristPos, 0.135, 0.9);
             robot.lift.wristDrive(wristPos);
         }
-        else if ( customPad2.getDpadRight())
+        else if ( customPad2.getRightBumper())
         {
             wristPos -= 0.01;
             wristPos = Range.clip( wristPos, 0.135, 0.9);

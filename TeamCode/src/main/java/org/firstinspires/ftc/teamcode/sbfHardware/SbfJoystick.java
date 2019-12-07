@@ -57,6 +57,10 @@ public class SbfJoystick
     {
         return myGamepad.right_bumper;
     }
+    public boolean getLeftBumper()
+    {
+        return myGamepad.left_bumper;
+    }
 
     public boolean getX()
     {

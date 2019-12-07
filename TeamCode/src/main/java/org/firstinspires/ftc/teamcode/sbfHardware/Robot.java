@@ -58,10 +58,13 @@ public class Robot
     ExpansionHubMotor encoderMotor;
 
     // Intake Items
-    private DcMotor leftIntake = null;
-    private DcMotor rightIntake = null;
+    private ExpansionHubMotor leftIntake = null;
+    private ExpansionHubMotor rightIntake = null;
     private CRServo leftInSupport = null;
     private CRServo rightInSupport = null;
+    private double stallCurrent = 5100;
+    private double left = 0;
+    private double right = 0;
 
     // Foundation Fingers Items
     private Servo leftFoundation = null;
@@ -250,7 +253,7 @@ public class Robot
 
         try
         {
-            leftIntake = hardwareMap.get(DcMotor.class, "yEncoder");
+            leftIntake = hardwareMap.get(ExpansionHubMotor.class, "yEncoder");
             leftIntake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
         catch (Exception p_exception)
@@ -259,7 +262,7 @@ public class Robot
         }
         try
         {
-            rightIntake = hardwareMap.get(DcMotor.class, "xEncoder");
+            rightIntake = hardwareMap.get(ExpansionHubMotor.class, "xEncoder");
             rightIntake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
         catch (Exception p_exception)
@@ -945,17 +948,74 @@ public class Robot
 
     /**
      * Intake - Rotate the intake wheels to take in a stone into the intake.
-     * @param power
+     * @param power  the power input from the gamepad
      */
     public void intakeIn(double power)
     {
-//        xEncoder.setPower(1.0);
-        leftIntake.setPower(-power * .9);
-        leftInSupport.setPower(-1);
-//        yEncoder.setPower(-1.0);
-        rightIntake.setPower(power * .7);
-        rightInSupport.setPower(1);
+////        xEncoder.setPower(1.0);
+//        leftIntake.setPower(-power * .9);
+//        leftInSupport.setPower(-1);
+////        yEncoder.setPower(-1.0);
+//        rightIntake.setPower(power * .7);
+//        rightInSupport.setPower(1);
 
+        telemetry.addData("left intake milliamps: ", leftIntake.getCurrentDraw(ExpansionHubEx.CurrentDrawUnits.MILLIAMPS));
+        telemetry.addData("right intake milliamps: ", rightIntake.getCurrentDraw(ExpansionHubEx.CurrentDrawUnits.MILLIAMPS));
+
+        if(isLeftStalled())
+        {
+            leftIntake.setPower(-power * .9);
+            leftInSupport.setPower(-1);
+            rightIntake.setPower(power * .25);
+            rightInSupport.setPower(1);
+        }
+        else if(isRightStalled())
+        {
+            leftIntake.setPower(-power * .25);
+            leftInSupport.setPower(-1);
+            rightIntake.setPower(power * .9);
+            rightInSupport.setPower(1);
+        }
+        else
+        {
+            leftIntake.setPower(-power * .9);
+            leftInSupport.setPower(-1);
+            rightIntake.setPower(power * .7);
+            rightInSupport.setPower(1);
+        }
+
+    }
+
+    public void servosIn()
+    {
+        leftInSupport.setPower(-1);
+        rightInSupport.setPower(1);
+    }
+
+    private boolean isLeftStalled()
+    {
+
+        if(leftIntake.getCurrentDraw(ExpansionHubEx.CurrentDrawUnits.MILLIAMPS) > stallCurrent)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private boolean isRightStalled()
+    {
+
+        if(rightIntake.getCurrentDraw(ExpansionHubEx.CurrentDrawUnits.MILLIAMPS) > stallCurrent)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     /**
