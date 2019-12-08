@@ -186,8 +186,9 @@ public class Robot
         /*
          * Setting ExpansionHub I2C bus speed
          */
-//        expansionHub.setAllI2cBusSpeeds(ExpansionHubEx.I2cBusSpeed.FAST_400K);
-//        telemetry.addLine("Setting speed of all I2C buses");
+        expansionHub.setAllI2cBusSpeeds(ExpansionHubEx.I2cBusSpeed.FAST_400K);
+        expansionHubAux.setAllI2cBusSpeeds(ExpansionHubEx.I2cBusSpeed.FAST_400K);
+        telemetry.addLine("Setting speed of all I2C buses");
 
         try
         {
@@ -959,17 +960,21 @@ public class Robot
 //        rightIntake.setPower(power * .7);
 //        rightInSupport.setPower(1);
 
-        telemetry.addData("left intake milliamps: ", leftIntake.getCurrentDraw(ExpansionHubEx.CurrentDrawUnits.MILLIAMPS));
-        telemetry.addData("right intake milliamps: ", rightIntake.getCurrentDraw(ExpansionHubEx.CurrentDrawUnits.MILLIAMPS));
+        // Adding these 2 variables so that we only access the expansion hub once per call.
+        double leftIntakeCurrent = leftIntake.getCurrentDraw(ExpansionHubEx.CurrentDrawUnits.MILLIAMPS);
+        double rightIntakeCurrent = rightIntake.getCurrentDraw(ExpansionHubEx.CurrentDrawUnits.MILLIAMPS);
 
-        if(isLeftStalled())
+        telemetry.addData("left intake milliamps: ", leftIntakeCurrent);
+        telemetry.addData("right intake milliamps: ", rightIntakeCurrent);
+
+        if( Math.abs(leftIntakeCurrent) > stallCurrent )  // can motor current be negative?
         {
             leftIntake.setPower(-power * .9);
             leftInSupport.setPower(-1);
             rightIntake.setPower(power * .25);
             rightInSupport.setPower(1);
         }
-        else if(isRightStalled())
+        else if( Math.abs(rightIntakeCurrent) > stallCurrent )
         {
             leftIntake.setPower(-power * .25);
             leftInSupport.setPower(-1);
