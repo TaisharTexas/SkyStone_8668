@@ -174,6 +174,13 @@ public class SBF_Teleop extends OpMode
             robot.lift.wristDrive(wristPos);
         }
 
+        if(customPad1.getB())
+        {
+            robot.lift.goHome();
+        }
+
+        getRuntime();
+
 
         loopTime = getRuntime();
         resetStartTime();

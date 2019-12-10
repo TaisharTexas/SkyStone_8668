@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.openftc.revextensions2.ExpansionHubMotor;
 
+import java.util.concurrent.TimeUnit;
+
 public class Lift
 {
     private Telemetry telemetry;
@@ -27,7 +29,13 @@ public class Lift
 
     public int encoder = 0;
 
+    private final double HOME = .89;
+    private final double EXTEND = .62;
+
     double thePosition;
+    int state = 0;
+    // internal time tracking
+    private long startTime = 0; // in nanoseconds
 
 
     public void init(Telemetry telem, HardwareMap hwmap)
@@ -177,6 +185,67 @@ public class Lift
         {
             wrist.setPosition(position);
         }
+    }
+
+    public void goHome()
+    {
+
+        resetStartTime();
+
+        switch (state)
+        {
+            case 0:
+                horizontalDrive(HOME);
+                wristRetract();
+                releaseClaw();
+                verticalDrive(-0.3);
+                if(getRuntime() > 1.25)
+                {
+                    resetStartTime();
+                    state++;
+                }
+                else if(touchL.isPressed() || touchR.isPressed())
+                {
+                    resetStartTime();
+                    verticalDrive(0.0);
+                    state = 2;
+                }
+                break;
+
+            case 1:
+                horizontalDrive(HOME);
+                wristRetract();
+                releaseClaw();
+                verticalDrive(-1.0);
+                if(touchL.isPressed() || touchR.isPressed())
+                {
+                    resetStartTime();
+                    verticalDrive(0.0);
+                    state++;
+                }
+
+            default:
+                break;
+
+        }
+    }
+
+    /**
+     * Get the number of seconds this op mode has been running
+     * <p>
+     * This method has sub millisecond accuracy.
+     * @return number of seconds this op mode has been running
+     */
+    public double getRuntime() {
+        final double NANOSECONDS_PER_SECOND = TimeUnit.SECONDS.toNanos(1);
+        return (System.nanoTime() - startTime) / NANOSECONDS_PER_SECOND;
+    }
+
+    /**
+     * Reset the start time to zero.
+     */
+    public void resetStartTime() {
+        startTime = System.nanoTime();
     }
 
 
