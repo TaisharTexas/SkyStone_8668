@@ -172,7 +172,7 @@ public class Pursuit
 
         telemetry.addData("Target loc: ", target);
         arrive(target, theMaxSpeed);
-        point(theTargetHeading, 300);
+        point(theTargetHeading, 100);
 
         if(lastSegment && location.dist(end) <= .5)
         {
@@ -244,7 +244,7 @@ public class Pursuit
     {
         double desiredAngularVelocity = (targetHeading-currentHeading);
 
-        double slowDown = 20;
+        double slowDown = 30;
 
         if(Math.abs(desiredAngularVelocity) < slowDown)
         {
