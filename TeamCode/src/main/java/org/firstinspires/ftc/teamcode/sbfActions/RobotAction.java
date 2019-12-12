@@ -25,14 +25,14 @@ public class RobotAction
     /** Creates a new object from the supplied parameters. */
     RobotAction( String anID, String next, double theTimeout)
     {
-        theId = anID;
+        theId = anID.toUpperCase();
         if(next.isEmpty())
         {
             theNextAction = null;
         }
         else
         {
-            theNextAction = next;
+            theNextAction = next.toUpperCase();
         }
 
         timeout = theTimeout;

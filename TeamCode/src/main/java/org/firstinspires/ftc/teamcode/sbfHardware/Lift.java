@@ -198,7 +198,7 @@ public class Lift
                 horizontalDrive(HOME);
                 wristRetract();
                 releaseClaw();
-                verticalDrive(-0.3);
+                verticalDrive(0.3);
                 if(getRuntime() > 1.25)
                 {
                     resetStartTime();
@@ -216,13 +216,14 @@ public class Lift
                 horizontalDrive(HOME);
                 wristRetract();
                 releaseClaw();
-                verticalDrive(-1.0);
+                verticalDrive(1.0);
                 if(touchL.isPressed() || touchR.isPressed())
                 {
                     resetStartTime();
                     verticalDrive(0.0);
                     state++;
                 }
+                break;
 
             default:
                 break;

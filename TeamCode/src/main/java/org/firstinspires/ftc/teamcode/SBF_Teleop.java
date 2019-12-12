@@ -177,6 +177,7 @@ public class SBF_Teleop extends OpMode
         if(customPad1.getB())
         {
             robot.lift.goHome();
+            shoulderPos = .89;
         }
 
         getRuntime();

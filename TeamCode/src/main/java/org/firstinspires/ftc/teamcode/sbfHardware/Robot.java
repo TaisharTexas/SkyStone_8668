@@ -198,7 +198,8 @@ public class Robot
         }
         catch(Exception p_exception)
         {
-            telemetry.addData("RF not foundd in config file", "");
+            telemetry.addData("RF not found in config file", "");
+            RF = null;
         }
         try
         {
@@ -209,6 +210,7 @@ public class Robot
         catch (Exception p_exception)
         {
             telemetry.addData("RR not found in config file", "");
+            RR = null;
         }
         try
         {
@@ -219,6 +221,7 @@ public class Robot
         catch (Exception p_exception)
         {
             telemetry.addData("LF not found in config file", "");
+            LF = null;
         }
         try
         {
@@ -229,6 +232,7 @@ public class Robot
         catch (Exception p_exception)
         {
             telemetry.addData("LR not found in config file","");
+            LR = null;
         }
 
         try
@@ -240,6 +244,7 @@ public class Robot
         catch(Exception p_exception)
         {
             telemetry.addData("x encoder not found in config file", "");
+            xEncoder = null;
         }
         try
         {
@@ -250,6 +255,7 @@ public class Robot
         catch(Exception p_exception)
         {
             telemetry.addData("y encoder not found in config file", "");
+            yEncoder = null;
         }
 
         try
@@ -260,6 +266,7 @@ public class Robot
         catch (Exception p_exception)
         {
             telemetry.addData("left intake not found in config file","");
+            leftIntake = null;
         }
         try
         {
@@ -269,12 +276,12 @@ public class Robot
         catch (Exception p_exception)
         {
             telemetry.addData("right intake not found in config file", "");
+            rightIntake = null;
         }
         try
         {
             leftFoundation = hardwareMap.get(Servo.class, "leftFoundation");
             leftFoundation.setDirection(Servo.Direction.FORWARD);
-//            leftFoundation.scaleRange();
         }
         catch (Exception p_exeception)
         {
@@ -285,7 +292,6 @@ public class Robot
         {
             rightFoundation = hardwareMap.get(Servo.class, "rightFoundation");
             rightFoundation.setDirection(Servo.Direction.REVERSE);
-//            rightFoundation.scaleRange();
         }
         catch (Exception p_exeception)
         {
@@ -296,7 +302,6 @@ public class Robot
         {
             leftInSupport = hardwareMap.get(CRServo.class, "leftIn");
             leftInSupport.setDirection(CRServo.Direction.REVERSE);
-//            rightFoundation.scaleRange();
         }
         catch (Exception p_exeception)
         {
@@ -307,7 +312,6 @@ public class Robot
         {
             rightInSupport = hardwareMap.get(CRServo.class, "rightIn");
             rightInSupport.setDirection(CRServo.Direction.REVERSE);
-//            rightFoundation.scaleRange();
         }
         catch (Exception p_exeception)
         {
@@ -732,7 +736,7 @@ public class Robot
         telemetry.addData("getRuntime() = ", getRuntime());
 //        telemetry.addData("time = ", time);
 
-        joystickDrive(lStickX, lStickY, -correction, 0.0, power);
+        joystickDrive(lStickX, -lStickY, correction, 0.0, power);
 
 //        if (((Math.abs(bulkData.getMotorCurrentPosition(encoderMotor)- initialPosition)) >= driveDistance) || (getRuntime() > time))
         if (((Math.abs(encoderMotor.getCurrentPosition() - initialPosition)) >= driveDistance) || (getRuntime() > time))
@@ -798,7 +802,7 @@ public class Robot
 
             if ( Math.abs(error) < 60 )
             {
-                directionalPower = error * 0.01;
+                directionalPower = error * 0.03;
                 if (directionalPower > 0 )
                 {
                     directionalPower = Range.clip( directionalPower, 0.25, power);
@@ -818,7 +822,7 @@ public class Robot
 
         joystickDrive(0.0, 0.0, directionalPower, 0.0, power);
 
-        if(Math.abs(targetHeading - currentHeading) < 4.0 || getRuntime() > time)
+        if(Math.abs(targetHeading - currentHeading) < 3.0 || getRuntime() > time)
         {
             stop();
 
@@ -1121,7 +1125,7 @@ public class Robot
     {
         if(rightFoundation != null)
         {
-            rightFoundation.setPosition(.15);
+            rightFoundation.setPosition(.2);
         }
         else
         {
@@ -1130,7 +1134,7 @@ public class Robot
 
         if(leftFoundation != null)
         {
-            leftFoundation.setPosition(.15);
+            leftFoundation.setPosition(.2);
         }
         else
         {

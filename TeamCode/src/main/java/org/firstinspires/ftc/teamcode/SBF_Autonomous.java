@@ -75,6 +75,7 @@ public class SBF_Autonomous extends OpMode
     public void start()
     {
         theMaster.setFirstAction(ssPos);
+//        theMaster.setFirstAction("One");
         resetStartTime();
         pursuit.elapsedTime = 0;
         robot.start();

@@ -188,10 +188,10 @@ public class ActionMaster
             {
                 if(action.theNextAction != null)
                 {
-                    nextList.add(action.theNextAction);
+                    nextList.add(action.theNextAction.toUpperCase());
                 }
                 action.exit();
-                runMap.remove(action.theId);
+                runMap.remove(action.theId.toUpperCase());
             }
         }
 
@@ -215,7 +215,7 @@ public class ActionMaster
     /** Adds an action to the run map. */
     public void addRunAction(String action)
     {
-        runMap.put(action, actionMap.get(action));
+        runMap.put(action.toUpperCase(), actionMap.get(action.toUpperCase()));
     }
 
     /** Clears the action map, run map, and next list of actions.*/
@@ -229,7 +229,7 @@ public class ActionMaster
     /** Adds the action listed in the parameter to the action map.*/
     public void addAction(RobotAction action)
     {
-        actionMap.put(action.theId, action);
+        actionMap.put(action.theId.toUpperCase(), action);
         telemetry.addData("Adding Action Named: ", action.theId);
     }
 

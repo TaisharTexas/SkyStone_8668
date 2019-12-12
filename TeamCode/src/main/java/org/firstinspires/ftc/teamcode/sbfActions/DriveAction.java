@@ -22,13 +22,14 @@ public class DriveAction extends RobotAction
     boolean theIntake;
 
     /** Creates a new object from the supplied parameters. */
-    DriveAction(String id, String nextAction, double duration, double power, double direction, double distance, boolean intake)
+    DriveAction(String id, String nextAction, double duration, double power, double direction,
+                double distance, boolean intake)
     {
         super(id, nextAction, duration);
 
         thePower = power;
         theDirection = direction;
-        theGain = .01;
+        theGain = .03;
         theDistance = distance;
         theIntake = intake;
 //        timeout = duration;
