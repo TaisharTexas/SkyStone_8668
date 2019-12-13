@@ -1,0 +1,3 @@
+Type,ID,Next Action,Duration,Pwr/Position,Direction,Distance/x,Intake/y
+DriveAction,Left,Park,2,0.5,0,20,FALSE
+DriveAction,Park,,4,0.7,90,35,FALSE

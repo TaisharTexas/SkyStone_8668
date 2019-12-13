@@ -1,0 +1,13 @@
+Type,ID,Next Action,Duration,Pwr/Position,Direction,Distance/x,Intake/y
+DriveAction,Left,SlideRight,4,0.5,180,5,FALSE
+DriveAction,SlideRight,ToFoundation,4,0.8,90,6,FALSE
+DriveAction,ToFoundation,GrabFoundation,4,0.4,180,24,FALSE
+FoundationAction,GrabFoundation,Wait,2,0.01,,,
+WaitAction,Wait,FaceWall,1,,,,
+TurnAction,FaceWall,PullFoundation,3,1,0,,
+DriveAction,PullFoundation,SlideCorner,5,0.6,0,36,FALSE
+DriveAction,SlideCorner,ReleaseFoundation,4,0.8,90,6,FALSE
+FoundationAction,ReleaseFoundation,WaitAgain,2,0.9,,,
+WaitAction,WaitAgain,FaceWallAgain,1,,,,
+TurnAction,FaceWallAgain,Park,2,1,0,,
+DriveAction,Park,,8,1,-95,58,FALSE
