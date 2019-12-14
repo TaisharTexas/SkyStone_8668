@@ -99,16 +99,42 @@ public class SBF_Teleop extends OpMode
         telemetry.addData("right vertical: ", robot.lift.rightVertical.getCurrentPosition());
         telemetry.addData("left vertical: ", robot.lift.leftVertical.getCurrentPosition());
 
+        double[] shoulderVals = {.86, .7, .62};
         if(customPad2.getDpadDown())
         {
             shoulderPos += .01;
+//            if(shoulderPos==shoulderVals[1])
+//            {
+//                shoulderPos=shoulderVals[0];
+//            }
+//            else if(shoulderPos==shoulderVals[2])
+//            {
+//                shoulderPos=shoulderVals[1];
+//            }
+//            else
+//            {
+//                shoulderPos=shoulderVals[0];
+//            }
         }
         else if(customPad2.getDpadUp())
         {
+//            if(shoulderPos==shoulderVals[0])
+//            {
+//                shoulderPos=shoulderVals[1];
+//            }
+//            else if(shoulderPos==shoulderVals[1])
+//            {
+//                shoulderPos=shoulderVals[2];
+//            }
+//            else
+//            {
+//                shoulderPos=shoulderVals[2];
+//            }
             shoulderPos -= .01;
         }
         shoulderPos = Range.clip(shoulderPos, .62, .89);
         robot.lift.horizontalDrive(shoulderPos);
+
 
 
         //intake controls
@@ -154,7 +180,7 @@ public class SBF_Teleop extends OpMode
         if(customPad2.getX())
         {
             robot.lift.wristDeploy();
-            wristPos = 0.9;
+            wristPos = 0.525;
         }
         else if(customPad2.getB())
         {
@@ -175,6 +201,17 @@ public class SBF_Teleop extends OpMode
         }
 
         if(customPad1.getB())
+        {
+            robot.lift.goHome();
+            shoulderPos = .89;
+        }
+
+        if(customPad2.getLeftTrigger() > .1)
+        {
+            robot.lift.autoExtend();
+            shoulderPos = .62;
+        }
+        if(customPad2.getRightTrigger() > .1)
         {
             robot.lift.goHome();
             shoulderPos = .89;

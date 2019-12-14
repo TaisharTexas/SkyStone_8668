@@ -34,6 +34,7 @@ public class Lift
 
     double thePosition;
     int state = 0;
+    int stateTwo = 0;
     // internal time tracking
     private long startTime = 0; // in nanoseconds
 
@@ -117,13 +118,13 @@ public class Lift
         }
         else if(touchR.isPressed() || touchL.isPressed())
         {
-            leftVertical.setPower(0.2);
-            rightVertical.setPower(0.2);
+            leftVertical.setPower(0.22);
+            rightVertical.setPower(0.22);
         }
-        else if ( encoder < 400  && power > 0)
+        else if ( encoder < 350  && power > 0)
         {
-            leftVertical.setPower(-0.15);
-            rightVertical.setPower(-0.15);
+            leftVertical.setPower(-0.2);
+            rightVertical.setPower(-0.2);
         }
 
         else if(power > .01 || power < -.01)
@@ -169,8 +170,10 @@ public class Lift
     {
         if(wrist != null)
         {
-            wrist.setPosition(.9);
+//            wrist.setPosition(.9);
+            wrist.setPosition(.525);
         }
+
     }
     public void wristRetract()
     {
@@ -222,6 +225,43 @@ public class Lift
                     resetStartTime();
                     verticalDrive(0.0);
                     state++;
+                }
+                break;
+
+            default:
+                break;
+
+        }
+    }
+
+    public void autoExtend()
+    {
+        resetStartTime();
+
+        switch (stateTwo)
+        {
+            case 0:
+                verticalDrive(-0.2);
+                if (leftVertical.getCurrentPosition() >= 150)
+                {
+                    verticalDrive(0.0);
+                    resetStartTime();
+                    stateTwo++;
+                }
+                break;
+
+            case 1:
+                horizontalDrive(EXTEND);
+                if (getRuntime() > 1.5)
+                {
+                    wristDeploy();
+                    verticalDrive(.2);
+                    if (getRuntime() > 1.7)
+                    {
+                        verticalDrive(0.0);
+                    }
+                    resetStartTime();
+                    stateTwo++;
                 }
                 break;
 

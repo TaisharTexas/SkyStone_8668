@@ -973,7 +973,7 @@ public class Robot
 
         if( Math.abs(leftIntakeCurrent) > stallCurrent )  // can motor current be negative?
         {
-            leftIntake.setPower(-power * .9);
+            leftIntake.setPower(-power * .75);
             leftInSupport.setPower(-1);
             rightIntake.setPower(power * .25);
             rightInSupport.setPower(1);
@@ -982,14 +982,14 @@ public class Robot
         {
             leftIntake.setPower(-power * .25);
             leftInSupport.setPower(-1);
-            rightIntake.setPower(power * .9);
+            rightIntake.setPower(power * .75);
             rightInSupport.setPower(1);
         }
         else
         {
-            leftIntake.setPower(-power * .9);
+            leftIntake.setPower(-power * .7);
             leftInSupport.setPower(-1);
-            rightIntake.setPower(power * .7);
+            rightIntake.setPower(power * .5);
             rightInSupport.setPower(1);
         }
 
