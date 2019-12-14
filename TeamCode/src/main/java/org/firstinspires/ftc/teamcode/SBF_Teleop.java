@@ -206,16 +206,16 @@ public class SBF_Teleop extends OpMode
             shoulderPos = .89;
         }
 
-        if(customPad2.getLeftTrigger() > .1)
-        {
-            robot.lift.autoExtend();
-            shoulderPos = .62;
-        }
-        if(customPad2.getRightTrigger() > .1)
-        {
-            robot.lift.goHome();
-            shoulderPos = .89;
-        }
+//        if(customPad2.getLeftTrigger() > .1)
+//        {
+//            robot.lift.autoExtend();
+//            shoulderPos = .62;
+//        }
+//        if(customPad2.getRightTrigger() > .1)
+//        {
+//            robot.lift.goHome();
+//            shoulderPos = .89;
+//        }
 
         getRuntime();
 
