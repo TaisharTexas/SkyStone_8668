@@ -22,4 +22,11 @@ public class RedFoundationRavens extends SBF_Autonomous
     {
         this.autoFile = new File("/storage/9016-4EF8/RedFoundationRavens.csv");
     }
+
+    @Override
+    public void init()
+    {
+        offset = 90;
+        super.init();
+    }
 }

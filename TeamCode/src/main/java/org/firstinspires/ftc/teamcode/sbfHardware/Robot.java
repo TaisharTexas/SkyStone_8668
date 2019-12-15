@@ -34,6 +34,7 @@ public class Robot
     // Robot - Generic Items
     private Telemetry telemetry;
     private HardwareMap hardwareMap;
+    private double offset;
 
     // Lift Class
     public Lift lift = new Lift();
@@ -167,12 +168,13 @@ public class Robot
      *               specific classes for initializing hardware.
      * @param useVision A boolean flag which tells the class whether or not the camera should be used.
      * */
-    public void init(Telemetry telem, HardwareMap hwmap, boolean useVision )
+    public void init(Telemetry telem, HardwareMap hwmap, boolean useVision, double theOffset )
     {
         telemetry = telem;
         hardwareMap = hwmap;
         useCamera = useVision;
         startTime = 0;
+        offset = theOffset;
 
         if ( useCamera)
         {
@@ -440,7 +442,7 @@ public class Robot
      */
     public void updateMotors(PVector neededVelocity, double spin)
     {
-        neededVelocity.rotate((float)Math.toRadians(currentHeading));
+        neededVelocity.rotate((float)Math.toRadians(updateHeadingPursuit(offset)));
         double x = neededVelocity.x / 40.0; //bot.maxSpeed; //max speed is 31.4 in/sec
         double y = neededVelocity.y / 40.0; // bot.maxSpeed;
 
@@ -508,6 +510,11 @@ public class Robot
     // Robot Private Methods
     //
 
+    private double updateHeadingPursuit(double offset)
+    {
+        return (updateHeadingInternal() + offset);
+    }
+
     /**
      * Robot - Used to query the IMU and get the robot's heading.  Internal method only.
      *
@@ -525,8 +532,8 @@ public class Robot
      */
     private float getXChange()
     {
-        double inchesX = (((xEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.cos(Math.toRadians(currentHeading)) +
-                         (((yEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.sin(Math.toRadians(currentHeading));
+        double inchesX = (((xEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.cos(Math.toRadians(updateHeadingPursuit(offset))) +
+                         (((yEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.sin(Math.toRadians(updateHeadingPursuit(offset)));
         return (float)inchesX;
     }
 
@@ -536,8 +543,8 @@ public class Robot
      */
     private float getYChange()
     {
-        double inchesY = ((-(xEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.sin(Math.toRadians(currentHeading)) +
-                         (((yEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.cos(Math.toRadians(currentHeading));
+        double inchesY = ((-(xEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.sin(Math.toRadians(updateHeadingPursuit(offset))) +
+                         (((yEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.cos(Math.toRadians(updateHeadingPursuit(offset)));
         return (float)inchesY;
     }
 
@@ -547,8 +554,8 @@ public class Robot
      */
     private float getXLinearVelocity()
     {
-        double linearX = xEncInPerSec * Math.cos(Math.toRadians(currentHeading)) +
-                yEncInPerSec * Math.sin(Math.toRadians(currentHeading));
+        double linearX = xEncInPerSec * Math.cos(Math.toRadians(updateHeadingPursuit(offset))) +
+                yEncInPerSec * Math.sin(Math.toRadians(updateHeadingPursuit(offset)));
         return (float)linearX;
     }
 
@@ -558,8 +565,8 @@ public class Robot
      */
     private float getYLinearVelocity()
     {
-        double linearY = -xEncInPerSec * Math.sin(Math.toRadians(currentHeading)) +
-                (yEncInPerSec) * Math.cos(Math.toRadians(currentHeading));
+        double linearY = -xEncInPerSec * Math.sin(Math.toRadians(updateHeadingPursuit(offset))) +
+                (yEncInPerSec) * Math.cos(Math.toRadians(updateHeadingPursuit(offset)));
         return (float)linearY;
     }
 

@@ -25,4 +25,11 @@ public class autoRun extends SBF_Autonomous
         autoFile = new File("/storage/9016-4EF8/autoRun.csv");
 
     }
+
+    @Override
+    public void init()
+    {
+        offset = 90;
+        super.init();
+    }
 }
