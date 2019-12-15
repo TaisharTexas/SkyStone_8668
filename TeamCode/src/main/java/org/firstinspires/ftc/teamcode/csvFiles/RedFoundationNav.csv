@@ -6,8 +6,9 @@ FoundationAction,GrabFoundation,Wait,2,0.01,,,
 WaitAction,Wait,PullFoundation,1,,,,
 DriveAction,PullFoundation,FaceWall,3,0.6,0,3,FALSE
 TurnAction,FaceWall,DriveAway,6,0.7,21,,
-DriveAction,DriveAway,FinishFace,3,0.7,0,6,FALSE
+DriveAction,DriveAway,FinishFace,3,0.7,0,10,FALSE
 TurnAction,FinishFace,IntoWall,5,0.6,90,,
 DriveAction,IntoWall,ReleaseFoundation,3,0.7,180,30,FALSE
-FoundationAction,ReleaseFoundation,Park,1,0.9,,,
-DriveAction,Park,,5,0.7,-7,45,FALSE
+FoundationAction,ReleaseFoundation,TurnAgain,1,0.9,,,
+TurnAction,TurnAgain,Park,3,0.7,90,,
+DriveAction,Park,,5,0.7,-11,40,FALSE
