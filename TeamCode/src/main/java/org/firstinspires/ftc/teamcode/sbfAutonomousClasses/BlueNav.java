@@ -27,6 +27,7 @@ public class BlueNav extends SBF_Autonomous
     public void init()
     {
         offset = 90;
+        whichCamera = "leftCam";
         super.init();
     }
 }

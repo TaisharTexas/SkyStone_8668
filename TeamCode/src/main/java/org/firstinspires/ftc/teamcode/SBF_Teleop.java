@@ -39,7 +39,7 @@ public class SBF_Teleop extends OpMode
 
     public void init()
     {
-        robot.init(telemetry, hardwareMap, false);
+        robot.init(telemetry, hardwareMap, false, 0.0);
         customPad1.init(telemetry, hardwareMap, gamepad1);
         customPad2.init(telemetry, hardwareMap, gamepad2);
 

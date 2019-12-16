@@ -20,10 +20,11 @@ public class CameraVision
 
     CameraVision.StageSwitchingPipeline stageSwitchingPipeline;
 
-    String camDeviceName = "leftCam";
+    public String camDeviceName = "leftCam";
 
-    public void init(HardwareMap hwMap)
+    public void init(HardwareMap hwMap, String whichCam)
     {
+        camDeviceName = whichCam;
         int cameraMonitorViewId = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName());
 //        webCam = new OpenCvWebcam(hwMap.get(WebcamName.class, "rightCam"), cameraMonitorViewId);
         webCam = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, camDeviceName), cameraMonitorViewId);

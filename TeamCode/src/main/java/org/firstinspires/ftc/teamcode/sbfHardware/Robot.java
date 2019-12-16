@@ -36,6 +36,7 @@ public class Robot
     private Telemetry telemetry;
     private HardwareMap hardwareMap;
     private double offset;
+    public String whichCamera = "leftCam";
 
     // Lift Class
     public Lift lift = new Lift();
@@ -179,7 +180,7 @@ public class Robot
 
         if ( useCamera)
         {
-            eyeOfSauron.init(hwmap);
+            eyeOfSauron.init(hwmap, whichCamera);
         }
 
         lift.init(telemetry, hardwareMap);

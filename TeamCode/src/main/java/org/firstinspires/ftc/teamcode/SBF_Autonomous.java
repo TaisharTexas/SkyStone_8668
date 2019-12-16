@@ -21,6 +21,8 @@ public class SBF_Autonomous extends OpMode
     Path drivePath = new Path();
 
     public File autoFile = null;
+    public String whichCamera;
+
 
     String ssPos = "One";
     public double offset;
@@ -35,6 +37,7 @@ public class SBF_Autonomous extends OpMode
     {
 //        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
+        robot.whichCamera = whichCamera;
         robot.init(telemetry, hardwareMap, false, offset);
 
 //        autoFile = new File("/storage/9016-4EF8/autoRun.csv");

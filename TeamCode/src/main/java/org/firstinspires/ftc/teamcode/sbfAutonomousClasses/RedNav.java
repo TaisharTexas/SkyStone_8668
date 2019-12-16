@@ -25,6 +25,7 @@ public class RedNav extends SBF_Autonomous
     public void init()
     {
         offset = 90;
+        whichCamera = "rightCam";
         super.init();
     }
 }
