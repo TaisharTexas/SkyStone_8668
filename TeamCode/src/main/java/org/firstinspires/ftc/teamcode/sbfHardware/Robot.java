@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.sbfHardware;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -21,7 +22,7 @@ import org.openftc.revextensions2.RevBulkData;
 import java.util.concurrent.TimeUnit;
 import com.qualcomm.robotcore.hardware.Servo;
 
-
+@Config
 /**
  * Defines the robot. Has objects needed for each mechanism in use on the robot and contains the all
  * the methods used by the robot.
@@ -64,8 +65,8 @@ public class Robot
     private CRServo leftInSupport = null;
     private CRServo rightInSupport = null;
     private double stallCurrent = 5100;
-    private double left = 0;
-    private double right = 0;
+    static double leftMaxIntakeSpd = 0.7;
+    static double rightMaxIntakeSpd = 0.5;
 
     // Foundation Fingers Items
     private Servo leftFoundation = null;
@@ -128,7 +129,7 @@ public class Robot
     /** The wheel diameter of the mecanum wheel currently on the robot.
      * Used in converting inches to encoder ticks. Allows the programmer to code in inches while
      * the motor measures in encoder ticks.*/
-    final double WHEEL_DIAMETER_INCHES = 4.0;
+    final double WHEEL_DIAMETER_INCHES = 100.0/25.4;
     /** The inches traveled per wheel rotation for the 4" diameter mecanum wheels currently on the robot.
      * Used in converting inches to encoder ticks. Allows the programmer to code in inches while
      * the motor measures in encoder ticks.*/
@@ -999,9 +1000,9 @@ public class Robot
         }
         else
         {
-            leftIntake.setPower(-power * .7);
+            leftIntake.setPower(-power * leftMaxIntakeSpd );
             leftInSupport.setPower(-1);
-            rightIntake.setPower(power * .5);
+            rightIntake.setPower(power * rightMaxIntakeSpd);
             rightInSupport.setPower(1);
         }
 
