@@ -426,6 +426,16 @@ public class Robot
     }
 
     /**
+     * Robot - applies an offset that is created in the gyro when initializing the robot in the
+     * Pursuit enabled autonomous
+     * @return double indicating the current heading as read from the gyro with the offset added.
+     */
+    public double getHeadingPursuit()
+    {
+        return (currentHeading + offset);
+    }
+
+    /**
      * Robot - calculate the amount of distance the robot has travelled since the last time this was called
      * @return PVector indicating the number of inches traveled in x,y
      */
@@ -442,7 +452,7 @@ public class Robot
      */
     public void updateMotors(PVector neededVelocity, double spin)
     {
-        neededVelocity.rotate((float)Math.toRadians(updateHeadingPursuit(offset)));
+        neededVelocity.rotate((float)Math.toRadians( getHeadingPursuit() ));
         double x = neededVelocity.x / 40.0; //bot.maxSpeed; //max speed is 31.4 in/sec
         double y = neededVelocity.y / 40.0; // bot.maxSpeed;
 
@@ -510,11 +520,6 @@ public class Robot
     // Robot Private Methods
     //
 
-    private double updateHeadingPursuit(double offset)
-    {
-        return (updateHeadingInternal() + offset);
-    }
-
     /**
      * Robot - Used to query the IMU and get the robot's heading.  Internal method only.
      *
@@ -532,8 +537,8 @@ public class Robot
      */
     private float getXChange()
     {
-        double inchesX = (((xEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.cos(Math.toRadians(updateHeadingPursuit(offset))) +
-                         (((yEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.sin(Math.toRadians(updateHeadingPursuit(offset)));
+        double inchesX = (((xEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.cos(Math.toRadians(getHeadingPursuit())) +
+                         (((yEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.sin(Math.toRadians(getHeadingPursuit()));
         return (float)inchesX;
     }
 
@@ -543,8 +548,8 @@ public class Robot
      */
     private float getYChange()
     {
-        double inchesY = ((-(xEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.sin(Math.toRadians(updateHeadingPursuit(offset))) +
-                         (((yEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.cos(Math.toRadians(updateHeadingPursuit(offset)));
+        double inchesY = ((-(xEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.sin(Math.toRadians( getHeadingPursuit() )) +
+                         (((yEncoderChange) / encTickPerRotation) * encInchesPerRotation) * Math.cos(Math.toRadians( getHeadingPursuit() ));
         return (float)inchesY;
     }
 
@@ -554,8 +559,8 @@ public class Robot
      */
     private float getXLinearVelocity()
     {
-        double linearX = xEncInPerSec * Math.cos(Math.toRadians(updateHeadingPursuit(offset))) +
-                yEncInPerSec * Math.sin(Math.toRadians(updateHeadingPursuit(offset)));
+        double linearX = xEncInPerSec * Math.cos(Math.toRadians( getHeadingPursuit() )) +
+                yEncInPerSec * Math.sin(Math.toRadians( getHeadingPursuit() ));
         return (float)linearX;
     }
 
@@ -565,8 +570,8 @@ public class Robot
      */
     private float getYLinearVelocity()
     {
-        double linearY = -xEncInPerSec * Math.sin(Math.toRadians(updateHeadingPursuit(offset))) +
-                (yEncInPerSec) * Math.cos(Math.toRadians(updateHeadingPursuit(offset)));
+        double linearY = -xEncInPerSec * Math.sin(Math.toRadians( getHeadingPursuit() )) +
+                (yEncInPerSec) * Math.cos(Math.toRadians( getHeadingPursuit() ));
         return (float)linearY;
     }
 

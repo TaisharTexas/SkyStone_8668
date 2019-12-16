@@ -22,22 +22,22 @@ public class Pursuit
     public double currentAngularVelocity;
     public double joystickAngularVelocity;
 
-    double endZone;
-    double maxSpeed;
-    double maxAccel;
-    double gainValue;
-    double turnGain;
+    private double endZone;
+    private double maxSpeed;
+    private double maxAccel;
+    private double gainValue;
+    private double turnGain;
 
-    double accelerationSteepness = 4.0;
-    double timeToAccelerate = 1.0;
+    private double accelerationSteepness = 4.0;
+    private double timeToAccelerate = 1.0;
 
-    int currentSegment = 0;
-    boolean lastSegment = false;
-    public boolean done = false;
+    private int currentSegment = 0;
+    private boolean lastSegment = false;
+    private boolean done = false;
 
     Telemetry telemetry;
     double elapsedTime = 0;
-    PVector end;
+    private PVector end;
 
     public Pursuit(float x, float y, Telemetry telem)
     {
@@ -181,8 +181,7 @@ public class Pursuit
 
     }
 
-
-    public void arrive(PVector target, double theMaxSpeed)
+    private void arrive(PVector target, double theMaxSpeed)
     {
         //converts the 0-1 power scale of the csv file to the 0-30 power scale used by the pursuit algorithm
 //        theMaxSpeed = theMaxSpeed * 30.0;
@@ -238,9 +237,7 @@ public class Pursuit
 
     }
 
-
-
-    public void point(double targetHeading, double theMaxTurnSpeed)
+    private void point(double targetHeading, double theMaxTurnSpeed)
     {
         double desiredAngularVelocity = (targetHeading-currentHeading);
 
@@ -270,7 +267,6 @@ public class Pursuit
 
     }
 
-
     /**
      * A function to get the normal point from a point (p) to a line segment (a-b)
      * This function could be optimized to make fewer new Vector objects
@@ -284,7 +280,7 @@ public class Pursuit
      * @param segmentEnd  The target waypoint to which the robot is attempting to drive.
      * @return The target direction the robot will drive at to move towards the end point.
      * */
-    public PVector getNormalPoint(PVector projectedLoc, PVector segmentStart, PVector segmentEnd) {
+    private PVector getNormalPoint(PVector projectedLoc, PVector segmentStart, PVector segmentEnd) {
         // Vector from a to p
         PVector ap = PVector.sub(projectedLoc, segmentStart);
         // Vector from a to b
@@ -297,11 +293,9 @@ public class Pursuit
     }
 
 
-    public float scaleVector(float value, float start1, float stop1, float start2, float stop2)
+    private float scaleVector(float value, float start1, float stop1, float start2, float stop2)
     {
-        float outgoing = start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1));
-
-        return outgoing;
+        return  start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1));
     }
 
     public void updatePosition(PVector currentPosition)
@@ -323,6 +317,7 @@ public class Pursuit
     {
         currentHeading = heading;
     }
+
     public boolean getDone()
     {
         return done;

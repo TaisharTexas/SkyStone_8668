@@ -84,10 +84,8 @@ public class SBF_Autonomous extends OpMode
 
     public void loop()
     {
-
-        // TODO: get rid of the pursuit items here and use the PursuitAction and the ActionMaster.
         robot.update();
-        telemetry.addData("Robot Heading: ", robot.getHeading());
+        telemetry.addData("Robot Heading: ", robot.getHeadingPursuit());
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////
@@ -108,7 +106,6 @@ public class SBF_Autonomous extends OpMode
 //        robot.updateMotors(pursuit.desiredVelocity.copy(), pursuit.joystickAngularVelocity);
 
         ////////////////////////////////////////////////////////////////////////////////////////////
-
 
         theMaster.execute();
 
