@@ -81,7 +81,9 @@ public class PursuitAction extends RobotAction
     @Override
     public void entry()
     {
-        thePath.addPoint((float)xPoint, (float)yPoint, thePower, theHeading);
+//        thePath.addPoint((float)xPoint, (float)yPoint, thePower, theHeading);
+        thePursuit.location.x = robot.location.x;
+        thePursuit.location.y = robot.location.y;
         super.entry();
     }
 

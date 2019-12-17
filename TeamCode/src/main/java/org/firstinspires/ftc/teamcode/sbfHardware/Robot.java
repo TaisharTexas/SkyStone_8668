@@ -38,6 +38,12 @@ public class Robot
     private double offset;
     public String whichCamera = "leftCam";
 
+    //TODO: make changeable.
+    public PVector location = new PVector(39,9);
+    public PVector velocity = new PVector(0,0);
+    public double currentAngularVelocity;
+
+
     // Lift Class
     public Lift lift = new Lift();
 
@@ -416,6 +422,12 @@ public class Robot
         /* store the current value to use as the previous value the next time around */
         prevXEncoder = bulkDataAux.getMotorCurrentPosition(xEncoder);
         prevYEncoder = bulkDataAux.getMotorCurrentPosition(yEncoder);
+
+        //TODO: Consider consolidating these updates between here and the pursuit class
+        updateVelocity(getVelocity());
+        updatePosition(getLocationChange());
+        updateHeading(getHeading());
+        updateAngularVelocity(getAngularVelocity());
     }
 
     /**
@@ -688,7 +700,7 @@ public class Robot
      *              reason, the timer will catch it.
      * @return  A boolean that tells us whether or not the robot is moving.
      */
-    public boolean drive(double power, double direction, double gain, double distance, double time, boolean intake)
+    public boolean drive(double power, double direction, double gain, double distance, double time, double intake)
     {
         double driveDistance = COUNTS_PER_INCH * distance;
         double correction;
@@ -697,10 +709,17 @@ public class Robot
 
         double actual = currentHeading;
 
-        if(intake)
+        if(intake > 0)
         {
-            leftIntake.setPower(.5);
-            rightIntake.setPower(.5);
+            intakeIn(Math.abs(intake));
+        }
+        else if(intake < 0)
+        {
+            intakeOut(Math.abs(intake));
+        }
+        else
+        {
+            intakeStop();
         }
 
 //        telemetry.addData( "Is RR-Diagonal?: ", direction ==  REVERSE_RIGHT_DIAGONAL);
@@ -1156,4 +1175,24 @@ public class Robot
         }
     }
 
+
+    public void updatePosition(PVector currentPosition)
+    {
+        location = PVector.add(location, currentPosition);
+    }
+
+    public void updateVelocity(PVector currentVelocity)
+    {
+        velocity.set(currentVelocity.x, currentVelocity.y);
+    }
+
+    public void updateAngularVelocity( double angularVelocity )
+    {
+        currentAngularVelocity = angularVelocity;
+    }
+
+    public void updateHeading( double heading )
+    {
+        currentHeading = heading;
+    }
 }

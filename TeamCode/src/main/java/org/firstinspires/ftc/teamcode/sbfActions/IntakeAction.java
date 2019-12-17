@@ -4,34 +4,22 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.sbfHardware.Robot;
 
 /**
- * Loaded into the run map as an action that drives the robot. Each action is parameterized by the CSV file.
+ * Loaded into the run map as an action that turns the robot. Each action is parameterized by the CSV file.
  *
  * @author Andrew, Error 404: Team Name Not Found
  * @see RobotAction
  * */
-public class DriveAction extends RobotAction
+public class IntakeAction extends RobotAction
 {
-    /** The robot's power. */
     double thePower;
-    /** The robot's direction. */
-    double theDirection;
-    /** The number by which the robot will correct error. */
-    double theGain;
-    /** The distance the robot will drive. */
-    double theDistance;
-    double theIntake;
+    boolean theDirection;
 
     /** Creates a new object from the supplied parameters. */
-    DriveAction(String id, String nextAction, double duration, double power, double direction,
-                double distance, double intake)
+    IntakeAction(String id, String nextAction, double duration, double power, boolean direction)
     {
         super(id, nextAction, duration);
-
         thePower = power;
         theDirection = direction;
-        theGain = .03;
-        theDistance = distance;
-        theIntake = intake;
 //        timeout = duration;
 //        theId = id;
 //
@@ -47,15 +35,13 @@ public class DriveAction extends RobotAction
 
     /** Takes the parameters from the CSV file, converts them appropriately, and calls the
      * parameterized constructor */
-    DriveAction(String[] params)
+    IntakeAction(String[] params)
     {
         this(params[0],
              params[1],
              Double.parseDouble(params[2]),
              Double.parseDouble(params[3]),
-             Double.parseDouble(params[4]),
-             Double.parseDouble(params[5]),
-             Double.parseDouble(params[6]));
+             Boolean.parseBoolean(params[4]));
     }
 
     /** Placeholder for initialization. Currently only calls the parent init method. */
@@ -69,23 +55,25 @@ public class DriveAction extends RobotAction
     @Override
     public void entry()
     {
+        if(theDirection)
+        {
+            robot.intakeIn(thePower);
+        }
+        else
+        {
+            robot.intakeOut(thePower);
+        }
         super.entry();
     }
 
-    /** The body of the action to be executed: Calls the drive() method in MecanumChassis. */
+    /** Calls the pointTurn() method in MecanumChassis. */
     @Override
     public boolean execute()
     {
-//        telemetry.addData("distance ", theDistance);
-        robot.updateVelocity(robot.getVelocity());
-        robot.updatePosition(robot.getLocationChange());
-        robot.updateHeading(robot.getHeading());
-        robot.updateAngularVelocity(robot.getAngularVelocity());
-        return robot.drive(thePower, theDirection, theGain, theDistance, timeout, theIntake);
+        return super.execute();
     }
 
-
-    /** Stops all the motors on the robot and calls the parent exit method. */
+    /** Stops all the motors and calls the parent exit method. */
     @Override
     public void exit()
     {
@@ -93,5 +81,4 @@ public class DriveAction extends RobotAction
         robot.intakeStop();
         super.exit();
     }
-
 }

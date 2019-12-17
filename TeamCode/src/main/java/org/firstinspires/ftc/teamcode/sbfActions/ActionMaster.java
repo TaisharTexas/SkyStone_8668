@@ -102,6 +102,12 @@ public class ActionMaster
                     myAction.init(telemetry, robot);
                     this.addAction(myAction);
                 }
+                else if(type.equalsIgnoreCase("INTAKEACTION"))
+                {
+                    myAction = new IntakeAction(params);
+                    myAction.init(telemetry, robot);
+                    this.addAction(myAction);
+                }
                 else if(type.equalsIgnoreCase("PURSUITACTION"))
                 {
                     if(!actionMap.containsKey(params[0].toUpperCase()))

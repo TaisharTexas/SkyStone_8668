@@ -34,6 +34,7 @@ public class Pursuit
     private int currentSegment = 0;
     private boolean lastSegment = false;
     private boolean done = false;
+    private boolean moving = false;
 
     Telemetry telemetry;
     double elapsedTime = 0;
@@ -66,8 +67,13 @@ public class Pursuit
      * Given a start waypoint and end waypoint, take the robot's current location and move the robot
      * first to the start point and then to the end point.
      */
+//    public boolean follow(Path drivePath)
     public void follow(Path drivePath)
     {
+        if(!moving)
+        {
+            moving = true;
+        }
         PVector target;
         PVector start = drivePath.pathPoints.get(currentSegment);
         end = drivePath.pathPoints.get(currentSegment + 1);
@@ -172,13 +178,15 @@ public class Pursuit
 
         telemetry.addData("Target loc: ", target);
         arrive(target, theMaxSpeed);
-        point(theTargetHeading, 100);
+        point(theTargetHeading, 175);
 
-        if(lastSegment && location.dist(end) <= .5)
+        if(lastSegment && location.dist(end) <= 3.5 && (Math.abs(currentHeading)-Math.abs(theTargetHeading)) <= 3)
         {
             done = true;
+//            moving  = false;
         }
 
+//        return !moving;
     }
 
     private void arrive(PVector target, double theMaxSpeed)
@@ -320,6 +328,7 @@ public class Pursuit
 
     public boolean getDone()
     {
+//        return !moving;
         return done;
     }
 
