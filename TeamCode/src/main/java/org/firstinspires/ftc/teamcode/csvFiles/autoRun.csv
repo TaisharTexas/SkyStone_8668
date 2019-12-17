@@ -1,0 +1,20 @@
+Type,ID,Next Action,Duration,Pwr/Position,Direction,Distance/x,Intake/y
+WaitAction,LEFT,RunLeft,1,,,,
+PursuitAction,RunLeft,done,4,20,-90,39,9
+PursuitAction,RunLeft,done,4,20,-90,45,52
+PursuitAction,RunLeft,done,4,20,-90,40,52
+PursuitAction,RunLeft,done,4,20,-90,54,27
+PursuitAction,RunLeft,done,4,20,90,112,27
+WaitAction,CENTER,RunCenter,1,,,,
+PursuitAction,RunCenter,done,4,20,0,0,0
+PursuitAction,RunCenter,done,4,20,0,0,30
+PursuitAction,RunCenter,done,4,30,0,15,30
+PursuitAction,RunCenter,done,4,20,0,15,0
+PursuitAction,RunCenter,done,4,30,0,0,0
+WaitAction,RIGHT,RunRight,1,,,,
+PursuitAction,RunRight,done,4,20,0,0,0
+PursuitAction,RunRight,done,4,20,0,0,30
+PursuitAction,RunRight,done,4,30,0,15,30
+PursuitAction,RunRight,done,4,20,0,15,0
+PursuitAction,RunRight,done,4,30,0,0,0
+FoundationAction,done,,2,0.1,,,

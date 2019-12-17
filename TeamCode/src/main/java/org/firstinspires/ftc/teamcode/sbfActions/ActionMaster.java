@@ -104,7 +104,7 @@ public class ActionMaster
                 }
                 else if(type.equalsIgnoreCase("PURSUITACTION"))
                 {
-                    if(!actionMap.containsKey(params[0]))
+                    if(!actionMap.containsKey(params[0].toUpperCase()))
                     {
                         myAction = new PursuitAction(params);
                         myAction.init(telemetry, robot);
@@ -112,7 +112,7 @@ public class ActionMaster
                     }
                     else
                     {
-                        myAction = actionMap.get(params[0]);
+                        myAction = actionMap.get(params[0].toUpperCase());
                         if(myAction != null)
                         {
                             ((PursuitAction)myAction).addPoint(params);

@@ -37,8 +37,8 @@ public class SBF_Autonomous extends OpMode
     {
 //        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        robot.whichCamera = whichCamera;
-        robot.init(telemetry, hardwareMap, false, offset);
+        robot.whichCamera = this.whichCamera;
+        robot.init(telemetry, hardwareMap, true, offset);
 
 //        autoFile = new File("/storage/9016-4EF8/autoRun.csv");
 //        autoFile = new File ("/storage/9016-4EF8/RedFoundationNav.csv");
@@ -48,23 +48,6 @@ public class SBF_Autonomous extends OpMode
         theMaster.init(telemetry, autoFile, robot);
 
         robot.getEncoderTelem();
-
-        // TODO: get rid of the Path object here and use the PursuitAction
-
-        // Set up path
-//        drivePath.addPoint(0,0,30,0);
-//        drivePath.addPoint(0,45,15,90);
-//        drivePath.addPoint(25,45,15,90);
-//        drivePath.addPoint(15,15,30,45);
-//        drivePath.addPoint(0,0,15,0);
-
-       // Attempt to map out getting 1 stone in red alliance autonomous
-//        drivePath.addPoint(39,9,25,-90);
-//        drivePath.addPoint( 43,55,20,-90);
-//        drivePath.addPoint( 30,55,20,-90);
-//        drivePath.addPoint( 60,18,25,-90);
-//        drivePath.addPoint(90, 25, 30, -45);
-//        drivePath.addPoint( 121,40,20,0);
     }
 
     @Override
@@ -72,7 +55,11 @@ public class SBF_Autonomous extends OpMode
     {
         robot.init_loop();
         super.init_loop();
+//        telemetry.addData("which camera: ", whichCamera);
         ssPos = robot.getSkyStonePosition();
+//        telemetry.addData("stone position, ", ssPos);
+//        telemetry.addData("pursuit heading ", robot.getHeadingPursuit());
+
 
     }
 

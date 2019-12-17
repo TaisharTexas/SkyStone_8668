@@ -107,7 +107,7 @@ public class Pursuit
             lastSegment = true;
         }
 
-//        telemetry.addData("CurrentSegment, Last Segment?: ", "%d, %s", currentSegment, String.valueOf(lastSegment ));
+        telemetry.addData("CurrentSegment, Last Segment?: ", "%d, %s", currentSegment, String.valueOf(lastSegment ));
         PVector velocityCopy = velocity.copy();
         velocityCopy.setMag(2);
 
