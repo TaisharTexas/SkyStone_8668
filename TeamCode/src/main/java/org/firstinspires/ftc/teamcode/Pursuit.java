@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.sbfUtil.PVector;
 
+@Config
 /**
  * Credit:
  *
@@ -22,11 +24,13 @@ public class Pursuit
     public double currentAngularVelocity;
     public double joystickAngularVelocity;
 
-    private double endZone;
+    static double endZone = 6.0;
     private double maxSpeed;
     private double maxAccel;
     private double gainValue;
     private double turnGain;
+
+    static double pathLookahead = 5.0;
 
     private double accelerationSteepness = 4.0;
     private double timeToAccelerate = 1.0;
@@ -37,7 +41,7 @@ public class Pursuit
     private boolean moving = false;
 
     Telemetry telemetry;
-    double elapsedTime = 0;
+    public double elapsedTime = 0;
     private PVector end;
 
     public Pursuit(float x, float y, Telemetry telem)
@@ -47,9 +51,8 @@ public class Pursuit
         velocity = new PVector(0,0);
         localVelocity = new PVector( 0,0);
         location = new PVector(x,y);
-//        initialPosition = new PVector(x,y);
         desiredVelocity = new PVector(0,0);
-        endZone = 6; //inch
+//        endZone = 6; //inch
 
         //  30 in/sec correlates to maximum unloaded motor speed
         //  30.615 in/sec = 15.7 rad/sec * 1.3 gearing * 1.5 in wheel radius
@@ -144,7 +147,7 @@ public class Pursuit
             }
 
             PVector pathDirection = PVector.sub(end, start);
-            pathDirection.setMag(5.0);
+            pathDirection.setMag(pathLookahead);
 
             target = normalPoint.copy();
             target.add(pathDirection);
@@ -164,7 +167,7 @@ public class Pursuit
             }
 
             PVector pathDirection = PVector.sub(end, start);
-            pathDirection.setMag(5.0);
+            pathDirection.setMag(pathLookahead);
 
             target = normalPoint.copy();
             target.add(pathDirection);
@@ -183,10 +186,7 @@ public class Pursuit
         if(lastSegment && location.dist(end) <= 3.5 && (Math.abs(currentHeading)-Math.abs(theTargetHeading)) <= 3)
         {
             done = true;
-//            moving  = false;
         }
-
-//        return !moving;
     }
 
     private void arrive(PVector target, double theMaxSpeed)
@@ -204,7 +204,7 @@ public class Pursuit
 
         if(location.dist(end) < endZone)
         {
-            float m = scaleVector(speed, 0, (float)endZone, 0.3f, (float)theMaxSpeed);
+            float m = scaleVector(speed, 0, (float)endZone, 1.0f, (float)theMaxSpeed);
             desiredVelocity.setMag(m);
         }
         else

@@ -5,6 +5,8 @@ import org.firstinspires.ftc.teamcode.Pursuit;
 import org.firstinspires.ftc.teamcode.sbfHardware.Robot;
 import org.firstinspires.ftc.teamcode.Path;
 
+import java.util.concurrent.TimeUnit;
+
 
 /**
  * Loaded into the run map as an action that drives the robot. Each action is parameterized by the CSV file.
@@ -25,6 +27,10 @@ public class PursuitAction extends RobotAction
     double yPoint;
     double theHeading;
     Pursuit thePursuit;
+
+    // internal time tracking
+    private long startTime = 0; // in nanoseconds
+
 
     /** Creates a new object from the supplied parameters. */
     PursuitAction(String id, String nextAction, double duration, double power, double heading, double x, double y)
@@ -84,6 +90,7 @@ public class PursuitAction extends RobotAction
 //        thePath.addPoint((float)xPoint, (float)yPoint, thePower, theHeading);
         thePursuit.location.x = robot.location.x;
         thePursuit.location.y = robot.location.y;
+        resetStartTime();
         super.entry();
     }
 
@@ -96,6 +103,7 @@ public class PursuitAction extends RobotAction
         thePursuit.updatePosition(robot.getLocationChange());
         thePursuit.updateHeading(robot.getHeadingPursuit());
         thePursuit.updateAngularVelocity(robot.getAngularVelocity());
+        thePursuit.elapsedTime = getRuntime();
         thePursuit.follow(thePath);
         robot.updateMotors(thePursuit.desiredVelocity.copy(), thePursuit.joystickAngularVelocity);
         return thePursuit.getDone();
@@ -118,6 +126,24 @@ public class PursuitAction extends RobotAction
         double heading = Double.parseDouble(params[4]);
 
         thePath.addPoint((float)x, (float)y, maxSpeed, heading);
+    }
+
+    /**
+     * Get the number of seconds this op mode has been running
+     * <p>
+     * This method has sub millisecond accuracy.
+        * @return number of seconds this op mode has been running
+     */
+    public double getRuntime() {
+        final double NANOSECONDS_PER_SECOND = TimeUnit.SECONDS.toNanos(1);
+        return (System.nanoTime() - startTime) / NANOSECONDS_PER_SECOND;
+    }
+
+    /**
+     * Reset the start time to zero.
+     */
+    public void resetStartTime() {
+        startTime = System.nanoTime();
     }
 
 }
