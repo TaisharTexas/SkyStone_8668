@@ -102,6 +102,12 @@ public class ActionMaster
                     myAction.init(telemetry, robot);
                     this.addAction(myAction);
                 }
+                else if(type.equalsIgnoreCase("CHANGEOUTACTION"))
+                {
+                    myAction = new ChangeOutAction(params);
+                    myAction.init(telemetry, robot);
+                    this.addAction(myAction);
+                }
                 else if(type.equalsIgnoreCase("INTAKEACTION"))
                 {
                     myAction = new IntakeAction(params);

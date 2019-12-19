@@ -22,9 +22,10 @@ public class SBF_Autonomous extends OpMode
 
     public File autoFile = null;
     public String whichCamera;
+    public static String skyStonePosition = "leftPositionTwo";
 
 
-    String ssPos = "One";
+    public String ssPos = "One";
     public double offset;
 
     public SBF_Autonomous()
@@ -66,10 +67,13 @@ public class SBF_Autonomous extends OpMode
     public void start()
     {
         theMaster.setFirstAction(ssPos);
+        skyStonePosition = ssPos;
+
 //        theMaster.setFirstAction("One");
         resetStartTime();
         pursuit.elapsedTime = 0;
         robot.start();
+        robot.stopCamera();
     }
 
     public void loop()
