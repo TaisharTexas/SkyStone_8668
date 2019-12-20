@@ -185,7 +185,7 @@ public class Pursuit
 
         if(lastSegment && location.dist(end) <= 3.5 && (Math.abs(currentHeading)-Math.abs(theTargetHeading)) <= 3)
         {
-            done = true;
+            done = false;
         }
     }
 

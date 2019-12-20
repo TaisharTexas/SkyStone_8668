@@ -29,7 +29,8 @@ public class autoRun extends SBF_Autonomous
     @Override
     public void init()
     {
-        offset = -90;
+//        offset = -90;
+        offset = 0.0;
         whichCamera = "rightCam";
         super.init();
     }

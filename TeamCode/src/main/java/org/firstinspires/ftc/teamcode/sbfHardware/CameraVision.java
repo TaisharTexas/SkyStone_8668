@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.sbfHardware;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -17,13 +18,16 @@ import org.openftc.easyopencv.OpenCvPipeline;
 public class CameraVision
 {
     OpenCvCamera webCam;
+    Telemetry telemetry;
 
     CameraVision.StageSwitchingPipeline stageSwitchingPipeline;
 
     public String camDeviceName = "leftCam";
 
-    public void init(HardwareMap hwMap, String whichCam)
+    public void init(HardwareMap hwMap, String whichCam, Telemetry telem)
     {
+        telemetry = telem;
+
         camDeviceName = whichCam;
         int cameraMonitorViewId = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName());
 //        webCam = new OpenCvWebcam(hwMap.get(WebcamName.class, "rightCam"), cameraMonitorViewId);
@@ -208,7 +212,11 @@ public class CameraVision
 
     public void stopCamera()
     {
-        webCam.stopStreaming();
+        if(webCam!=null)
+        {
+            webCam.stopStreaming();
+        }
+
     }
 
     public void setCamDeviceName(String camDeviceName)

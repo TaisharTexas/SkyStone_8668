@@ -92,7 +92,8 @@ public class Robot
 
     private final double encWheelRadius = 1.0; //in inches
     private final double encTickPerRotation = 2400;
-    public static double encDistanceConstant = 195.5/192; //calibrated over 16' & 12' on foam tiles -- 9/13/19
+//    public static double encDistanceConstant = 195.5/192; //calibrated over 16' & 12' on foam tiles -- 9/13/19
+    public static double encDistanceConstant = 1;
     private final double encInchesPerRotation = 2.0 * encWheelRadius * Math.PI * encDistanceConstant; // this is the encoder wheel distancd
     private final double gearRatio = 1.733333333;
     private final double encTicksPerInch = encTickPerRotation / (encInchesPerRotation);
@@ -187,7 +188,7 @@ public class Robot
 
         if ( useCamera)
         {
-            eyeOfSauron.init(hwmap, whichCamera);
+            eyeOfSauron.init(hwmap, whichCamera, telemetry);
         }
 
         lift.init(telemetry, hardwareMap);
@@ -529,6 +530,7 @@ public class Robot
         {
             eyeOfSauron.stopCamera();
         }
+
 
     }
 
