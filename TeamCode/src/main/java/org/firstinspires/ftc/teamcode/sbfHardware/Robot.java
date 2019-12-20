@@ -43,8 +43,6 @@ public class Robot
     public PVector velocity = new PVector(0,0);
     public double currentAngularVelocity;
 
-
-
     // Lift Class
     public Lift lift = new Lift();
 
@@ -52,13 +50,17 @@ public class Robot
     private CameraVision eyeOfSauron = new CameraVision();
     boolean useCamera;
 
-    // Robot - REV Hub Items
+    /**
+     * Robot - REV Hub Items
+     */
     private RevBulkData bulkData;
     private RevBulkData bulkDataAux;
     private ExpansionHubEx expansionHub;
     private ExpansionHubEx expansionHubAux;
 
-    // Chassis Items
+    /**
+     * Chassis Items
+      */
     private ExpansionHubMotor RF = null;
     private ExpansionHubMotor RR = null;
     private ExpansionHubMotor LF = null;
@@ -67,7 +69,9 @@ public class Robot
     /** The dc motor whose encoder is being used for distance measurements. */
     ExpansionHubMotor encoderMotor;
 
-    // Intake Items
+    /**
+     * Intake Items
+     */
     private ExpansionHubMotor leftIntake = null;
     private ExpansionHubMotor rightIntake = null;
     private CRServo leftInSupport = null;
@@ -76,21 +80,25 @@ public class Robot
     public static double leftMaxIntakeSpd = 0.9;
     public static double rightMaxIntakeSpd = 0.8;
 
-    // Foundation Fingers Items
+    /**
+     * Foundation Fingers Items
+     */
     private Servo leftFoundation = null;
     private Servo rightFoundation = null;
 
-    // Robot - Odometry Items
+    /**
+     * Robot - Odometry Items
+     */
     private ExpansionHubMotor xEncoder = null;
     private ExpansionHubMotor yEncoder = null;
 
-    /*
+    /**
      * Robot - Encoder information used in odometry
      */
     private double xEncInPerSec;
     private double yEncInPerSec;
 
-    private final double encWheelRadius = 1.0; //in inches
+    private final double encWheelRadius = 1.96/2.0; //in inches ... encoder is a 50mm diameter wheel.
     private final double encTickPerRotation = 2400;
 //    public static double encDistanceConstant = 195.5/192; //calibrated over 16' & 12' on foam tiles -- 9/13/19
     public static double encDistanceConstant = 1;
@@ -164,9 +172,9 @@ public class Robot
     /** A double that is the number of nanoseconds per second. */
     double NANOSECONDS_PER_SECOND = TimeUnit.SECONDS.toNanos(1);
 
-    //
-    // Robot Public Interface
-    //
+    /**
+     * Robot Public Interface
+     */
 
     /**
      *  Robot - Triggers the initialization of the selected classes.  Intended to be used  when the INIT
@@ -534,9 +542,9 @@ public class Robot
 
     }
 
-    //
-    // Robot Private Methods
-    //
+    /**
+     * Robot Private Methods
+     */
 
     /**
      * Robot - Used to query the IMU and get the robot's heading.  Internal method only.
@@ -612,9 +620,9 @@ public class Robot
         startTime = System.nanoTime();
     }
 
-    //
-    // Chassis Public Interface
-    //
+    /**
+     * Chassis Public Interface
+     */
 
     /**
      * Chassis - Uses joystick-type inputs to drive the robot. Allows for omnidirectional movement and has a
@@ -871,9 +879,9 @@ public class Robot
         return !moving;
     }
 
-    //
-    // Chassis Private Methods
-    //
+    /**
+     * Chassis Private Methods
+     */
 
     /**
      * Chassis - setMode sets all four drive motors to a specified mode. There are three mode choices:
@@ -936,9 +944,9 @@ public class Robot
         return done;
     }
 
-    //
-    // Vision System Public Interface
-    //
+    /**
+     * Vision System Public Interface
+     */
 
     /**
      * Vision System - get the current position of the SkyStone

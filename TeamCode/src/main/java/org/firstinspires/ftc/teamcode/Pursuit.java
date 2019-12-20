@@ -323,6 +323,18 @@ public class Pursuit
 
     public void updateHeading( double heading )
     {
+        // check to see if the heading changes unrealistically due to gyro rollover
+        if (Math.abs(heading - currentHeading) > 225)
+        {
+            if (heading < 0)
+            {
+                heading += 360;
+            }
+            else if (heading > 0)
+            {
+                heading -= 360;
+            }
+        }
         currentHeading = heading;
     }
 
