@@ -8,6 +8,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 //@TeleOp
+/**
+ * Written for Carl Bergman
+ *
+ * @author Andrew Lee, SBF Robotics
+ *  */
 @Disabled
 public class Robot_Teleop extends OpMode
 {
