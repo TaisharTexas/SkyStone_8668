@@ -24,13 +24,13 @@ public class Pursuit
     public double currentAngularVelocity;
     public double joystickAngularVelocity;
 
-    static double endZone = 6.0;
+    public static double endZone = 6.0;
     private double maxSpeed;
     private double maxAccel;
     private double gainValue;
     private double turnGain;
 
-    static double pathLookahead = 5.0;
+    public static double pathLookahead = 5.0;
 
     private double accelerationSteepness = 4.0;
     private double timeToAccelerate = 1.0;

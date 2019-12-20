@@ -73,8 +73,8 @@ public class Robot
     private CRServo leftInSupport = null;
     private CRServo rightInSupport = null;
     private double stallCurrent = 5100;
-    static double leftMaxIntakeSpd = 0.7;
-    static double rightMaxIntakeSpd = 0.5;
+    public static double leftMaxIntakeSpd = 0.9;
+    public static double rightMaxIntakeSpd = 0.8;
 
     // Foundation Fingers Items
     private Servo leftFoundation = null;
