@@ -243,7 +243,7 @@ public class SBF_Teleop extends OpMode
         }
         else
         {
-            maximumSpeed = .55;
+            maximumSpeed = .45;
         }
 
         return maximumSpeed;

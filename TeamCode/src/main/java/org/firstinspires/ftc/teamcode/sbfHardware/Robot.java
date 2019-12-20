@@ -395,6 +395,7 @@ public class Robot
          * Update the sensor data using bulk transferes from the Rev Hubs
          */
         currentHeading = updateHeadingInternal();
+        telemetry.addData("heading", currentHeading);
         bulkData = expansionHub.getBulkInputData();
         bulkDataAux = expansionHubAux.getBulkInputData();
 
@@ -416,8 +417,8 @@ public class Robot
         telemetry.addData("xEncoder", bulkDataAux.getMotorCurrentPosition(xEncoder));
         telemetry.addData("yEncoder", bulkDataAux.getMotorCurrentPosition(yEncoder));
 
-        telemetry.addData("left position: ", bulkDataAux.getMotorCurrentPosition(lift.leftVertical));
-        telemetry.addData("right position: ", bulkDataAux.getMotorCurrentPosition(lift.rightVertical));
+//        telemetry.addData("left position: ", bulkDataAux.getMotorCurrentPosition(lift.leftVertical));
+//        telemetry.addData("right position: ", bulkDataAux.getMotorCurrentPosition(lift.rightVertical));
         lift.encoder = bulkDataAux.getMotorCurrentPosition(lift.leftVertical);
 
         /* store the current value to use as the previous value the next time around */
@@ -977,10 +978,10 @@ public class Robot
     public void intakeOut(double power)
     {
 //        xEncoder.setPower(-1.0);
-        leftIntake.setPower(power * .45);
+        leftIntake.setPower(power * .75);
         leftInSupport.setPower(1);
 //        yEncoder.setPower(1.0);
-        rightIntake.setPower(-power * .45);
+        rightIntake.setPower(-power * .75);
         rightInSupport.setPower(-1);
 
     }
@@ -1007,17 +1008,17 @@ public class Robot
 
         if( Math.abs(leftIntakeCurrent) > stallCurrent )  // can motor current be negative?
         {
-            leftIntake.setPower(-power * .75);
-            leftInSupport.setPower(-1);
-            rightIntake.setPower(power * .25);
-            rightInSupport.setPower(1);
+            leftIntake.setPower(power * .75);
+            leftInSupport.setPower(1);
+            rightIntake.setPower(-power * .25);
+            rightInSupport.setPower(-1);
         }
         else if( Math.abs(rightIntakeCurrent) > stallCurrent )
         {
-            leftIntake.setPower(-power * .25);
-            leftInSupport.setPower(-1);
-            rightIntake.setPower(power * .75);
-            rightInSupport.setPower(1);
+            leftIntake.setPower(power * .25);
+            leftInSupport.setPower(1);
+            rightIntake.setPower(-power * .75);
+            rightInSupport.setPower(-1);
         }
         else
         {
