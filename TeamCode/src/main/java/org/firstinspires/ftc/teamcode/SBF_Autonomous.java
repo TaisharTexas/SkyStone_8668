@@ -39,7 +39,7 @@ public class SBF_Autonomous extends OpMode
 //        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         robot.whichCamera = this.whichCamera;
-        robot.init(telemetry, hardwareMap, false, offset);
+        robot.init(telemetry, hardwareMap, true, offset);
 
 //        autoFile = new File("/storage/9016-4EF8/autoRun.csv");
 //        autoFile = new File ("/storage/9016-4EF8/RedFoundationNav.csv");
