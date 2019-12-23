@@ -140,20 +140,20 @@ public class SBF_Teleop extends OpMode
         //intake controls
         if(customPad1.getLeftTrigger() != 0)
         {
-            robot.intakeIn(customPad1.getLeftTrigger());
+            robot.intake.intakeIn(customPad1.getLeftTrigger());
         }
         else if(customPad1.getRightTrigger() != 0)
         {
-            robot.intakeOut(customPad1.getRightTrigger());
+            robot.intake.intakeOut(customPad1.getRightTrigger());
         }
         else
         {
-            robot.intakeStop();
+            robot.intake.intakeStop();
         }
 
         if(customPad1.getLeftBumper())
         {
-            robot.servosIn();
+            robot.intake.servosDrive(1);
         }
 
         //foundation grabber controls

@@ -15,11 +15,10 @@ public class IntakeAction extends RobotAction
     boolean theDirection;
 
     /** Creates a new object from the supplied parameters. */
-    IntakeAction(String id, String nextAction, double duration, double power, boolean direction)
+    IntakeAction(String id, String nextAction, double duration, double power)
     {
         super(id, nextAction, duration);
         thePower = power;
-        theDirection = direction;
 //        timeout = duration;
 //        theId = id;
 //
@@ -40,8 +39,7 @@ public class IntakeAction extends RobotAction
         this(params[0],
              params[1],
              Double.parseDouble(params[2]),
-             Double.parseDouble(params[3]),
-             Boolean.parseBoolean(params[4]));
+             Double.parseDouble(params[3]));
     }
 
     /** Placeholder for initialization. Currently only calls the parent init method. */
@@ -55,14 +53,8 @@ public class IntakeAction extends RobotAction
     @Override
     public void entry()
     {
-        if(theDirection)
-        {
-            robot.intakeIn(thePower);
-        }
-        else
-        {
-            robot.intakeOut(thePower);
-        }
+
+        robot.intakeDrive(thePower);
         super.entry();
     }
 

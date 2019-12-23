@@ -46,6 +46,8 @@ public class Robot
     // Lift Class
     public Lift lift = new Lift();
 
+    public Intake intake = new Intake();
+
     // Vision System Items
     private CameraVision eyeOfSauron = new CameraVision();
     boolean useCamera;
@@ -69,16 +71,7 @@ public class Robot
     /** The dc motor whose encoder is being used for distance measurements. */
     ExpansionHubMotor encoderMotor;
 
-    /**
-     * Intake Items
-     */
-    private ExpansionHubMotor leftIntake = null;
-    private ExpansionHubMotor rightIntake = null;
-    private CRServo leftInSupport = null;
-    private CRServo rightInSupport = null;
-    private double stallCurrent = 5100;
-    public static double leftMaxIntakeSpd = 0.9;
-    public static double rightMaxIntakeSpd = 0.8;
+
 
     /**
      * Foundation Fingers Items
@@ -193,6 +186,7 @@ public class Robot
         useCamera = useVision;
         startTime = 0;
         offset = theOffset;
+        intake.init(telemetry, hardwareMap);
 
         if ( useCamera)
         {
@@ -200,6 +194,7 @@ public class Robot
         }
 
         lift.init(telemetry, hardwareMap);
+        intake.init(telemetry, hardwareMap);
 
         expansionHub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 2");
         expansionHubAux = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 3");
@@ -278,26 +273,7 @@ public class Robot
             yEncoder = null;
         }
 
-        try
-        {
-            leftIntake = hardwareMap.get(ExpansionHubMotor.class, "yEncoder");
-            leftIntake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        }
-        catch (Exception p_exception)
-        {
-            telemetry.addData("left intake not found in config file","");
-            leftIntake = null;
-        }
-        try
-        {
-            rightIntake = hardwareMap.get(ExpansionHubMotor.class, "xEncoder");
-            rightIntake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        }
-        catch (Exception p_exception)
-        {
-            telemetry.addData("right intake not found in config file", "");
-            rightIntake = null;
-        }
+
         try
         {
             leftFoundation = hardwareMap.get(Servo.class, "leftFoundation");
@@ -318,26 +294,7 @@ public class Robot
             telemetry.addData("rightFoundation not found in config file", 0);
             rightFoundation = null;
         }
-        try
-        {
-            leftInSupport = hardwareMap.get(CRServo.class, "leftIn");
-            leftInSupport.setDirection(CRServo.Direction.REVERSE);
-        }
-        catch (Exception p_exeception)
-        {
-            telemetry.addData("leftIn not found in config file", 0);
-            leftInSupport = null;
-        }
-        try
-        {
-            rightInSupport = hardwareMap.get(CRServo.class, "rightIn");
-            rightInSupport.setDirection(CRServo.Direction.REVERSE);
-        }
-        catch (Exception p_exeception)
-        {
-            telemetry.addData("rightIn not found in config file", 0);
-            rightInSupport = null;
-        }
+
 
 
         try
@@ -721,19 +678,7 @@ public class Robot
 
         double actual = currentHeading;
 
-        if(intake > 0)
-        {
-            intakeIn(Math.abs(intake));
-        }
-        else if(intake < 0)
-        {
-            intakeOut(Math.abs(intake));
-        }
-        else
-        {
-            intakeStop();
-        }
-
+        intake.intakeDrive(intake);
 //        telemetry.addData( "Is RR-Diagonal?: ", direction ==  REVERSE_RIGHT_DIAGONAL);
 //        telemetry.addData("Direction: ", direction);
 //        telemetry.addData("RR-Diag: ", REVERSE_RIGHT_DIAGONAL);
@@ -787,7 +732,7 @@ public class Robot
         if (((Math.abs(encoderMotor.getCurrentPosition() - initialPosition)) >= driveDistance) || (getRuntime() > time))
         {
             stop();
-            intakeStop();
+            intake.intakeStop();
 
             setZeroBehavior("FLOAT");
 
@@ -975,130 +920,6 @@ public class Robot
     public void setCameraDeviceName( String device )
     {
         eyeOfSauron.setCamDeviceName( device );
-    }
-
-    //
-    // Intake Public Interface
-    //
-
-    /**
-     * Intake - Rotate the intake wheels to reverse a stone out of the intake.
-     * @param power
-     */
-    public void intakeOut(double power)
-    {
-//        xEncoder.setPower(-1.0);
-        leftIntake.setPower(power * .75);
-        leftInSupport.setPower(1);
-//        yEncoder.setPower(1.0);
-        rightIntake.setPower(-power * .75);
-        rightInSupport.setPower(-1);
-
-    }
-
-    /**
-     * Intake - Rotate the intake wheels to take in a stone into the intake.
-     * @param power  the power input from the gamepad
-     */
-    public void intakeIn(double power)
-    {
-////        xEncoder.setPower(1.0);
-//        leftIntake.setPower(-power * .9);
-//        leftInSupport.setPower(-1);
-////        yEncoder.setPower(-1.0);
-//        rightIntake.setPower(power * .7);
-//        rightInSupport.setPower(1);
-
-        // Adding these 2 variables so that we only access the expansion hub once per call.
-        double leftIntakeCurrent = leftIntake.getCurrentDraw(ExpansionHubEx.CurrentDrawUnits.MILLIAMPS);
-        double rightIntakeCurrent = rightIntake.getCurrentDraw(ExpansionHubEx.CurrentDrawUnits.MILLIAMPS);
-
-        telemetry.addData("left intake milliamps: ", leftIntakeCurrent);
-        telemetry.addData("right intake milliamps: ", rightIntakeCurrent);
-
-        if( Math.abs(leftIntakeCurrent) > stallCurrent )  // can motor current be negative?
-        {
-            leftIntake.setPower(power * .75);
-            leftInSupport.setPower(1);
-            rightIntake.setPower(-power * .25);
-            rightInSupport.setPower(-1);
-        }
-        else if( Math.abs(rightIntakeCurrent) > stallCurrent )
-        {
-            leftIntake.setPower(power * .25);
-            leftInSupport.setPower(1);
-            rightIntake.setPower(-power * .75);
-            rightInSupport.setPower(-1);
-        }
-        else
-        {
-            leftIntake.setPower(-power * leftMaxIntakeSpd );
-            leftInSupport.setPower(-1);
-            rightIntake.setPower(power * rightMaxIntakeSpd);
-            rightInSupport.setPower(1);
-        }
-
-    }
-
-    public void servosIn()
-    {
-        leftInSupport.setPower(-1);
-        rightInSupport.setPower(1);
-    }
-
-    private boolean isLeftStalled()
-    {
-
-        if(leftIntake.getCurrentDraw(ExpansionHubEx.CurrentDrawUnits.MILLIAMPS) > stallCurrent)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    private boolean isRightStalled()
-    {
-
-        if(rightIntake.getCurrentDraw(ExpansionHubEx.CurrentDrawUnits.MILLIAMPS) > stallCurrent)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    /**
-     * Intake - stop the intake wheels
-     */
-    public void intakeStop()
-    {
-//        xEncoder.setPower(0.0);
-        if(leftIntake != null)
-        {
-            leftIntake.setPower(0.0);
-            leftInSupport.setPower(0.0);
-
-        }
-        else
-        {
-            telemetry.addData("left intake is null", "cannot use");
-        }
-//        yEncoder.setPower(0.0);
-        if(rightIntake != null)
-        {
-            rightIntake.setPower(0.0);
-            rightInSupport.setPower(0.0);
-        }
-        else
-        {
-            telemetry.addData("right intake is null", "cannot use");
-        }
-
     }
 
     //
