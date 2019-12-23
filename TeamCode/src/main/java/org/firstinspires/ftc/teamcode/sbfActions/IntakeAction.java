@@ -54,7 +54,7 @@ public class IntakeAction extends RobotAction
     public void entry()
     {
 
-        robot.intakeDrive(thePower);
+        robot.intake.intakeDrive(thePower);
         super.entry();
     }
 
@@ -70,7 +70,7 @@ public class IntakeAction extends RobotAction
     public void exit()
     {
         robot.stop();
-        robot.intakeStop();
+        robot.intake.intakeStop();
         super.exit();
     }
 }

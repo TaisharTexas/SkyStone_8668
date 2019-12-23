@@ -669,7 +669,7 @@ public class Robot
      *              reason, the timer will catch it.
      * @return  A boolean that tells us whether or not the robot is moving.
      */
-    public boolean drive(double power, double direction, double gain, double distance, double time, double intake)
+    public boolean drive(double power, double direction, double gain, double distance, double time, double intakePower)
     {
         double driveDistance = COUNTS_PER_INCH * distance;
         double correction;
@@ -678,7 +678,7 @@ public class Robot
 
         double actual = currentHeading;
 
-        intake.intakeDrive(intake);
+        intake.intakeDrive(intakePower);
 //        telemetry.addData( "Is RR-Diagonal?: ", direction ==  REVERSE_RIGHT_DIAGONAL);
 //        telemetry.addData("Direction: ", direction);
 //        telemetry.addData("RR-Diag: ", REVERSE_RIGHT_DIAGONAL);

@@ -90,7 +90,7 @@ public class DriveAction extends RobotAction
     public void exit()
     {
         robot.stop();
-        robot.intakeStop();
+        robot.intake.intakeStop();
         super.exit();
     }
 

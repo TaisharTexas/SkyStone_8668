@@ -23,16 +23,13 @@ public class Intake
     private ExpansionHubMotor rightIntake = null;
     private CRServo leftInSupport = null;
     private CRServo rightInSupport = null;
-    public CRServo rightInSupport2 = null;
-    public CRServo leftInSupport2 = null;
+    private CRServo rightInSupport2 = null;
+    private CRServo leftInSupport2 = null;
     private double stallCurrent = 5100;
-    public static double leftMaxIntakeSpd = 0.6;
-    public static double rightMaxIntakeSpd = 0.5;
-    public static double leftMaxIntakeSpdAuto = .9;
-    public static double rightMaxIntakeSpdAuto = .8;
-
-
-    private long startTime = 0; // in nanoseconds
+    private static double leftMaxIntakeSpd = 0.6;
+    private static double rightMaxIntakeSpd = 0.5;
+    private static double leftMaxIntakeSpdAuto = .9;
+    private static double rightMaxIntakeSpdAuto = .8;
 
 
     public void init(Telemetry telem, HardwareMap hwmap)
@@ -81,6 +78,26 @@ public class Intake
             telemetry.addData("rightIn not found in config file", 0);
             rightInSupport = null;
         }
+//        try
+//        {
+//            rightInSupport2 = hardwareMap.get(CRServo.class, "rightIn2");
+//            rightInSupport2.setDirection(CRServo.Direction.REVERSE);
+//        }
+//        catch (Exception p_exeception)
+//        {
+//            telemetry.addData("rightIn2 not found in config file", 0);
+//            rightInSupport2 = null;
+//        }
+//        try
+//        {
+//            leftInSupport2 = hardwareMap.get(CRServo.class, "leftIn2");
+//            leftInSupport2.setDirection(CRServo.Direction.REVERSE);
+//        }
+//        catch (Exception p_exeception)
+//        {
+//            telemetry.addData("leftIn2 not found in config file", 0);
+//            leftInSupport2 = null;
+//        }
 
 
     }
@@ -91,12 +108,12 @@ public class Intake
      */
     public void intakeOut(double power)
     {
-//        xEncoder.setPower(-1.0);
-        leftIntake.setPower(power * .75);
+        leftIntake.setPower(power * leftMaxIntakeSpd);
         leftInSupport.setPower(1);
-//        yEncoder.setPower(1.0);
-        rightIntake.setPower(-power * .75);
+//        leftInSupport2.setPower(1);
+        rightIntake.setPower(-power * rightMaxIntakeSpd);
         rightInSupport.setPower(-1);
+//        rightInSupport2.setPower(-1);
 
     }
 
@@ -106,12 +123,6 @@ public class Intake
      */
     public void intakeIn(double power)
     {
-////        xEncoder.setPower(1.0);
-//        leftIntake.setPower(-power * .9);
-//        leftInSupport.setPower(-1);
-////        yEncoder.setPower(-1.0);
-//        rightIntake.setPower(power * .7);
-//        rightInSupport.setPower(1);
 
         // Adding these 2 variables so that we only access the expansion hub once per call.
         double leftIntakeCurrent = leftIntake.getCurrentDraw(ExpansionHubEx.CurrentDrawUnits.MILLIAMPS);
@@ -138,8 +149,10 @@ public class Intake
         {
             leftIntake.setPower(-power * leftMaxIntakeSpd );
             leftInSupport.setPower(-1);
+//            leftInSupport2.setPower(-1);
             rightIntake.setPower(power * rightMaxIntakeSpd);
             rightInSupport.setPower(1);
+//            rightInSupport2.setPower(1);
         }
 
     }
@@ -147,34 +160,36 @@ public class Intake
     public void servosDrive(double power)
     {
         leftInSupport.setPower(-power);
+//        leftInSupport2.setPower(-power);
         rightInSupport.setPower(power);
+//        leftInSupport2.setPower(power);
     }
 
-    private boolean isLeftStalled()
-    {
-
-        if(leftIntake.getCurrentDraw(ExpansionHubEx.CurrentDrawUnits.MILLIAMPS) > stallCurrent)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    private boolean isRightStalled()
-    {
-
-        if(rightIntake.getCurrentDraw(ExpansionHubEx.CurrentDrawUnits.MILLIAMPS) > stallCurrent)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+//    private boolean isLeftStalled()
+//    {
+//
+//        if(leftIntake.getCurrentDraw(ExpansionHubEx.CurrentDrawUnits.MILLIAMPS) > stallCurrent)
+//        {
+//            return true;
+//        }
+//        else
+//        {
+//            return false;
+//        }
+//    }
+//
+//    private boolean isRightStalled()
+//    {
+//
+//        if(rightIntake.getCurrentDraw(ExpansionHubEx.CurrentDrawUnits.MILLIAMPS) > stallCurrent)
+//        {
+//            return true;
+//        }
+//        else
+//        {
+//            return false;
+//        }
+//    }
 
     /**
      * Intake - stop the intake wheels
@@ -186,6 +201,7 @@ public class Intake
         {
             leftIntake.setPower(0.0);
             leftInSupport.setPower(0.0);
+//            leftInSupport2.setPower(0.0);
 
         }
         else
@@ -197,6 +213,7 @@ public class Intake
         {
             rightIntake.setPower(0.0);
             rightInSupport.setPower(0.0);
+//            rightInSupport2.setPower(0.0);
         }
         else
         {
