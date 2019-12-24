@@ -19,12 +19,12 @@ public class Intake
     /**
      * Intake Items
      */
-    private ExpansionHubMotor leftIntake = null;
-    private ExpansionHubMotor rightIntake = null;
+    public ExpansionHubMotor leftIntake = null;
+    public ExpansionHubMotor rightIntake = null;
     private CRServo leftInSupport = null;
     private CRServo rightInSupport = null;
-    private CRServo rightInSupport2 = null;
-    private CRServo leftInSupport2 = null;
+//    private CRServo rightInSupport2 = null;
+//    private CRServo leftInSupport2 = null;
     private double stallCurrent = 5100;
     private static double leftMaxIntakeSpd = 0.6;
     private static double rightMaxIntakeSpd = 0.5;

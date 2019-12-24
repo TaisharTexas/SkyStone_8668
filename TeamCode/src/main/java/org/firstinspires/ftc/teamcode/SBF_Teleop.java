@@ -136,6 +136,10 @@ public class SBF_Teleop extends OpMode
         robot.lift.horizontalDrive(shoulderPos);
 
 
+        telemetry.addData("right trigger: ", customPad1.getRightTrigger());
+        telemetry.addData("left trigger: ", customPad1.getLeftTrigger());
+        telemetry.addData("left Intake: ", robot.intake.leftIntake.getPower());
+        telemetry.addData("right intake: ", robot.intake.rightIntake.getPower());
 
         //intake controls
         if(customPad1.getLeftTrigger() != 0)
