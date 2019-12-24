@@ -193,7 +193,6 @@ public class Robot
         }
 
         lift.init(telemetry, hardwareMap);
-        intake.init(telemetry, hardwareMap);
 
         expansionHub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 2");
         expansionHubAux = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 3");
@@ -271,6 +270,9 @@ public class Robot
             telemetry.addData("y encoder not found in config file", "");
             yEncoder = null;
         }
+
+        //MUST INITIALIZE INTAKE AFTER X AND Y ENCODERS
+        intake.init(telemetry, hardwareMap);
 
 
         try
@@ -360,7 +362,7 @@ public class Robot
          * Update the sensor data using bulk transferes from the Rev Hubs
          */
         currentHeading = updateHeadingInternal();
-        telemetry.addData("heading", currentHeading);
+//        telemetry.addData("heading", currentHeading);
         bulkData = expansionHub.getBulkInputData();
         bulkDataAux = expansionHubAux.getBulkInputData();
 
@@ -379,8 +381,8 @@ public class Robot
         xEncoderChange = bulkDataAux.getMotorCurrentPosition(xEncoder) - prevXEncoder;
         yEncoderChange = bulkDataAux.getMotorCurrentPosition(yEncoder) - prevYEncoder;
 
-        telemetry.addData("xEncoder", bulkDataAux.getMotorCurrentPosition(xEncoder));
-        telemetry.addData("yEncoder", bulkDataAux.getMotorCurrentPosition(yEncoder));
+//        telemetry.addData("xEncoder", bulkDataAux.getMotorCurrentPosition(xEncoder));
+//        telemetry.addData("yEncoder", bulkDataAux.getMotorCurrentPosition(yEncoder));
 
 //        telemetry.addData("left position: ", bulkDataAux.getMotorCurrentPosition(lift.leftVertical));
 //        telemetry.addData("right position: ", bulkDataAux.getMotorCurrentPosition(lift.rightVertical));

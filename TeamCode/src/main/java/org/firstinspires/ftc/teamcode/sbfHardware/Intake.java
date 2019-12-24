@@ -26,8 +26,8 @@ public class Intake
 //    private CRServo rightInSupport2 = null;
 //    private CRServo leftInSupport2 = null;
     private double stallCurrent = 5100;
-    private static double leftMaxIntakeSpd = 0.6;
-    private static double rightMaxIntakeSpd = 0.5;
+    private static double leftMaxIntakeSpd = 0.75;
+    private static double rightMaxIntakeSpd = 0.65;
     private static double leftMaxIntakeSpdAuto = .9;
     private static double rightMaxIntakeSpdAuto = .8;
 
@@ -128,8 +128,8 @@ public class Intake
         double leftIntakeCurrent = leftIntake.getCurrentDraw(ExpansionHubEx.CurrentDrawUnits.MILLIAMPS);
         double rightIntakeCurrent = rightIntake.getCurrentDraw(ExpansionHubEx.CurrentDrawUnits.MILLIAMPS);
 
-        telemetry.addData("left intake milliamps: ", leftIntakeCurrent);
-        telemetry.addData("right intake milliamps: ", rightIntakeCurrent);
+//        telemetry.addData("left intake milliamps: ", leftIntakeCurrent);
+//        telemetry.addData("right intake milliamps: ", rightIntakeCurrent);
 
         if( Math.abs(leftIntakeCurrent) > stallCurrent )  // can motor current be negative?
         {

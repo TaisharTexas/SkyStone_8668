@@ -64,8 +64,8 @@ public class SBF_Teleop extends OpMode
         telemetry.addData("heading: ", robot.getHeading());
 
 
-        telemetry.addData("path: ", Environment.getExternalStorageDirectory().getPath() + "/");
-        telemetry.addData("path external: ", getExternalStoragePath(hardwareMap.appContext, true) );
+//        telemetry.addData("path: ", Environment.getExternalStorageDirectory().getPath() + "/");
+//        telemetry.addData("path external: ", getExternalStoragePath(hardwareMap.appContext, true) );
 
     }
 
@@ -81,9 +81,9 @@ public class SBF_Teleop extends OpMode
     {
         robot.update();
 
-        telemetry.addData("horiz", robot.lift.horizontal.getPosition());
-        telemetry.addData("d up", customPad2.getDpadUp());
-        telemetry.addData("d down", customPad2.getDpadDown());
+//        telemetry.addData("horiz", robot.lift.horizontal.getPosition());
+//        telemetry.addData("d up", customPad2.getDpadUp());
+//        telemetry.addData("d down", customPad2.getDpadDown());
 
 
 
@@ -96,8 +96,8 @@ public class SBF_Teleop extends OpMode
 
 //        lift controls
         robot.lift.verticalDrive(customPad2.getRightStickY()*.75);
-        telemetry.addData("right vertical: ", robot.lift.rightVertical.getCurrentPosition());
-        telemetry.addData("left vertical: ", robot.lift.leftVertical.getCurrentPosition());
+//        telemetry.addData("right vertical: ", robot.lift.rightVertical.getCurrentPosition());
+//        telemetry.addData("left vertical: ", robot.lift.leftVertical.getCurrentPosition());
 
         double[] shoulderVals = {.86, .7, .62};
         if(customPad2.getDpadDown())
@@ -136,10 +136,11 @@ public class SBF_Teleop extends OpMode
         robot.lift.horizontalDrive(shoulderPos);
 
 
-        telemetry.addData("right trigger: ", customPad1.getRightTrigger());
-        telemetry.addData("left trigger: ", customPad1.getLeftTrigger());
-        telemetry.addData("left Intake: ", robot.intake.leftIntake.getPower());
-        telemetry.addData("right intake: ", robot.intake.rightIntake.getPower());
+//        telemetry.addData("right trigger: ", customPad1.getRightTrigger());
+//        telemetry.addData("left trigger: ", customPad1.getLeftTrigger());
+//        telemetry.addData("left Intake: ", robot.intake.leftIntake.getPower());
+//        telemetry.addData("right intake: ", robot.intake.rightIntake.getPower());
+        telemetry.addData("position: ", robot.location);
 
         //intake controls
         if(customPad1.getLeftTrigger() != 0)
@@ -226,10 +227,10 @@ public class SBF_Teleop extends OpMode
 
         loopTime = getRuntime();
         resetStartTime();
-        telemetry.addData("Loop Time ", "%.3f", loopTime);
-        telemetry.addData("Gamepad left stick x, Left Stick X", "%.3f, %.3f", gamepad1.left_stick_x, customPad1.getLeftStickX());
-        telemetry.addData("Gamepad left stick y, Left Stick Y", "%.3f, %.3f", gamepad1.left_stick_y, customPad1.getLeftStickY());
-        telemetry.addData("Gamepad right stick x: ", "%.3f", customPad1.getRightStickX());
+//        telemetry.addData("Loop Time ", "%.3f", loopTime);
+//        telemetry.addData("Gamepad left stick x, Left Stick X", "%.3f, %.3f", gamepad1.left_stick_x, customPad1.getLeftStickX());
+//        telemetry.addData("Gamepad left stick y, Left Stick Y", "%.3f, %.3f", gamepad1.left_stick_y, customPad1.getLeftStickY());
+//        telemetry.addData("Gamepad right stick x: ", "%.3f", customPad1.getRightStickX());
         telemetry.addData("Heading ", "%.3f", robot.getHeading());
 //        telemetry.addData("Robot Location: ", "%.3f","%.3f", robot.);
 
