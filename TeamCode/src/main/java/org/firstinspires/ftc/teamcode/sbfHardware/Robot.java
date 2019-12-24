@@ -186,7 +186,6 @@ public class Robot
         useCamera = useVision;
         startTime = 0;
         offset = theOffset;
-        intake.init(telemetry, hardwareMap);
 
         if ( useCamera)
         {
