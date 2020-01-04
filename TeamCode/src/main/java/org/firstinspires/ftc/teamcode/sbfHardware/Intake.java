@@ -26,8 +26,8 @@ public class Intake
 //    private CRServo rightInSupport2 = null;
 //    private CRServo leftInSupport2 = null;
     private double stallCurrent = 5100;
-    private static double leftMaxIntakeSpd = 0.75;
-    private static double rightMaxIntakeSpd = 0.65;
+    private static double leftMaxIntakeSpd = 0.85;
+    private static double rightMaxIntakeSpd = 0.8;
     private static double leftMaxIntakeSpdAuto = .9;
     private static double rightMaxIntakeSpdAuto = .8;
 
@@ -130,30 +130,36 @@ public class Intake
 
 //        telemetry.addData("left intake milliamps: ", leftIntakeCurrent);
 //        telemetry.addData("right intake milliamps: ", rightIntakeCurrent);
-
-        if( Math.abs(leftIntakeCurrent) > stallCurrent )  // can motor current be negative?
-        {
-            leftIntake.setPower(power * .75);
-            leftInSupport.setPower(1);
-            rightIntake.setPower(-power * .25);
-            rightInSupport.setPower(-1);
-        }
-        else if( Math.abs(rightIntakeCurrent) > stallCurrent )
-        {
-            leftIntake.setPower(power * .25);
-            leftInSupport.setPower(1);
-            rightIntake.setPower(-power * .75);
-            rightInSupport.setPower(-1);
-        }
-        else
-        {
-            leftIntake.setPower(-power * leftMaxIntakeSpd );
-            leftInSupport.setPower(-1);
+//
+//        if( Math.abs(leftIntakeCurrent) > stallCurrent )  // can motor current be negative?
+//        {
+//            leftIntake.setPower(power * .75);
+//            leftInSupport.setPower(1);
+//            rightIntake.setPower(-power * .25);
+//            rightInSupport.setPower(-1);
+//        }
+//        else if( Math.abs(rightIntakeCurrent) > stallCurrent )
+//        {
+//            leftIntake.setPower(power * .25);
+//            leftInSupport.setPower(1);
+//            rightIntake.setPower(-power * .75);
+//            rightInSupport.setPower(-1);
+//        }
+//        else
+//        {
+//            leftIntake.setPower(-power * leftMaxIntakeSpd );
+//            leftInSupport.setPower(-1);
+////            leftInSupport2.setPower(-1);
+//            rightIntake.setPower(power * rightMaxIntakeSpd);
+//            rightInSupport.setPower(1);
+////            rightInSupport2.setPower(1);
+//        }
+        leftIntake.setPower(-power * leftMaxIntakeSpd );
+        leftInSupport.setPower(-1);
 //            leftInSupport2.setPower(-1);
-            rightIntake.setPower(power * rightMaxIntakeSpd);
-            rightInSupport.setPower(1);
+        rightIntake.setPower(power * rightMaxIntakeSpd);
+        rightInSupport.setPower(1);
 //            rightInSupport2.setPower(1);
-        }
 
     }
 

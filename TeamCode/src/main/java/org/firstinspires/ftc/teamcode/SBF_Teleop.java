@@ -44,9 +44,9 @@ public class SBF_Teleop extends OpMode
         customPad2.init(telemetry, hardwareMap, gamepad2);
 
         robot.releaseFoundation();
-        shoulderPos = .89;
+        shoulderPos = .81;
 //        lift.horizontal.setPosition(.7);
-        wristPos = 0.135;
+        wristPos = .05;
 
 
     }
@@ -62,7 +62,6 @@ public class SBF_Teleop extends OpMode
     public void init_loop()
     {
         telemetry.addData("heading: ", robot.getHeading());
-
 
 //        telemetry.addData("path: ", Environment.getExternalStorageDirectory().getPath() + "/");
 //        telemetry.addData("path external: ", getExternalStoragePath(hardwareMap.appContext, true) );
@@ -81,7 +80,7 @@ public class SBF_Teleop extends OpMode
     {
         robot.update();
 
-//        telemetry.addData("horiz", robot.lift.horizontal.getPosition());
+        telemetry.addData("horiz", robot.lift.horizontal.getPosition());
 //        telemetry.addData("d up", customPad2.getDpadUp());
 //        telemetry.addData("d down", customPad2.getDpadDown());
 
@@ -103,37 +102,16 @@ public class SBF_Teleop extends OpMode
         if(customPad2.getDpadDown())
         {
             shoulderPos += .01;
-//            if(shoulderPos==shoulderVals[1])
-//            {
-//                shoulderPos=shoulderVals[0];
-//            }
-//            else if(shoulderPos==shoulderVals[2])
-//            {
-//                shoulderPos=shoulderVals[1];
-//            }
-//            else
-//            {
-//                shoulderPos=shoulderVals[0];
-//            }
         }
         else if(customPad2.getDpadUp())
         {
-//            if(shoulderPos==shoulderVals[0])
-//            {
-//                shoulderPos=shoulderVals[1];
-//            }
-//            else if(shoulderPos==shoulderVals[1])
-//            {
-//                shoulderPos=shoulderVals[2];
-//            }
-//            else
-//            {
-//                shoulderPos=shoulderVals[2];
-//            }
             shoulderPos -= .01;
         }
-        shoulderPos = Range.clip(shoulderPos, .62, .89);
+        shoulderPos = Range.clip(shoulderPos, .48, .81);
         robot.lift.horizontalDrive(shoulderPos);
+
+        telemetry.addData("shoulder", robot.lift.horizontal.getPosition());
+        telemetry.addData("shoulderPos", shoulderPos);
 
 
 //        telemetry.addData("right trigger: ", customPad1.getRightTrigger());
@@ -171,6 +149,7 @@ public class SBF_Teleop extends OpMode
             robot.releaseFoundation();
         }
 
+        telemetry.addData("claw", robot.lift.claw.getPosition());
         //claw controls
         if(customPad2.getA())
         {
@@ -181,35 +160,36 @@ public class SBF_Teleop extends OpMode
             robot.lift.releaseClaw();
         }
 
+        telemetry.addData("wrist", robot.lift.wrist.getPosition());
         //wrist controls
         if(customPad2.getX())
         {
             robot.lift.wristDeploy();
-            wristPos = 0.525;
+            wristPos = 0.44;
         }
         else if(customPad2.getB())
         {
             robot.lift.wristRetract();
-            wristPos = 0.135;
+            wristPos = 0.05;
         }
         else if(customPad2.getLeftBumper())
         {
             wristPos += 0.01;
-            wristPos = Range.clip( wristPos, 0.135, 0.9);
+            wristPos = Range.clip( wristPos, 0.01, 0.9);
             robot.lift.wristDrive(wristPos);
         }
         else if ( customPad2.getRightBumper())
         {
             wristPos -= 0.01;
-            wristPos = Range.clip( wristPos, 0.135, 0.9);
+            wristPos = Range.clip( wristPos, 0.01, 0.9);
             robot.lift.wristDrive(wristPos);
         }
 
-        if(customPad1.getB())
-        {
-            robot.lift.goHome();
-            shoulderPos = .89;
-        }
+//        if(customPad1.getB())
+//        {
+//            robot.lift.goHome();
+//            shoulderPos = .89;
+//        }
 
 //        if(customPad2.getLeftTrigger() > .1)
 //        {
