@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.sbfHardware;
 
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -111,7 +112,7 @@ public class Intake
         leftIntake.setPower(power * leftMaxIntakeSpd);
         leftInSupport.setPower(1);
 //        leftInSupport2.setPower(1);
-        rightIntake.setPower(-power * rightMaxIntakeSpd);
+        rightIntake.setPower(power * rightMaxIntakeSpd);
         rightInSupport.setPower(-1);
 //        rightInSupport2.setPower(-1);
 
@@ -157,7 +158,7 @@ public class Intake
         leftIntake.setPower(-power * leftMaxIntakeSpd );
         leftInSupport.setPower(-1);
 //            leftInSupport2.setPower(-1);
-        rightIntake.setPower(power * rightMaxIntakeSpd);
+        rightIntake.setPower(-power * rightMaxIntakeSpd);
         rightInSupport.setPower(1);
 //            rightInSupport2.setPower(1);
 
@@ -231,7 +232,7 @@ public class Intake
     public void intakeDrive(double power)
     {
         leftIntake.setPower(-power*leftMaxIntakeSpdAuto);
-        rightIntake.setPower(power*rightMaxIntakeSpdAuto);
+        rightIntake.setPower(-power*rightMaxIntakeSpdAuto);
         servosDrive(power);
 
     }

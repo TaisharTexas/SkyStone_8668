@@ -106,7 +106,8 @@ public class PursuitAction extends RobotAction
         thePursuit.elapsedTime = getRuntime();
         thePursuit.follow(thePath);
         robot.updateMotors(thePursuit.desiredVelocity.copy(), thePursuit.joystickAngularVelocity);
-        return thePursuit.getDone() || super.execute();
+//        return thePursuit.getDone() || super.execute();
+        return false;
     }
 
 

@@ -6,6 +6,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
@@ -92,7 +93,8 @@ public class Robot
     private double yEncInPerSec;
 
     private final double encWheelRadius = 1.96/2.0; //in inches ... encoder is a 50mm diameter wheel.
-    private final double encTickPerRotation = 2400;
+//    private final double encTickPerRotation = 2400;
+    private final double encTickPerRotation = 3200;
 //    public static double encDistanceConstant = 195.5/192; //calibrated over 16' & 12' on foam tiles -- 9/13/19
     public static double encDistanceConstant = 1;
     private final double encInchesPerRotation = 2.0 * encWheelRadius * Math.PI * encDistanceConstant; // this is the encoder wheel distancd
@@ -252,7 +254,7 @@ public class Robot
         {
             xEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "xEncoder");
             xEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-            xEncoder.setDirection((DcMotorEx.Direction.FORWARD));
+            xEncoder.setDirection((DcMotorEx.Direction.REVERSE));
         }
         catch(Exception p_exception)
         {
@@ -392,6 +394,9 @@ public class Robot
         prevXEncoder = bulkDataAux.getMotorCurrentPosition(xEncoder);
         prevYEncoder = bulkDataAux.getMotorCurrentPosition(yEncoder);
 
+        telemetry.addData("x encoder: ", xEncoder.getCurrentPosition());
+        telemetry.addData("y encoder: ", yEncoder.getCurrentPosition()) ;
+
         //TODO: Consider consolidating these updates between here and the pursuit class
         updateVelocity(getVelocity());
         updatePosition(getLocationChange());
@@ -439,6 +444,8 @@ public class Robot
         double x = neededVelocity.x / 40.0; //bot.maxSpeed; //max speed is 31.4 in/sec
         double y = neededVelocity.y / 40.0; // bot.maxSpeed;
 
+        telemetry.addData("x encoder: ", xEncoder.getCurrentPosition());
+        telemetry.addData("y encoder: ", yEncoder.getCurrentPosition());
         telemetry.addData("SbfJoystick x, y: ", "%.3f, %.3f", x, y );
 
         double turn = spin / 343;
@@ -601,6 +608,9 @@ public class Robot
               - The left joystick controls moving straight forward/backward and straight sideways.
               - The right joystick control turning.
         */
+
+        telemetry.addData("x encoder: ", xEncoder.getCurrentPosition());
+        telemetry.addData("y encoder: ", yEncoder.getCurrentPosition());
         double forward = leftStickY;
         double right = -leftStickX;
         double clockwise = rightStickX;
