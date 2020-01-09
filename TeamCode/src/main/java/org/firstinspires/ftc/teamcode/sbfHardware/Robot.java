@@ -364,7 +364,8 @@ public class Robot
          * Update the sensor data using bulk transferes from the Rev Hubs
          */
         currentHeading = updateHeadingInternal();
-//        telemetry.addData("heading", currentHeading);
+        telemetry.addData("heading", currentHeading);
+        telemetry.addData("pursuitHeading: ", getHeadingPursuit());
         bulkData = expansionHub.getBulkInputData();
         bulkDataAux = expansionHubAux.getBulkInputData();
 
@@ -400,8 +401,9 @@ public class Robot
         //TODO: Consider consolidating these updates between here and the pursuit class
         updateVelocity(getVelocity());
         updatePosition(getLocationChange());
-        updateHeading(getHeading());
+        updateHeading(getHeadingPursuit());
         updateAngularVelocity(getAngularVelocity());
+        updateHeading(currentHeading);
     }
 
     /**
@@ -768,7 +770,7 @@ public class Robot
         power = Math.abs(power);
 
         update();
-        telemetry.addData("currentHeading: ", currentHeading);
+//        telemetry.addData("currentHeading: ", currentHeading);
 //        double currentHeading = getHeading();
 
         if (Math.abs(targetHeading) > 170  &&  currentHeading < 0.0)

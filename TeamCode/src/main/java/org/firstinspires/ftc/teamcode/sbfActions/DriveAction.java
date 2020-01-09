@@ -79,7 +79,7 @@ public class DriveAction extends RobotAction
 //        telemetry.addData("distance ", theDistance);
         robot.updateVelocity(robot.getVelocity());
         robot.updatePosition(robot.getLocationChange());
-        robot.updateHeading(robot.getHeading());
+        robot.updateHeading(robot.getHeadingPursuit());
         robot.updateAngularVelocity(robot.getAngularVelocity());
         return robot.drive(thePower, theDirection, theGain, theDistance, timeout, theIntake);
     }

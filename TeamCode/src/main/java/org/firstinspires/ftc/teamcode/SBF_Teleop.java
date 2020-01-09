@@ -118,7 +118,7 @@ public class SBF_Teleop extends OpMode
 //        telemetry.addData("left trigger: ", customPad1.getLeftTrigger());
 //        telemetry.addData("left Intake: ", robot.intake.leftIntake.getPower());
 //        telemetry.addData("right intake: ", robot.intake.rightIntake.getPower());
-//        telemetry.addData("position: ", robot.location);
+        telemetry.addData("position: ", robot.location);
 
         //intake controls
         if(customPad1.getLeftTrigger() != 0)

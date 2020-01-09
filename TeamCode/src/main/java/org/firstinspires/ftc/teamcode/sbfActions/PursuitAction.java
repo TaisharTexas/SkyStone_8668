@@ -99,15 +99,19 @@ public class PursuitAction extends RobotAction
     public boolean execute()
     {
 //        telemetry.addData("distance ", theDistance);
-        thePursuit.updateVelocity(robot.getVelocity());
-        thePursuit.updatePosition(robot.getLocationChange());
-        thePursuit.updateHeading(robot.getHeadingPursuit());
-        thePursuit.updateAngularVelocity(robot.getAngularVelocity());
+//        thePursuit.updateVelocity(robot.getVelocity());
+//        thePursuit.updatePosition(robot.getLocationChange());
+//        thePursuit.updateHeading(robot.getHeadingPursuit());
+//        thePursuit.updateAngularVelocity(robot.getAngularVelocity());
+        robot.updateVelocity(robot.getVelocity());
+        robot.updatePosition(robot.getLocationChange());
+        robot.updateHeading(robot.getHeadingPursuit());
+        robot.updateAngularVelocity(robot.getAngularVelocity());
         thePursuit.elapsedTime = getRuntime();
         thePursuit.follow(thePath);
         robot.updateMotors(thePursuit.desiredVelocity.copy(), thePursuit.joystickAngularVelocity);
-//        return thePursuit.getDone() || super.execute();
-        return false;
+        return thePursuit.getDone() || super.execute();
+//        return false;
     }
 
 
