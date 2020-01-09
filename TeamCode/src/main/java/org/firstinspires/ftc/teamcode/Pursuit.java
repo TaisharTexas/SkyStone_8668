@@ -306,21 +306,21 @@ public class Pursuit
         return  start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1));
     }
 
-//    public void updatePosition(PVector currentPosition)
-//    {
-//        location = PVector.add(location, currentPosition);
-//    }
-//
-//    public void updateVelocity(PVector currentVelocity)
-//    {
-//        velocity.set(currentVelocity.x, currentVelocity.y);
-//    }
-//
-//    public void updateAngularVelocity( double angularVelocity )
-//    {
-//        currentAngularVelocity = angularVelocity;
-//    }
-//
+    public void updatePosition(PVector currentPosition)
+    {
+        location = PVector.add(location, currentPosition);
+    }
+
+    public void updateVelocity(PVector currentVelocity)
+    {
+        velocity.set(currentVelocity.x, currentVelocity.y);
+    }
+
+    public void updateAngularVelocity( double angularVelocity )
+    {
+        currentAngularVelocity = angularVelocity;
+    }
+
     public void updateHeading( double heading )
     {
         // check to see if the heading changes unrealistically due to gyro rollover

@@ -89,7 +89,7 @@ public class SBF_Autonomous extends OpMode
 //
 //
 ////        telemetry.addData("mp.global velocity: ", bot.velocity);
-//        pursuit.currentHeading = robot.getHeading();
+//        pursuit.currentHeading = robot.getRawHeading();
 //        pursuit.currentAngularVelocity = robot.getAngularVelocity();
 //
 ////        telemetry.addData("mp.currentAngularVelocity: ", bot.currentAngularVelocity);

@@ -3,10 +3,8 @@ package org.firstinspires.ftc.teamcode.sbfHardware;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
@@ -106,7 +104,7 @@ public class Robot
     private int xEncoderChange = 0;
     private int yEncoderChange = 0;
 
-    private double currentHeading = 0;
+    private double currentRawHeading = 0;
     private boolean servoDone = false;
 
     /** Directional variables used to simulate joystick commands in autonomous.
@@ -363,8 +361,8 @@ public class Robot
         /*
          * Update the sensor data using bulk transferes from the Rev Hubs
          */
-        currentHeading = updateHeadingInternal();
-        telemetry.addData("heading", currentHeading);
+        currentRawHeading = updateHeadingRaw();
+        telemetry.addData("raw heading", currentRawHeading);
         telemetry.addData("pursuitHeading: ", getHeadingPursuit());
         bulkData = expansionHub.getBulkInputData();
         bulkDataAux = expansionHubAux.getBulkInputData();
@@ -399,21 +397,13 @@ public class Robot
         telemetry.addData("y encoder: ", yEncoder.getCurrentPosition()) ;
 
         //TODO: Consider consolidating these updates between here and the pursuit class
-        updateVelocity(getVelocity());
-        updatePosition(getLocationChange());
-        updateHeading(getHeadingPursuit());
-        updateAngularVelocity(getAngularVelocity());
-        updateHeading(currentHeading);
+        updateVelocity(this.getVelocity());
+        updatePosition(this.getLocationChange());
+       // updateHeading(getHeadingPursuit());
+        updateAngularVelocity(this.getAngularVelocity());
+    //    updateHeading(currentRawHeading);
     }
 
-    /**
-     * Robot - Used to get the heading value of the robot.
-     * @return  the robot's heading as a double.
-     */
-    public double getHeading()
-    {
-        return currentHeading;
-    }
 
     /**
      * Robot - applies an offset that is created in the gyro when initializing the robot in the
@@ -422,7 +412,7 @@ public class Robot
      */
     public double getHeadingPursuit()
     {
-        return (currentHeading + offset);
+        return (currentRawHeading + offset);
     }
 
     /**
@@ -518,7 +508,7 @@ public class Robot
      *
      * @return  the robot's heading as an double
      */
-    private double updateHeadingInternal()
+    private double updateHeadingRaw()
     {
         Orientation angles = gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         return -AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle));
@@ -689,7 +679,7 @@ public class Robot
 
         update();
 
-        double actual = currentHeading;
+        double actual = currentRawHeading;
 
         intake.intakeDrive(intakePower);
 //        telemetry.addData( "Is RR-Diagonal?: ", direction ==  REVERSE_RIGHT_DIAGONAL);
@@ -700,7 +690,7 @@ public class Robot
         {
             setZeroBehavior("BRAKE");
 
-            initialHeading = currentHeading;
+            initialHeading = currentRawHeading;
             if (Math.abs(initialHeading) > 130  &&  initialHeading < 0.0)
             {
                 initialHeading += 360.0;
@@ -770,19 +760,19 @@ public class Robot
         power = Math.abs(power);
 
         update();
-//        telemetry.addData("currentHeading: ", currentHeading);
-//        double currentHeading = getHeading();
+//        telemetry.addData("currentRawHeading: ", currentRawHeading);
+//        double currentRawHeading = getRawHeading();
 
-        if (Math.abs(targetHeading) > 170  &&  currentHeading < 0.0)
+        if (Math.abs(targetHeading) > 170 && currentRawHeading < 0.0)
         {
-            currentHeading += 360;
+            currentRawHeading += 360;
         }
 
         if (!moving)
         {
             setZeroBehavior("BRAKE");
 
-            initialHeading = currentHeading;
+            initialHeading = currentRawHeading;
             error = targetHeading - initialHeading;
 
             if (error > 180)
@@ -825,7 +815,7 @@ public class Robot
 
         joystickDrive(0.0, 0.0, directionalPower, 0.0, power);
 
-        if(Math.abs(targetHeading - currentHeading) < 3.0 || getRuntime() > time)
+        if(Math.abs(targetHeading - currentRawHeading) < 3.0 || getRuntime() > time)
         {
             stop();
 
@@ -1039,6 +1029,6 @@ public class Robot
 
     public void updateHeading( double heading )
     {
-        currentHeading = heading;
+        currentRawHeading = heading;
     }
 }

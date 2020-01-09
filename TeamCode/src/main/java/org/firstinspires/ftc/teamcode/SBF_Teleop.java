@@ -61,7 +61,7 @@ public class SBF_Teleop extends OpMode
     @Override
     public void init_loop()
     {
-//        telemetry.addData("heading: ", robot.getHeading());
+//        telemetry.addData("heading: ", robot.getRawHeading());
 
 //        telemetry.addData("path: ", Environment.getExternalStorageDirectory().getPath() + "/");
 //        telemetry.addData("path external: ", getExternalStoragePath(hardwareMap.appContext, true) );
@@ -211,7 +211,7 @@ public class SBF_Teleop extends OpMode
 //        telemetry.addData("Gamepad left stick x, Left Stick X", "%.3f, %.3f", gamepad1.left_stick_x, customPad1.getLeftStickX());
 //        telemetry.addData("Gamepad left stick y, Left Stick Y", "%.3f, %.3f", gamepad1.left_stick_y, customPad1.getLeftStickY());
 //        telemetry.addData("Gamepad right stick x: ", "%.3f", customPad1.getRightStickX());
-//        telemetry.addData("Heading ", "%.3f", robot.getHeading());
+//        telemetry.addData("Heading ", "%.3f", robot.getRawHeading());
 //        telemetry.addData("Robot Location: ", "%.3f","%.3f", robot.);
 
 //        telemetry.addData("SS Position: ", robot.eyeOfSauron.getSkyStonePosition());
