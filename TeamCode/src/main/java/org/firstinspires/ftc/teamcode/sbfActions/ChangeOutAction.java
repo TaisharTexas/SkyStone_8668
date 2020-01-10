@@ -40,13 +40,13 @@ public class ChangeOutAction extends RobotAction
     @Override
     public void init(Telemetry telem, Robot theRobot)
     {
-        ssPosition = SBF_Autonomous.skyStonePosition;
         super.init(telem, theRobot);
     }
 
     /** Sets the count variable to zero and calls the parent init method.  */
     public void entry()
     {
+        ssPosition = SBF_Autonomous.skyStonePosition;
         //robot.start();
         count = 0;
         super.entry();
