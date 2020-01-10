@@ -49,6 +49,7 @@ public class SBF_Autonomous extends OpMode
         theMaster.init(telemetry, autoFile, robot);
 
         robot.getEncoderTelem();
+
     }
 
     @Override
@@ -66,10 +67,9 @@ public class SBF_Autonomous extends OpMode
 
     public void start()
     {
-        theMaster.setFirstAction(ssPos);
         skyStonePosition = ssPos;
+        theMaster.setFirstAction(ssPos);
 
-//        theMaster.setFirstAction("One");
         resetStartTime();
         pursuit.elapsedTime = 0;
         robot.start();
@@ -80,26 +80,6 @@ public class SBF_Autonomous extends OpMode
     {
         robot.update();
         telemetry.addData("Robot Heading: ", robot.getHeadingPursuit());
-
-
-        ////////////////////////////////////////////////////////////////////////////////////////////
-
-//        pursuit.updatePosition(robot.getLocationChange());
-//        pursuit.updateVelocity(robot.getVelocity());
-//
-//
-////        telemetry.addData("mp.global velocity: ", bot.velocity);
-//        pursuit.currentHeading = robot.getRawHeading();
-//        pursuit.currentAngularVelocity = robot.getAngularVelocity();
-//
-////        telemetry.addData("mp.currentAngularVelocity: ", bot.currentAngularVelocity);
-//
-//        pursuit.elapsedTime = getRuntime();
-//        pursuit.follow(drivePath);
-//
-//        robot.updateMotors(pursuit.desiredVelocity.copy(), pursuit.joystickAngularVelocity);
-
-        ////////////////////////////////////////////////////////////////////////////////////////////
 
         theMaster.execute();
 

@@ -83,6 +83,7 @@ public class Lift
         {
             horizontal = hardwareMap.get(Servo.class, "horizontal");
             horizontal.setDirection(Servo.Direction.FORWARD);
+            horizontal.setPosition(.81);
         }
         catch (Exception p_exeception)
         {
