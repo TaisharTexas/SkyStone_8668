@@ -13,9 +13,12 @@ import java.io.File;
 @Config
 public class SBF_Autonomous extends OpMode
 {
+    public double startX;
+    public double startY;
+
     ActionMaster theMaster = new ActionMaster();
 
-    Pursuit pursuit = new Pursuit((float)39.0, (float)9.0, telemetry);
+    Pursuit pursuit = new Pursuit((float)startX, (float)startY, telemetry);
 //    Pursuit pursuit = new Pursuit((float)0.0, (float)0.0, telemetry);
     Robot robot = new Robot();
     Path drivePath = new Path();
@@ -40,8 +43,10 @@ public class SBF_Autonomous extends OpMode
 
         robot.whichCamera = this.whichCamera;
         robot.init(telemetry, hardwareMap, true, offset);
+        robot.location.x = (float)startX;
+        robot.location.y = (float)startY;
 
-//        autoFile = new File("/storage/9016-4EF8/autoRun.csv");
+//        autoFile = new File("/storage/9016-4EF8/BluePursuitQuarry.csv");
 //        autoFile = new File ("/storage/9016-4EF8/RedFoundationNav.csv");
 
         telemetry.addData("autofile: ", autoFile);

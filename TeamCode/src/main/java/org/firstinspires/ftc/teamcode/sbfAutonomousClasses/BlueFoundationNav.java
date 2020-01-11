@@ -21,6 +21,9 @@ public class BlueFoundationNav extends SBF_Autonomous
     public BlueFoundationNav()
     {
         this.autoFile = new File("/storage/9016-4EF8/BlueFoundationNav.csv");
+        startX = 105;
+        startY = 9;
+
 
     }
 

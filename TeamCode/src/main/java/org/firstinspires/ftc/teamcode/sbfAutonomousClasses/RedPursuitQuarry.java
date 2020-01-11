@@ -17,11 +17,14 @@ import java.io.File;
  * */
 public class RedPursuitQuarry extends SBF_Autonomous
 {
+
     /** Calls the init methods for needed classes and locates the correct file path to the CSV file
      * for the crater face drive path. */
     public RedPursuitQuarry()
     {
         autoFile = new File("/storage/9016-4EF8/RedPursuitQuarry.csv");
+        startX = 39;
+        startY = 9;
 
     }
 

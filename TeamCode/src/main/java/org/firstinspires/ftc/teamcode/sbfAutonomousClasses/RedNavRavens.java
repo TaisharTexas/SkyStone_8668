@@ -23,6 +23,8 @@ public class RedNavRavens extends SBF_Autonomous
     public RedNavRavens()
     {
         autoFile = new File("/storage/9016-4EF8/RedNavRavens.csv");
+        startX = 39;
+        startY = 9;
     }
 
     @Override

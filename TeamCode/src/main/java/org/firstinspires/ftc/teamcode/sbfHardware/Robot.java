@@ -37,7 +37,6 @@ public class Robot
     private double offset;
     public String whichCamera = "leftCam";
 
-    //TODO: make changeable.
     public PVector location = new PVector(39,9);
     public PVector velocity = new PVector(0,0);
     public double currentAngularVelocity;

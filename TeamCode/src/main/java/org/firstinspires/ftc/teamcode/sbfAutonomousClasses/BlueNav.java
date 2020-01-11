@@ -23,6 +23,9 @@ public class BlueNav extends SBF_Autonomous
     public BlueNav()
     {
         autoFile = new File("/storage/9016-4EF8/BlueNav.csv");
+        startX = 105;
+        startY = 9;
+
     }
 
     @Override

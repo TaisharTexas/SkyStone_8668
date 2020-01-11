@@ -165,7 +165,7 @@ public class Lift
     {
         if(claw != null)
         {
-            claw.setPosition(.35);
+            claw.setPosition(.44);
         }
     }
 

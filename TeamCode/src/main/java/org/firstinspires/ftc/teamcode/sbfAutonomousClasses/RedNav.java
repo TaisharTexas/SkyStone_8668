@@ -21,6 +21,8 @@ public class RedNav extends SBF_Autonomous
     public RedNav()
     {
         autoFile = new File("/storage/9016-4EF8/RedNav.csv");
+        startX = 39;
+        startY = 9;
     }
 
     @Override

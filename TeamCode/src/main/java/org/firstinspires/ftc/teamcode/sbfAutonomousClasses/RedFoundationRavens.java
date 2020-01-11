@@ -21,6 +21,8 @@ public class RedFoundationRavens extends SBF_Autonomous
     public RedFoundationRavens()
     {
         this.autoFile = new File("/storage/9016-4EF8/RedFoundationRavens.csv");
+        startX = 39;
+        startY = 9;
     }
 
     @Override

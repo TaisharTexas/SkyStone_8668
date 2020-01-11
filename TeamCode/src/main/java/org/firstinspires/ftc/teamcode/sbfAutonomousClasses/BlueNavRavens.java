@@ -23,6 +23,9 @@ public class BlueNavRavens extends SBF_Autonomous
     public BlueNavRavens()
     {
         autoFile = new File("/storage/9016-4EF8/BlueNavRavens.csv");
+        startX = 105;
+        startY = 9;
+
     }
 
     @Override

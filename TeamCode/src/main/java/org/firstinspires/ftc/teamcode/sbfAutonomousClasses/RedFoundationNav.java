@@ -21,6 +21,8 @@ public class RedFoundationNav extends SBF_Autonomous
     public RedFoundationNav()
     {
         this.autoFile = new File("/storage/9016-4EF8/RedFoundationNav.csv");
+        startX = 39;
+        startY = 9;
     }
 
     @Override
