@@ -21,5 +21,17 @@ public class BlueFoundationRavens extends SBF_Autonomous
     public BlueFoundationRavens()
     {
         this.autoFile = new File("/storage/9016-4EF8/BlueFoundationRavens.csv");
+
+        startX = 105;
+        startY = 9;
+
+
+    }
+    @Override
+    public void init()
+    {
+        offset = 90;
+        whichCamera = "leftCam";
+        super.init();
     }
 }

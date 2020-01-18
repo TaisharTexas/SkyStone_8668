@@ -48,6 +48,7 @@ public class Lift
         {
             leftVertical = (ExpansionHubMotor) hardwareMap.get(DcMotorEx .class, "leftV");
             leftVertical.setDirection(DcMotorEx.Direction.REVERSE);
+            leftVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             leftVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             leftVertical.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -62,6 +63,7 @@ public class Lift
         {
             rightVertical = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "rightV");
             rightVertical.setDirection(DcMotorEx.Direction.FORWARD);
+            rightVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             rightVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             rightVertical.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
@@ -81,6 +83,7 @@ public class Lift
         {
             horizontal = hardwareMap.get(Servo.class, "horizontal");
             horizontal.setDirection(Servo.Direction.FORWARD);
+            horizontal.setPosition(.81);
         }
         catch (Exception p_exeception)
         {
@@ -155,14 +158,14 @@ public class Lift
     {
         if(claw != null)
         {
-            claw.setPosition(.9);
+            claw.setPosition(.77);
         }
     }
     public void releaseClaw()
     {
         if(claw != null)
         {
-            claw.setPosition(.5);
+            claw.setPosition(.44);
         }
     }
 
@@ -171,7 +174,7 @@ public class Lift
         if(wrist != null)
         {
 //            wrist.setPosition(.9);
-            wrist.setPosition(.525);
+            wrist.setPosition(.45);
         }
 
     }
@@ -179,7 +182,7 @@ public class Lift
     {
         if(wrist != null)
         {
-            wrist.setPosition(.135);
+            wrist.setPosition(.05);
         }
     }
     public void wristDrive( double position )

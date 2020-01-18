@@ -1,14 +1,13 @@
 package org.firstinspires.ftc.teamcode.sbfAutonomousClasses;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.SBF_Autonomous;
 
 import java.io.File;
 
 
-@Autonomous(name="autoRun", group="Zombie")
+@Autonomous(name="RedPursuitQuarry", group="Pursuit")
 /** The autonomous class that handles autonomous from the crater side of the lander.
  * This class loads data from a spreadsheet and uses the data to create a sequential list of robot
  * actions.  It lands, samples, goes to the depot, drops the marker, and comes back to the crater.
@@ -16,13 +15,25 @@ import java.io.File;
  * @author Andrew, SBF Robotics
  * @see SBF_Autonomous
  * */
-public class autoRun extends SBF_Autonomous
+public class RedPursuitQuarry extends SBF_Autonomous
 {
+
     /** Calls the init methods for needed classes and locates the correct file path to the CSV file
      * for the crater face drive path. */
-    public autoRun()
+    public RedPursuitQuarry()
     {
-        autoFile = new File("/storage/9016-4EF8/autoRun.csv");
+        autoFile = new File("/storage/9016-4EF8/RedPursuitQuarry.csv");
+        startX = 39;
+        startY = 9;
 
+    }
+
+    @Override
+    public void init()
+    {
+        offset = -90;
+//        offset = 0.0;
+        whichCamera = "rightCam";
+        super.init();
     }
 }

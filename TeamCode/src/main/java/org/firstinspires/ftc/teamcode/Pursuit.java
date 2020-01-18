@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.sbfUtil.PVector;
 
+@Config
 /**
  * Credit:
  *
@@ -22,22 +24,25 @@ public class Pursuit
     public double currentAngularVelocity;
     public double joystickAngularVelocity;
 
-    double endZone;
-    double maxSpeed;
-    double maxAccel;
-    double gainValue;
-    double turnGain;
+    public static double endZone = 6.0;
+    private double maxSpeed;
+    private double maxAccel;
+    private double gainValue;
+    private double turnGain;
 
-    double accelerationSteepness = 4.0;
-    double timeToAccelerate = 1.0;
+    public static double pathLookahead = 5.0;
 
-    int currentSegment = 0;
-    boolean lastSegment = false;
-    public boolean done = false;
+    private double accelerationSteepness = 4.0;
+    private double timeToAccelerate = 1.0;
+
+    private int currentSegment = 0;
+    private boolean lastSegment = false;
+    private boolean done = false;
+    private boolean moving = false;
 
     Telemetry telemetry;
-    double elapsedTime = 0;
-    PVector end;
+    public double elapsedTime = 0;
+    private PVector end;
 
     public Pursuit(float x, float y, Telemetry telem)
     {
@@ -46,9 +51,8 @@ public class Pursuit
         velocity = new PVector(0,0);
         localVelocity = new PVector( 0,0);
         location = new PVector(x,y);
-//        initialPosition = new PVector(x,y);
         desiredVelocity = new PVector(0,0);
-        endZone = 6; //inch
+//        endZone = 6; //inch
 
         //  30 in/sec correlates to maximum unloaded motor speed
         //  30.615 in/sec = 15.7 rad/sec * 1.3 gearing * 1.5 in wheel radius
@@ -66,8 +70,13 @@ public class Pursuit
      * Given a start waypoint and end waypoint, take the robot's current location and move the robot
      * first to the start point and then to the end point.
      */
+//    public boolean follow(Path drivePath)
     public void follow(Path drivePath)
     {
+        if(!moving)
+        {
+            moving = true;
+        }
         PVector target;
         PVector start = drivePath.pathPoints.get(currentSegment);
         end = drivePath.pathPoints.get(currentSegment + 1);
@@ -107,7 +116,7 @@ public class Pursuit
             lastSegment = true;
         }
 
-//        telemetry.addData("CurrentSegment, Last Segment?: ", "%d, %s", currentSegment, String.valueOf(lastSegment ));
+        telemetry.addData("CurrentSegment, Last Segment?: ", "%d, %s", currentSegment, String.valueOf(lastSegment ));
         PVector velocityCopy = velocity.copy();
         velocityCopy.setMag(2);
 
@@ -138,7 +147,7 @@ public class Pursuit
             }
 
             PVector pathDirection = PVector.sub(end, start);
-            pathDirection.setMag(5.0);
+            pathDirection.setMag(pathLookahead);
 
             target = normalPoint.copy();
             target.add(pathDirection);
@@ -158,7 +167,7 @@ public class Pursuit
             }
 
             PVector pathDirection = PVector.sub(end, start);
-            pathDirection.setMag(5.0);
+            pathDirection.setMag(pathLookahead);
 
             target = normalPoint.copy();
             target.add(pathDirection);
@@ -172,17 +181,15 @@ public class Pursuit
 
         telemetry.addData("Target loc: ", target);
         arrive(target, theMaxSpeed);
-        point(theTargetHeading, 100);
+        point(theTargetHeading, 175);
 
-        if(lastSegment && location.dist(end) <= .5)
+        if(lastSegment && location.dist(end) <= 3.5 && (Math.abs(currentHeading)-Math.abs(theTargetHeading)) <= 3)
         {
             done = true;
         }
-
     }
 
-
-    public void arrive(PVector target, double theMaxSpeed)
+    private void arrive(PVector target, double theMaxSpeed)
     {
         //converts the 0-1 power scale of the csv file to the 0-30 power scale used by the pursuit algorithm
 //        theMaxSpeed = theMaxSpeed * 30.0;
@@ -197,7 +204,7 @@ public class Pursuit
 
         if(location.dist(end) < endZone)
         {
-            float m = scaleVector(speed, 0, (float)endZone, 0.3f, (float)theMaxSpeed);
+            float m = scaleVector(speed, 0, (float)endZone, 1.0f, (float)theMaxSpeed);
             desiredVelocity.setMag(m);
         }
         else
@@ -238,9 +245,7 @@ public class Pursuit
 
     }
 
-
-
-    public void point(double targetHeading, double theMaxTurnSpeed)
+    private void point(double targetHeading, double theMaxTurnSpeed)
     {
         double desiredAngularVelocity = (targetHeading-currentHeading);
 
@@ -270,7 +275,6 @@ public class Pursuit
 
     }
 
-
     /**
      * A function to get the normal point from a point (p) to a line segment (a-b)
      * This function could be optimized to make fewer new Vector objects
@@ -284,7 +288,7 @@ public class Pursuit
      * @param segmentEnd  The target waypoint to which the robot is attempting to drive.
      * @return The target direction the robot will drive at to move towards the end point.
      * */
-    public PVector getNormalPoint(PVector projectedLoc, PVector segmentStart, PVector segmentEnd) {
+    private PVector getNormalPoint(PVector projectedLoc, PVector segmentStart, PVector segmentEnd) {
         // Vector from a to p
         PVector ap = PVector.sub(projectedLoc, segmentStart);
         // Vector from a to b
@@ -297,11 +301,9 @@ public class Pursuit
     }
 
 
-    public float scaleVector(float value, float start1, float stop1, float start2, float stop2)
+    private float scaleVector(float value, float start1, float stop1, float start2, float stop2)
     {
-        float outgoing = start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1));
-
-        return outgoing;
+        return  start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1));
     }
 
     public void updatePosition(PVector currentPosition)
@@ -321,10 +323,24 @@ public class Pursuit
 
     public void updateHeading( double heading )
     {
+        // check to see if the heading changes unrealistically due to gyro rollover
+        if (Math.abs(heading - currentHeading) > 225)
+        {
+            if (heading < 0)
+            {
+                heading += 360;
+            }
+            else if (heading > 0)
+            {
+                heading -= 360;
+            }
+        }
         currentHeading = heading;
     }
+
     public boolean getDone()
     {
+//        return !moving;
         return done;
     }
 

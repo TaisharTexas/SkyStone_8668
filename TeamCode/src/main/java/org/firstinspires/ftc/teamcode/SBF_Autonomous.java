@@ -13,16 +13,23 @@ import java.io.File;
 @Config
 public class SBF_Autonomous extends OpMode
 {
+    public double startX;
+    public double startY;
+
     ActionMaster theMaster = new ActionMaster();
 
-    Pursuit pursuit = new Pursuit((float)39.0, (float)9.0, telemetry);
+    Pursuit pursuit = new Pursuit((float)startX, (float)startY, telemetry);
 //    Pursuit pursuit = new Pursuit((float)0.0, (float)0.0, telemetry);
     Robot robot = new Robot();
     Path drivePath = new Path();
 
     public File autoFile = null;
+    public String whichCamera;
+    public static String skyStonePosition = "leftPositionTwo";
 
-    String ssPos = "One";
+
+    public String ssPos = "One";
+    public double offset;
 
     public SBF_Autonomous()
     {
@@ -34,9 +41,12 @@ public class SBF_Autonomous extends OpMode
     {
 //        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        robot.init(telemetry, hardwareMap, false);
+        robot.whichCamera = this.whichCamera;
+        robot.init(telemetry, hardwareMap, true, offset);
+        robot.location.x = (float)startX;
+        robot.location.y = (float)startY;
 
-//        autoFile = new File("/storage/9016-4EF8/autoRun.csv");
+//        autoFile = new File("/storage/9016-4EF8/BluePursuitQuarry.csv");
 //        autoFile = new File ("/storage/9016-4EF8/RedFoundationNav.csv");
 
         telemetry.addData("autofile: ", autoFile);
@@ -45,22 +55,6 @@ public class SBF_Autonomous extends OpMode
 
         robot.getEncoderTelem();
 
-        // TODO: get rid of the Path object here and use the PursuitAction
-
-        // Set up path
-//        drivePath.addPoint(0,0,30,0);
-//        drivePath.addPoint(0,45,15,90);
-//        drivePath.addPoint(25,45,15,90);
-//        drivePath.addPoint(15,15,30,45);
-//        drivePath.addPoint(0,0,15,0);
-
-       // Attempt to map out getting 1 stone in red alliance autonomous
-//        drivePath.addPoint(39,9,25,-90);
-//        drivePath.addPoint( 43,55,20,-90);
-//        drivePath.addPoint( 30,55,20,-90);
-//        drivePath.addPoint( 60,18,25,-90);
-//        drivePath.addPoint(90, 25, 30, -45);
-//        drivePath.addPoint( 121,40,20,0);
     }
 
     @Override
@@ -68,46 +62,29 @@ public class SBF_Autonomous extends OpMode
     {
         robot.init_loop();
         super.init_loop();
+//        telemetry.addData("which camera: ", whichCamera);
         ssPos = robot.getSkyStonePosition();
+//        telemetry.addData("stone position, ", ssPos);
+//        telemetry.addData("pursuit heading ", robot.getHeadingPursuit());
+
 
     }
 
     public void start()
     {
+        skyStonePosition = ssPos;
         theMaster.setFirstAction(ssPos);
-//        theMaster.setFirstAction("One");
+
         resetStartTime();
         pursuit.elapsedTime = 0;
         robot.start();
+        robot.stopCamera();
     }
 
     public void loop()
     {
-
-        // TODO: get rid of the pursuit items here and use the PursuitAction and the ActionMaster.
         robot.update();
-        telemetry.addData("Robot Heading: ", robot.getHeading());
-
-
-        ////////////////////////////////////////////////////////////////////////////////////////////
-
-//        pursuit.updatePosition(robot.getLocationChange());
-//        pursuit.updateVelocity(robot.getVelocity());
-//
-//
-////        telemetry.addData("mp.global velocity: ", bot.velocity);
-//        pursuit.currentHeading = robot.getHeading();
-//        pursuit.currentAngularVelocity = robot.getAngularVelocity();
-//
-////        telemetry.addData("mp.currentAngularVelocity: ", bot.currentAngularVelocity);
-//
-//        pursuit.elapsedTime = getRuntime();
-//        pursuit.follow(drivePath);
-//
-//        robot.updateMotors(pursuit.desiredVelocity.copy(), pursuit.joystickAngularVelocity);
-
-        ////////////////////////////////////////////////////////////////////////////////////////////
-
+        telemetry.addData("Robot Heading: ", robot.getHeadingPursuit());
 
         theMaster.execute();
 

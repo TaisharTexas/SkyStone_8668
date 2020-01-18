@@ -59,7 +59,7 @@ public class ComputerDebugging
 //        messageBuilder.append(",");
 //        messageBuilder.append(df.format(car.getYChange()));
 //        messageBuilder.append(",");
-//        messageBuilder.append(df.format(car.getHeading()));
+//        messageBuilder.append(df.format(car.getRawHeading()));
 //        messageBuilder.append("%");
 //
 //    }

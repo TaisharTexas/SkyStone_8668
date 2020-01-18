@@ -21,5 +21,17 @@ public class BlueFoundationNav extends SBF_Autonomous
     public BlueFoundationNav()
     {
         this.autoFile = new File("/storage/9016-4EF8/BlueFoundationNav.csv");
+        startX = 105;
+        startY = 9;
+
+
+    }
+
+    @Override
+    public void init()
+    {
+        offset = 90;
+        whichCamera = "leftCam";
+        super.init();
     }
 }
