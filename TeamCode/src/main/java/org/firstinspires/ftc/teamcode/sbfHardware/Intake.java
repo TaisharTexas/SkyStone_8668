@@ -27,10 +27,10 @@ public class Intake
 //    private CRServo rightInSupport2 = null;
 //    private CRServo leftInSupport2 = null;
     private double stallCurrent = 5100;
-    private static double leftMaxIntakeSpd = 0.85;
-    private static double rightMaxIntakeSpd = 0.8;
-    private static double leftMaxIntakeSpdAuto = .9;
-    private static double rightMaxIntakeSpdAuto = .8;
+    private static double leftMaxIntakeSpd = 0.95;
+    private static double rightMaxIntakeSpd = 0.9;
+    private static double leftMaxIntakeSpdAuto = 1;
+    private static double rightMaxIntakeSpdAuto = .9;
 
 
     public void init(Telemetry telem, HardwareMap hwmap)

@@ -224,7 +224,7 @@ public class SBF_Teleop extends OpMode
 
         if(customPad1.getRightBumper())
         {
-            maximumSpeed = .9;
+            maximumSpeed = 1;
         }
         else
         {

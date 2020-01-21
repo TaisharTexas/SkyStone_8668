@@ -121,13 +121,13 @@ public class Lift
         }
         else if(touchR.isPressed() || touchL.isPressed())
         {
-            leftVertical.setPower(0.22);
-            rightVertical.setPower(0.22);
+            leftVertical.setPower(0.25);
+            rightVertical.setPower(0.25);
         }
         else if ( encoder < 350  && power > 0)
         {
-            leftVertical.setPower(-0.2);
-            rightVertical.setPower(-0.2);
+            leftVertical.setPower(-0.3);
+            rightVertical.setPower(-0.3);
         }
 
         else if(power > .01 || power < -.01)
