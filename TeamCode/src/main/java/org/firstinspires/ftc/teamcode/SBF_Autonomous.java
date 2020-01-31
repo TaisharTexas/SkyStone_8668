@@ -31,6 +31,8 @@ public class SBF_Autonomous extends OpMode
     public String ssPos = "One";
     public double offset;
 
+    public boolean isOff;
+
     public SBF_Autonomous()
     {
 
@@ -45,6 +47,8 @@ public class SBF_Autonomous extends OpMode
         robot.init(telemetry, hardwareMap, true, offset);
         robot.location.x = (float)startX;
         robot.location.y = (float)startY;
+
+        isOff = false;
 
 //        autoFile = new File("/storage/9016-4EF8/BluePursuitQuarry.csv");
 //        autoFile = new File ("/storage/9016-4EF8/RedFoundationNav.csv");
@@ -78,11 +82,17 @@ public class SBF_Autonomous extends OpMode
         resetStartTime();
         pursuit.elapsedTime = 0;
         robot.start();
-        robot.stopCamera();
+//        robot.stopCamera();
     }
 
     public void loop()
     {
+        if(!isOff)
+        {
+            robot.stopCamera();
+            isOff = true;
+        }
+
         robot.update();
         telemetry.addData("Robot Heading: ", robot.getHeadingPursuit());
 
