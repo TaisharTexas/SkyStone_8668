@@ -1,15 +1,27 @@
 package org.firstinspires.ftc.teamcode.sbfHardware;
 
+import android.app.Activity;
+import android.graphics.Color;
+import android.view.View;
+
+import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcontroller.external.samples.SensorDigitalTouch;
+import org.firstinspires.ftc.robotcontroller.external.samples.SensorREVColorDistance;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.openftc.revextensions2.ExpansionHubEx;
 import org.openftc.revextensions2.ExpansionHubMotor;
 
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class Intake
@@ -24,6 +36,9 @@ public class Intake
     public ExpansionHubMotor rightIntake = null;
     private CRServo leftInSupport = null;
     private CRServo rightInSupport = null;
+    private ColorSensor rampSignalC = null;
+    private DistanceSensor rampSignalD = null;
+    private DistanceSensor backSignal = null;
 //    private CRServo rightInSupport2 = null;
 //    private CRServo leftInSupport2 = null;
     private double stallCurrent = 5100;
@@ -32,6 +47,18 @@ public class Intake
     private static double leftMaxIntakeSpdAuto = 1;
     private static double rightMaxIntakeSpdAuto = .9;
 
+    // hsvValues is an array that will hold the hue, saturation, and value information.
+    float hsvValues[] = {0F, 0F, 0F};
+
+    // values is a reference to the hsvValues array.
+    final float values[] = hsvValues;
+
+    // sometimes it helps to multiply the raw RGB values with a scale factor
+    // to amplify/attentuate the measured values.
+    final double SCALE_FACTOR = 255;
+
+    private int relativeLayoutId;
+    private View relativeLayout;
 
     public void init(Telemetry telem, HardwareMap hwmap)
     {
@@ -100,6 +127,33 @@ public class Intake
 //            leftInSupport2 = null;
 //        }
 
+        try
+        {
+            rampSignalC = hardwareMap.get(ColorSensor.class, "rampSignal");
+        }
+        catch (Exception p_exception)
+        {
+            telemetry.addData("rampSignalC not found in config file", 0);
+            rampSignalC = null;
+        }
+        try
+        {
+            rampSignalD = hardwareMap.get(DistanceSensor.class, "rampSignal");
+        }
+        catch (Exception p_exception)
+        {
+            telemetry.addData("rampSignalD not found in config file", 0);
+            rampSignalD = null;
+        }
+        try
+        {
+            backSignal = hardwareMap.get(DistanceSensor.class, "backSignal");
+        }
+        catch (Exception p_exception)
+        {
+            telemetry.addData("backSignal not found in config file", 0);
+            backSignal = null;
+        }
 
     }
 
@@ -116,6 +170,23 @@ public class Intake
         rightInSupport.setPower(-1);
 //        rightInSupport2.setPower(-1);
 
+    }
+
+    public double rampSignal()
+    {
+        // send the info back to driver station using telemetry function.
+        telemetry.addData("Distance (cm)", String.format(Locale.US, "%.02f", rampSignalD.getDistance(DistanceUnit.CM)));
+
+        return rampSignalD.getDistance(DistanceUnit.CM);
+
+    }
+
+    public double backSignal()
+    {
+        // send the info back to driver station using telemetry function.
+        telemetry.addData("Distance (cm)", String.format(Locale.US, "%.02f", backSignal.getDistance(DistanceUnit.CM)));
+
+        return backSignal.getDistance(DistanceUnit.CM);
     }
 
     /**
@@ -237,5 +308,18 @@ public class Intake
 
     }
 
+    public void sensorDone()
+    {
+        // Set the panel back to the default color
+        relativeLayout.post(new Runnable()
+        {
+            public void run()
+            {
+                relativeLayout.setBackgroundColor(Color.WHITE);
+            }
+        });
+    }
+
 
 }
+

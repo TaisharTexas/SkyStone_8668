@@ -35,7 +35,7 @@ public class Pursuit
     private double accelerationSteepness = 4.0;
     private double timeToAccelerate = 1.0;
 
-    private int currentSegment = 0;
+    public int currentSegment = 0;
     private boolean lastSegment = false;
     private boolean done = false;
     private boolean moving = false;
