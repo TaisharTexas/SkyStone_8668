@@ -91,6 +91,7 @@ public class SBF_Autonomous extends OpMode
         {
             robot.stopCamera();
             isOff = true;
+            resetStartTime();
         }
 
         robot.update();

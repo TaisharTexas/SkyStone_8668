@@ -181,7 +181,7 @@ public class Pursuit
 
         telemetry.addData("Target loc: ", target);
         arrive(target, theMaxSpeed);
-        point(theTargetHeading, 175);
+        point(theTargetHeading, 200);
 
         if(lastSegment && location.dist(end) <= 3.5 && (Math.abs(currentHeading)-Math.abs(theTargetHeading)) <= 3)
         {

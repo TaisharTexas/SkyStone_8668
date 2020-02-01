@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.sbfActions;
 
 
+import org.firstinspires.ftc.teamcode.sbfHardware.Lift;
 import org.firstinspires.ftc.teamcode.sbfHardware.Robot;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -111,6 +112,12 @@ public class ActionMaster
                 else if(type.equalsIgnoreCase("INTAKEACTION"))
                 {
                     myAction = new IntakeAction(params);
+                    myAction.init(telemetry, robot);
+                    this.addAction(myAction);
+                }
+                else if(type.equalsIgnoreCase("LIFTACTION"))
+                {
+                    myAction = new LiftAction(params);
                     myAction.init(telemetry, robot);
                     this.addAction(myAction);
                 }

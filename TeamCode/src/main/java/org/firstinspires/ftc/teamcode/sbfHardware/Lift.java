@@ -292,5 +292,11 @@ public class Lift
         startTime = System.nanoTime();
     }
 
+    public void stopLift()
+    {
+        rightVertical.setPower(0.0);
+        leftVertical.setPower(0.0);
+    }
+
 
 }
