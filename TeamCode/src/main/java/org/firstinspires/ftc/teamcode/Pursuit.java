@@ -35,7 +35,7 @@ public class Pursuit
     private double accelerationSteepness = 4.0;
     private double timeToAccelerate = 1.0;
 
-    private int currentSegment = 0;
+    public int currentSegment = 0;
     private boolean lastSegment = false;
     private boolean done = false;
     private boolean moving = false;
@@ -181,7 +181,7 @@ public class Pursuit
 
         telemetry.addData("Target loc: ", target);
         arrive(target, theMaxSpeed);
-        point(theTargetHeading, 175);
+        point(theTargetHeading, 200);
 
         if(lastSegment && location.dist(end) <= 3.5 && (Math.abs(currentHeading)-Math.abs(theTargetHeading)) <= 3)
         {

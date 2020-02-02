@@ -65,11 +65,7 @@ public class PursuitAction extends RobotAction
              Double.parseDouble(params[4]),
              Double.parseDouble(params[5]),
              Double.parseDouble(params[6]));
-//        this(params[0],
-//             params[1],
-//             Double.parseDouble(params[2]));
 
-        // use addPoint here
         this.addPoint(params);
     }
 
@@ -104,6 +100,8 @@ public class PursuitAction extends RobotAction
         thePursuit.updateHeading(robot.getHeadingPursuit());
         thePursuit.updateAngularVelocity(robot.getAngularVelocity());
 
+        telemetry.addData("current segment: ", thePursuit.currentSegment);
+
 
         thePursuit.elapsedTime = getRuntime();
         thePursuit.follow(thePath);
@@ -113,7 +111,8 @@ public class PursuitAction extends RobotAction
     }
 
 
-    /** Stops all the motors on the robot and calls the parent exit method. */
+    /** Stops all the motors on the robot and calls the p
+     * arent exit method. */
     @Override
     public void exit()
     {

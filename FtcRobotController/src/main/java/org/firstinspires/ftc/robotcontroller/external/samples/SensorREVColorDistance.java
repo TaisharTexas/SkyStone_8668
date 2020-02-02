@@ -54,7 +54,7 @@ import java.util.Locale;
  */
 @TeleOp(name = "Sensor: REVColorDistance", group = "Sensor")
 @Disabled                            // Comment this out to add to the opmode list
-public class SensorREVColorDistance extends LinearOpMode {
+public class  SensorREVColorDistance extends LinearOpMode {
 
     /**
      * Note that the REV Robotics Color-Distance incorporates two sensors into one device.
@@ -127,8 +127,7 @@ public class SensorREVColorDistance extends LinearOpMode {
                     hsvValues);
 
             // send the info back to driver station using telemetry function.
-            telemetry.addData("Distance (cm)",
-                    String.format(Locale.US, "%.02f", sensorDistance.getDistance(DistanceUnit.CM)));
+            telemetry.addData("Distance (cm)", String.format(Locale.US, "%.02f", sensorDistance.getDistance(DistanceUnit.CM)));
             telemetry.addData("Alpha", sensorColor.alpha());
             telemetry.addData("Red  ", sensorColor.red());
             telemetry.addData("Green", sensorColor.green());
@@ -148,7 +147,8 @@ public class SensorREVColorDistance extends LinearOpMode {
         }
 
         // Set the panel back to the default color
-        relativeLayout.post(new Runnable() {
+        relativeLayout.post(new Runnable()
+        {
             public void run() {
                 relativeLayout.setBackgroundColor(Color.WHITE);
             }
