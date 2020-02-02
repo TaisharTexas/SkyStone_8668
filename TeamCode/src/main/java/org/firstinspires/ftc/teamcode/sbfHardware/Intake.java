@@ -127,33 +127,33 @@ public class Intake
 //            leftInSupport2 = null;
 //        }
 
-        try
-        {
-            rampSignalC = hardwareMap.get(ColorSensor.class, "rampSignal");
-        }
-        catch (Exception p_exception)
-        {
-            telemetry.addData("rampSignalC not found in config file", 0);
-            rampSignalC = null;
-        }
-        try
-        {
-            rampSignalD = hardwareMap.get(DistanceSensor.class, "rampSignal");
-        }
-        catch (Exception p_exception)
-        {
-            telemetry.addData("rampSignalD not found in config file", 0);
-            rampSignalD = null;
-        }
-        try
-        {
-            backSignal = hardwareMap.get(DistanceSensor.class, "backSignal");
-        }
-        catch (Exception p_exception)
-        {
-            telemetry.addData("backSignal not found in config file", 0);
-            backSignal = null;
-        }
+//        try
+//        {
+//            rampSignalC = hardwareMap.get(ColorSensor.class, "rampSignal");
+//        }
+//        catch (Exception p_exception)
+//        {
+//            telemetry.addData("rampSignalC not found in config file", 0);
+//            rampSignalC = null;
+//        }
+//        try
+//        {
+//            rampSignalD = hardwareMap.get(DistanceSensor.class, "rampSignal");
+//        }
+//        catch (Exception p_exception)
+//        {
+//            telemetry.addData("rampSignalD not found in config file", 0);
+//            rampSignalD = null;
+//        }
+//        try
+//        {
+//            backSignal = hardwareMap.get(DistanceSensor.class, "backSignal");
+//        }
+//        catch (Exception p_exception)
+//        {
+//            telemetry.addData("backSignal not found in config file", 0);
+//            backSignal = null;
+//        }
 
     }
 
@@ -172,22 +172,22 @@ public class Intake
 
     }
 
-    public double rampSignal()
-    {
-        // send the info back to driver station using telemetry function.
-        telemetry.addData("Distance (cm)", String.format(Locale.US, "%.02f", rampSignalD.getDistance(DistanceUnit.CM)));
+//    public double rampSignal()
+//    {
+//        // send the info back to driver station using telemetry function.
+//        telemetry.addData("Distance (cm)", String.format(Locale.US, "%.02f", rampSignalD.getDistance(DistanceUnit.CM)));
+//
+//        return rampSignalD.getDistance(DistanceUnit.CM);
+//
+//    }
 
-        return rampSignalD.getDistance(DistanceUnit.CM);
-
-    }
-
-    public double backSignal()
-    {
-        // send the info back to driver station using telemetry function.
-        telemetry.addData("Distance (cm)", String.format(Locale.US, "%.02f", backSignal.getDistance(DistanceUnit.CM)));
-
-        return backSignal.getDistance(DistanceUnit.CM);
-    }
+//    public double backSignal()
+//    {
+//        // send the info back to driver station using telemetry function.
+//        telemetry.addData("Distance (cm)", String.format(Locale.US, "%.02f", backSignal.getDistance(DistanceUnit.CM)));
+//
+//        return backSignal.getDistance(DistanceUnit.CM);
+//    }
 
     /**
      * Intake - Rotate the intake wheels to take in a stone into the intake.

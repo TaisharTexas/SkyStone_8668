@@ -60,7 +60,6 @@ PursuitAction,travelBackLeft,ejectTwo,6,35,-90,12,40
 PursuitAction,travelBackLeft,ejectTwo,6,35,0,30,40
 PursuitAction,travelBackLeft,ejectTwo,6,35,90,40,36
 PursuitAction,travelBackLeft,ejectTwo,6,35,90,95,36
-PursuitAction,travelBackLeft,ejectTwo,6,35,90,95,36
 WaitAction,centerPositionTwo,getCenterTwo,0.01,,,,
 PursuitAction,getCenterTwo,intakeCenter,5,35,-90,59,30
 PursuitAction,getCenterTwo,intakeCenter,5,35,-90,40,30
@@ -70,7 +69,6 @@ PursuitAction,travelBackCenter,ejectTwo,6,35,-90,23,46
 PursuitAction,travelBackCenter,ejectTwo,6,35,-90,30,40
 PursuitAction,travelBackCenter,ejectTwo,6,35,90,40,32
 PursuitAction,travelBackCenter,ejectTwo,6,35,90,98,32
-PursuitAction,travelBackCenter,ejectTwo,6,35,90,98,32
 WaitAction,rightPositionTwo,getRightTwo,0.01,35,,,
 PursuitAction,getRightTwo,intakeRight,4,35,-90,59,30
 PursuitAction,getRightTwo,intakeRight,4,35,-90,40,30
@@ -78,7 +76,6 @@ PursuitAction,getRightTwo,intakeRight,4,35,-90,36,44.5
 DriveAction,intakeRight,travelBackRight,3,0.2,0,8,0.8
 PursuitAction,travelBackRight,ejectTwo,6,35,-90,28,44.5
 PursuitAction,travelBackRight,ejectTwo,6,35,90,45,32
-PursuitAction,travelBackRight,ejectTwo,6,35,90,100,32
 PursuitAction,travelBackRight,ejectTwo,6,35,90,100,32
 DriveAction,ejectTwo,Navigate,4,0.3,180,10,-0.65
 PursuitAction,Navigate,,2,30,90,76,35

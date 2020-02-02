@@ -138,8 +138,8 @@ public class SBF_Teleop extends OpMode
             robot.intake.servosDrive(1);
         }
 
-        telemetry.addData("ramp signal: ", robot.intake.rampSignal());
-        telemetry.addData("back signal: ", robot.intake.backSignal());
+//        telemetry.addData("ramp signal: ", robot.intake.rampSignal());
+//        telemetry.addData("back signal: ", robot.intake.backSignal());
 
         //foundation grabber controls
         if(customPad1.getX())
