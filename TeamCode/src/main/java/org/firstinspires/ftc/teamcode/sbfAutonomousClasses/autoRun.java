@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.sbfAutonomousClasses;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
@@ -17,10 +19,18 @@ import java.io.File;
  * */
 public class autoRun extends SBF_Autonomous
 {
+
+    FtcDashboard dashboard;
+    TelemetryPacket packet;
+    double elapsedTime = 0;
+
     /** Calls the init methods for needed classes and locates the correct file path to the CSV file
      * for the crater face drive path. */
     public autoRun()
     {
+        dashboard = FtcDashboard.getInstance();
+        packet = new TelemetryPacket();
+
         autoFile = new File("/storage/9016-4EF8/autoRun.csv");
         startX = 39;
         startY = 9;
@@ -30,8 +40,29 @@ public class autoRun extends SBF_Autonomous
     @Override
     public void init()
     {
+        elapsedTime = getRuntime();
+
         offset = -90;
         whichCamera = "rightCam";
         super.init();
+    }
+
+    @Override
+    public void loop()
+    {
+        super.loop();
+
+        if (getRuntime() - elapsedTime > 0.1)
+        {
+            elapsedTime = getRuntime();
+
+            packet.fieldOverlay()
+                    .setFill("navy")
+                    .fillCircle(robot.location.x - 60, robot.location.y - 60, 4.0);
+
+            dashboard.sendTelemetryPacket(packet);
+        }
+
+
     }
 }

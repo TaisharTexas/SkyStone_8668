@@ -20,7 +20,7 @@ public class SBF_Autonomous extends OpMode
 
     Pursuit pursuit = new Pursuit((float)startX, (float)startY, telemetry);
 //    Pursuit pursuit = new Pursuit((float)0.0, (float)0.0, telemetry);
-    Robot robot = new Robot();
+    public Robot robot = new Robot();
     Path drivePath = new Path();
 
     public File autoFile = null;
