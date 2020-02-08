@@ -24,13 +24,15 @@ public class Pursuit
     public double currentAngularVelocity;
     public double joystickAngularVelocity;
 
-    public static double endZone = 6.0;
+    public static double endZone = 12.0;
     private double maxSpeed;
     private double maxAccel;
     private double gainValue;
     private double turnGain;
 
-    public static double pathLookahead = 5.0;
+    public static double pathLookahead = 10.0;
+    public static double maxTurnSpd = 550;
+    public static double maxFastAccelGain = 20;
 
     private double accelerationSteepness = 4.0;
     private double timeToAccelerate = 1.0;
@@ -62,7 +64,7 @@ public class Pursuit
         maxAccel = maxSpeed * gainValue;
 
         //unit: degrees per second turned -- max turn rate is 343 degrees/sec
-        turnGain = 250;
+        turnGain = maxTurnSpd;
 
     }
 
@@ -96,7 +98,7 @@ public class Pursuit
         }
         else if(theMaxSpeed >= 26)
         {
-            maxAccel = theMaxSpeed * 8;
+            maxAccel = theMaxSpeed * maxFastAccelGain;
             if (currentSegment == 0)
             {
                 maxAccel = maxAccel / (1.0 + Math.exp(-accelerationSteepness * (elapsedTime - timeToAccelerate)));
