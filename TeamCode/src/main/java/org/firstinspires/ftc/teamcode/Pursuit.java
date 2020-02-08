@@ -46,6 +46,8 @@ public class Pursuit
     public double elapsedTime = 0;
     private PVector end;
 
+    public String auxAction;
+
     public Pursuit(float x, float y, Telemetry telem)
     {
         telemetry = telem;
@@ -90,6 +92,7 @@ public class Pursuit
 
         double radius = theMaxSpeed / 6.0;
         radius = Range.clip(radius,1.0,radius);
+        auxAction = "NULL";
 
 
         if(theMaxSpeed >= 20 && theMaxSpeed < 26)
@@ -134,6 +137,8 @@ public class Pursuit
             currentSegment++;
             start = drivePath.pathPoints.get(currentSegment);
             end = drivePath.pathPoints.get(currentSegment + 1);
+            auxAction = drivePath.auxActions.get(currentSegment);
+
             theMaxSpeed = drivePath.maxSpeeds.get(currentSegment + 1);
             theTargetHeading = drivePath.targetHeadings.get(currentSegment + 1);
 

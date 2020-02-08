@@ -63,6 +63,11 @@ public class RobotAction
 
     }
 
+    public String getAuxAction()
+    {
+        return "NULL";
+    }
+
     /**
      * Get the number of seconds this op mode has been running
      * <p>

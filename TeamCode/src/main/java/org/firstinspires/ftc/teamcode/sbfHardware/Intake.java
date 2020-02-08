@@ -36,7 +36,7 @@ public class Intake
     public ExpansionHubMotor rightIntake = null;
     private CRServo leftInSupport = null;
     private CRServo rightInSupport = null;
-    private ColorSensor rampSignalC = null;
+//    private ColorSensor rampSignalC = null;
     private DistanceSensor rampSignalD = null;
     private DistanceSensor backSignal = null;
 //    private CRServo rightInSupport2 = null;
@@ -46,6 +46,7 @@ public class Intake
     private static double rightMaxIntakeSpd = 0.9;
     private static double leftMaxIntakeSpdAuto = 1;
     private static double rightMaxIntakeSpdAuto = .9;
+    private double stoneDistance = 5.1;
 
     // hsvValues is an array that will hold the hue, saturation, and value information.
     float hsvValues[] = {0F, 0F, 0F};
@@ -136,24 +137,24 @@ public class Intake
 //            telemetry.addData("rampSignalC not found in config file", 0);
 //            rampSignalC = null;
 //        }
-//        try
-//        {
-//            rampSignalD = hardwareMap.get(DistanceSensor.class, "rampSignal");
-//        }
-//        catch (Exception p_exception)
-//        {
-//            telemetry.addData("rampSignalD not found in config file", 0);
-//            rampSignalD = null;
-//        }
-//        try
-//        {
-//            backSignal = hardwareMap.get(DistanceSensor.class, "backSignal");
-//        }
-//        catch (Exception p_exception)
-//        {
-//            telemetry.addData("backSignal not found in config file", 0);
-//            backSignal = null;
-//        }
+        try
+        {
+            rampSignalD = hardwareMap.get(DistanceSensor.class, "rampSignal");
+        }
+        catch (Exception p_exception)
+        {
+            telemetry.addData("rampSignalD not found in config file", 0);
+            rampSignalD = null;
+        }
+        try
+        {
+            backSignal = hardwareMap.get(DistanceSensor.class, "backSignal");
+        }
+        catch (Exception p_exception)
+        {
+            telemetry.addData("backSignal not found in config file", 0);
+            backSignal = null;
+        }
 
     }
 
@@ -163,31 +164,40 @@ public class Intake
      */
     public void intakeOut(double power)
     {
-        leftIntake.setPower(power * leftMaxIntakeSpd);
-        leftInSupport.setPower(1);
-//        leftInSupport2.setPower(1);
-        rightIntake.setPower(power * rightMaxIntakeSpd);
-        rightInSupport.setPower(-1);
-//        rightInSupport2.setPower(-1);
+        intakeDrive(-power);
+    }
+
+    public boolean rampSignal()
+    {
+        // send the info back to driver station using telemetry function.
+        telemetry.addData("Distance (cm)", String.format(Locale.US, "%.02f", rampSignalD.getDistance(DistanceUnit.CM)));
+
+        if(rampSignalD.getDistance(DistanceUnit.CM) <= stoneDistance)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
 
     }
 
-//    public double rampSignal()
-//    {
-//        // send the info back to driver station using telemetry function.
-//        telemetry.addData("Distance (cm)", String.format(Locale.US, "%.02f", rampSignalD.getDistance(DistanceUnit.CM)));
-//
-//        return rampSignalD.getDistance(DistanceUnit.CM);
-//
-//    }
+    public boolean backSignal()
+    {
+        // send the info back to driver station using telemetry function.
+        telemetry.addData("Distance (cm)", String.format(Locale.US, "%.02f", backSignal.getDistance(DistanceUnit.CM)));
 
-//    public double backSignal()
-//    {
-//        // send the info back to driver station using telemetry function.
-//        telemetry.addData("Distance (cm)", String.format(Locale.US, "%.02f", backSignal.getDistance(DistanceUnit.CM)));
-//
-//        return backSignal.getDistance(DistanceUnit.CM);
-//    }
+        if(backSignal.getDistance(DistanceUnit.CM) <= stoneDistance)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
     /**
      * Intake - Rotate the intake wheels to take in a stone into the intake.
@@ -195,44 +205,7 @@ public class Intake
      */
     public void intakeIn(double power)
     {
-
-        // Adding these 2 variables so that we only access the expansion hub once per call.
-        double leftIntakeCurrent = leftIntake.getCurrentDraw(ExpansionHubEx.CurrentDrawUnits.MILLIAMPS);
-        double rightIntakeCurrent = rightIntake.getCurrentDraw(ExpansionHubEx.CurrentDrawUnits.MILLIAMPS);
-
-//        telemetry.addData("left intake milliamps: ", leftIntakeCurrent);
-//        telemetry.addData("right intake milliamps: ", rightIntakeCurrent);
-//
-//        if( Math.abs(leftIntakeCurrent) > stallCurrent )  // can motor current be negative?
-//        {
-//            leftIntake.setPower(power * .75);
-//            leftInSupport.setPower(1);
-//            rightIntake.setPower(-power * .25);
-//            rightInSupport.setPower(-1);
-//        }
-//        else if( Math.abs(rightIntakeCurrent) > stallCurrent )
-//        {
-//            leftIntake.setPower(power * .25);
-//            leftInSupport.setPower(1);
-//            rightIntake.setPower(-power * .75);
-//            rightInSupport.setPower(-1);
-//        }
-//        else
-//        {
-//            leftIntake.setPower(-power * leftMaxIntakeSpd );
-//            leftInSupport.setPower(-1);
-////            leftInSupport2.setPower(-1);
-//            rightIntake.setPower(power * rightMaxIntakeSpd);
-//            rightInSupport.setPower(1);
-////            rightInSupport2.setPower(1);
-//        }
-        leftIntake.setPower(-power * leftMaxIntakeSpd );
-        leftInSupport.setPower(-1);
-//            leftInSupport2.setPower(-1);
-        rightIntake.setPower(-power * rightMaxIntakeSpd);
-        rightInSupport.setPower(1);
-//            rightInSupport2.setPower(1);
-
+        intakeDrive(power);
     }
 
     public void servosDrive(double power)
@@ -300,6 +273,12 @@ public class Intake
 
     }
 
+    /**
+     * Drives intake motors & servos.
+     * @param power  the power at which the motors drive
+     *               - power = eject
+     *               + power = intake
+     * */
     public void intakeDrive(double power)
     {
         leftIntake.setPower(-power*leftMaxIntakeSpdAuto);

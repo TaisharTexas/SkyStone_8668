@@ -146,7 +146,7 @@ public class Robot
     /** The encoder ticks per inch ( (ticks per mtr rev*10)/(13*4*3.14159) ).
      * Used in converting inches to encoder ticks. Allows the programmer to code in inches while
      * the motor measures in encoder ticks.*/
-    final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV)/(gearRatio*INCH_PER_REV);
+    final double CHASSIS_COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV)/(gearRatio*INCH_PER_REV);
 
     /** An int variable used in drive, tankDrive, and pointTurn to capture the encoder position before each move. */
     double initialPosition;
@@ -395,7 +395,6 @@ public class Robot
         telemetry.addData("x encoder: ", xEncoder.getCurrentPosition());
         telemetry.addData("y encoder: ", yEncoder.getCurrentPosition()) ;
 
-        //TODO: Consider consolidating these updates between here and the pursuit class
         updateVelocity(this.getVelocity());
         updatePosition(this.getLocationChange());
        // updateHeading(getHeadingPursuit());
@@ -673,7 +672,7 @@ public class Robot
      */
     public boolean drive(double power, double direction, double gain, double distance, double time, double intakePower)
     {
-        double driveDistance = COUNTS_PER_INCH * distance;
+        double driveDistance = CHASSIS_COUNTS_PER_INCH * distance;
         double correction;
 
         update();
@@ -825,6 +824,7 @@ public class Robot
 
         return !moving;
     }
+
 
     /**
      * Chassis Private Methods
