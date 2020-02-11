@@ -30,7 +30,7 @@ public class SBF_Teleop extends OpMode
     SbfJoystick customPad2 = new SbfJoystick();
     CameraVision camera = new CameraVision();
 
-    Deadline pad2Wait = new Deadline(200, TimeUnit.MILLISECONDS);
+    Deadline pad2Wait = new Deadline(500, TimeUnit.MILLISECONDS);
     Deadline pad1Wait = new Deadline( 200, TimeUnit.MILLISECONDS);
 
     double shoulderPos;
@@ -108,13 +108,17 @@ public class SBF_Teleop extends OpMode
 
         double[] shoulderVals = {.86, .7, .62};
 
-        if(customPad2.getDpadDown())
+        if(pad2Wait.hasExpired())
         {
-            shoulderPos += .005;
-        }
-        else if(customPad2.getDpadUp())
-        {
-            shoulderPos -= .005;
+            pad2Wait.reset();
+            if(customPad2.getDpadDown())
+            {
+                shoulderPos += .05;
+            }
+            else if(customPad2.getDpadUp())
+            {
+                shoulderPos -= .05;
+            }
         }
         shoulderPos = Range.clip(shoulderPos, .58, .83);
         robot.lift.horizontalDrive(shoulderPos);
