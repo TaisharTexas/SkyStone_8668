@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 import org.firstinspires.ftc.teamcode.sbfHardware.CameraVision;
 import org.firstinspires.ftc.teamcode.sbfHardware.Lift;
 import org.firstinspires.ftc.teamcode.sbfHardware.Robot;
@@ -17,6 +18,7 @@ import org.firstinspires.ftc.teamcode.sbfHardware.SbfJoystick;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.concurrent.TimeUnit;
 
 @TeleOp(name="SBF Teleop", group="Amazing")
 
@@ -27,6 +29,9 @@ public class SBF_Teleop extends OpMode
     SbfJoystick customPad1 = new SbfJoystick();
     SbfJoystick customPad2 = new SbfJoystick();
     CameraVision camera = new CameraVision();
+
+    Deadline pad2Wait = new Deadline(200, TimeUnit.MILLISECONDS);
+    Deadline pad1Wait = new Deadline( 200, TimeUnit.MILLISECONDS);
 
     double shoulderPos;
     double wristPos;
@@ -62,7 +67,7 @@ public class SBF_Teleop extends OpMode
     @Override
     public void init_loop()
     {
-        robot.ledLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
+        robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
 //        telemetry.addData("heading: ", robot.getRawHeading());
 
 //        telemetry.addData("path: ", Environment.getExternalStorageDirectory().getPath() + "/");
@@ -74,6 +79,8 @@ public class SBF_Teleop extends OpMode
     {
         robot.start();
         resetStartTime();
+        pad1Wait.reset();
+        pad2Wait.reset();
 //        lift.wrist.setPosition(.9);
 //        lift.claw.setPosition(.1);
     }
@@ -100,6 +107,7 @@ public class SBF_Teleop extends OpMode
 //        telemetry.addData("left vertical: ", robot.lift.leftVertical.getCurrentPosition());
 
         double[] shoulderVals = {.86, .7, .62};
+
         if(customPad2.getDpadDown())
         {
             shoulderPos += .005;

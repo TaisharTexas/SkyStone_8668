@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -13,6 +14,8 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
+
+import java.util.concurrent.TimeUnit;
 //import org.openftc.easyopencv.OpenCvWebcam;
 
 public class CameraVision
@@ -37,7 +40,7 @@ public class CameraVision
         webCam.setPipeline(stageSwitchingPipeline);
         webCam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
 
-        stageSwitchingPipeline.elapsedTime = System.currentTimeMillis();
+        stageSwitchingPipeline.elapsedTime.reset();
     }
 
     static class StageSwitchingPipeline extends OpenCvPipeline
@@ -46,7 +49,7 @@ public class CameraVision
         Mat thresholdMat = new Mat();
         Mat Cb = new Mat();
 
-        double elapsedTime = 0;
+        Deadline elapsedTime = new Deadline(250, TimeUnit.MILLISECONDS);
 
         String SSposition = "null";
 
@@ -95,9 +98,9 @@ public class CameraVision
             int rightR = 288;
 
 
-            if (System.currentTimeMillis() - elapsedTime > 250 )
+            if ( elapsedTime.hasExpired() )
             {
-                elapsedTime = System.currentTimeMillis();
+                elapsedTime.reset();
 
                 Imgproc.cvtColor(input, yCbCrChan2Mat, Imgproc.COLOR_RGB2YCrCb);
                 Core.extractChannel(yCbCrChan2Mat, Cb, 2);

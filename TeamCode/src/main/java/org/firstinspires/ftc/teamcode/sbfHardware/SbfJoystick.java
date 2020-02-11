@@ -16,16 +16,12 @@ public class SbfJoystick
     HardwareMap hardwareMap;
 
     Gamepad myGamepad;
-    //Gamepad gamepad2;
 
-//    public void init(Telemetry telem, HardwareMap hwMap, Gamepad theGamepad1, Gamepad theGamepad2)
     public void init(Telemetry telem, HardwareMap hwMap, Gamepad theGamepad )
     {
         hardwareMap = hwMap;
         telemetry = telem;
         myGamepad = theGamepad;
-       // gamepad2 = theGamepad2;
-
     }
 
     //GAMEPAD 1
@@ -72,14 +68,6 @@ public class SbfJoystick
         return myGamepad.y;
     }
 
-
-    // GAMEPAD 2
-//    public double get2RightStickY()
-//    {
-//        telemetry.addData("2, right stick y: ", gamepad2.right_stick_y);
-//        return gamepad2.right_stick_y;
-//    }
-
     public double getLeftTrigger()
     {
         return myGamepad.left_trigger;
@@ -118,13 +106,5 @@ public class SbfJoystick
     {
         return myGamepad.b;
     }
-//    public boolean getX()
-//    {
-//        return gamepad2.x;
-//    }
-//    public boolean get2y()
-//    {
-//        return  gamepad2.y;
-//    }
 
 }
