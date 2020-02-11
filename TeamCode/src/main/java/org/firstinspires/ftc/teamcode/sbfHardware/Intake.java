@@ -46,7 +46,8 @@ public class Intake
     private static double rightMaxIntakeSpd = 0.9;
     private static double leftMaxIntakeSpdAuto = 1;
     private static double rightMaxIntakeSpdAuto = .9;
-    private double stoneDistance = 5.1;
+    private double stoneDistanceFront = 6;
+    private double stoneDistanceBack = 6;
 
     // hsvValues is an array that will hold the hue, saturation, and value information.
     float hsvValues[] = {0F, 0F, 0F};
@@ -172,14 +173,22 @@ public class Intake
         // send the info back to driver station using telemetry function.
         telemetry.addData("Distance (cm)", String.format(Locale.US, "%.02f", rampSignalD.getDistance(DistanceUnit.CM)));
 
-        if(rampSignalD.getDistance(DistanceUnit.CM) <= stoneDistance)
+        if(!(Double.isNaN(rampSignalD.getDistance(DistanceUnit.CM))))
         {
-            return true;
+            if(rampSignalD.getDistance(DistanceUnit.CM) <= stoneDistanceFront)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         else
         {
             return false;
         }
+
 
 
     }
@@ -189,14 +198,22 @@ public class Intake
         // send the info back to driver station using telemetry function.
         telemetry.addData("Distance (cm)", String.format(Locale.US, "%.02f", backSignal.getDistance(DistanceUnit.CM)));
 
-        if(backSignal.getDistance(DistanceUnit.CM) <= stoneDistance)
+        if(!(Double.isNaN(backSignal.getDistance(DistanceUnit.CM))))
         {
-            return true;
+            if(backSignal.getDistance(DistanceUnit.CM) <= stoneDistanceBack)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         else
         {
             return false;
         }
+
     }
 
     /**

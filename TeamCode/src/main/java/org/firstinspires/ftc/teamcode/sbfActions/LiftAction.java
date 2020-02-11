@@ -13,13 +13,15 @@ public class LiftAction extends RobotAction
 {
     double thePower;
     boolean theDirection;
-    double theDistance;
+    double thePosition;
+    double timeout;
 
     /** Creates a new object from the supplied parameters. */
-    LiftAction(String id, String nextAction, double duration, double power)
+    LiftAction(String id, String nextAction, double duration, double power, double position)
     {
         super(id, nextAction, duration);
         thePower = power;
+        thePosition = position;
 //        timeout = duration;
 //        theId = id;
 //
@@ -40,7 +42,8 @@ public class LiftAction extends RobotAction
         this(params[0],
              params[1],
              Double.parseDouble(params[2]),
-             Double.parseDouble(params[3]));
+             Double.parseDouble(params[3]),
+             Double.parseDouble(params[4]));
     }
 
     /** Placeholder for initialization. Currently only calls the parent init method. */
@@ -62,7 +65,7 @@ public class LiftAction extends RobotAction
     @Override
     public boolean execute()
     {
-        robot.lift.verticalDrive(thePower);
+        robot.lift.vLiftDrive(thePower, thePosition, timeout);
         return super.execute();
     }
 
@@ -70,7 +73,6 @@ public class LiftAction extends RobotAction
     @Override
     public void exit()
     {
-        robot.stop();
         robot.lift.stopLift();
         super.exit();
     }

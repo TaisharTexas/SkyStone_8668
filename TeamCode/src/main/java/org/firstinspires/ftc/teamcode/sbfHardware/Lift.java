@@ -37,7 +37,10 @@ public class Lift
     int stateTwo = 0;
     // internal time tracking
     private long startTime = 0; // in nanoseconds
-    final double LIFT_COUNTS_PER_INCH = 1;
+    final double ENCODER_TICKS_PER_MTR_ROTATION = 3360; //encoder ticks
+    final double ROTATIONAL_IN_PER_MTR_ROTATION = 9.4; //inches rotation
+    final double ROTATIONAL_IN_PER_VERTICAL_IN = .43; //inches vertical
+    final double ENCODER_TICKS_PER_IN_VERTICAL = (ENCODER_TICKS_PER_MTR_ROTATION*ROTATIONAL_IN_PER_VERTICAL_IN)/(ROTATIONAL_IN_PER_MTR_ROTATION);
     boolean moving;
     double initialPosition;
 
@@ -87,8 +90,8 @@ public class Lift
         try
         {
             horizontal = hardwareMap.get(Servo.class, "horizontal");
-            horizontal.setDirection(Servo.Direction.FORWARD);
-            horizontal.setPosition(.81);
+            horizontal.setDirection(Servo.Direction.REVERSE);
+            horizontal.setPosition(.37);
         }
         catch (Exception p_exeception)
         {
@@ -129,7 +132,8 @@ public class Lift
      */
     public boolean vLiftDrive(double power, double positionInches, double time)
     {
-        double driveDistance = LIFT_COUNTS_PER_INCH * positionInches;
+        double driveDistance = ENCODER_TICKS_PER_IN_VERTICAL * positionInches;
+        telemetry.addData("drive distance: ", driveDistance);
         double gain = 1;
         double liftEncoderPos = encoder;
 
@@ -197,7 +201,7 @@ public class Lift
     {
         if(claw != null)
         {
-            claw.setPosition(.77);
+            claw.setPosition(.785);
         }
     }
     public void releaseClaw()

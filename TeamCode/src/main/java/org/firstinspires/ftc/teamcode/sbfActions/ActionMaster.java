@@ -60,99 +60,104 @@ public class ActionMaster
                 String[] theItems = line.split(",");
 
                 // Grab the first one... this will be the type of RobotAction to create
-                String type = theItems[0].trim().toUpperCase();
-                if (!type.isEmpty()) {
+                if(theItems.length != 0)
+                {
+                    String type = theItems[0].trim().toUpperCase();
+
+                    if (!type.isEmpty()) {
 
 
-                    // Grab the reset of the items after the first one... these are the parameters to use
-                    // with the constructors for each of the RobotAction subclasses.
-                    String[] params = (Arrays.copyOfRange(theItems, 1, theItems.length));
+                        // Grab the reset of the items after the first one... these are the parameters to use
+                        // with the constructors for each of the RobotAction subclasses.
+                        String[] params = (Arrays.copyOfRange(theItems, 1, theItems.length));
 
-                    // Based on the type, make the specific kind of RobotAction
-                    if (type.equalsIgnoreCase("WAITACTION")) {
-                        myAction = new WaitAction(params);
-                        myAction.init(telemetry, robot);
-                        this.addAction(myAction);
-                    }
-                    else if (type.equalsIgnoreCase("DRIVEACTION")) {
-                        myAction = new DriveAction(params);
-                        myAction.init(telemetry, robot);
-                        this.addAction(myAction);
-                    }
-                    else if (type.equalsIgnoreCase("CAMERAACTION")) {
-                        myAction = new CameraAction(params);
-                        myAction.init(telemetry, robot);
-                        this.addAction(myAction);
-                    }
-                    else if (type.equalsIgnoreCase("TURNACTION")) {
-                        myAction = new TurnAction(params);
-                        myAction.init(telemetry, robot);
-                        this.addAction(myAction);
-                    }
-                    else if (type.equalsIgnoreCase("GYROACTION")) {
-                        myAction = new GyroAction(params);
-                        myAction.init(telemetry, robot);
-                        this.addAction(myAction);
-                    }
-                    else if (type.equalsIgnoreCase("FOUNDATIONACTION")) {
-                        myAction = new FoundationAction(params);
-                        myAction.init(telemetry, robot);
-                        this.addAction(myAction);
-                    }
-                    else if (type.equalsIgnoreCase("CHANGEOUTACTION")) {
-                        myAction = new ChangeOutAction(params);
-                        myAction.init(telemetry, robot);
-                        this.addAction(myAction);
-                    }
-                    else if (type.equalsIgnoreCase("INTAKEACTION")) {
-                        myAction = new IntakeAction(params);
-                        myAction.init(telemetry, robot);
-                        this.addAction(myAction);
-                    }
-                    else if (type.equalsIgnoreCase("LIFTACTION")) {
-                        myAction = new LiftAction(params);
-                        myAction.init(telemetry, robot);
-                        this.addAction(myAction);
-                    }
-                    else if (type.equalsIgnoreCase("LIFTHOMEACTION")) {
-                        myAction = new LiftAction(params);
-                        myAction.init(telemetry, robot);
-                        this.addAction(myAction);
-                    }
-                    else if (type.equalsIgnoreCase("DEPLOYSTONEACTION")) {
-                        myAction = new LiftAction(params);
-                        myAction.init(telemetry, robot);
-                        this.addAction(myAction);
-                    }
-                    else if (type.equalsIgnoreCase("INTAKESTONEACTION")) {
-                        myAction = new LiftAction(params);
-                        myAction.init(telemetry, robot);
-                        this.addAction(myAction);
-                    }
-                    else if (type.equalsIgnoreCase("PURSUITACTION")) {
-                        if (!actionMap.containsKey(params[0].toUpperCase())) {
-                            myAction = new PursuitAction(params);
+                        // Based on the type, make the specific kind of RobotAction
+                        if (type.equalsIgnoreCase("WAITACTION")) {
+                            myAction = new WaitAction(params);
                             myAction.init(telemetry, robot);
                             this.addAction(myAction);
                         }
-                        else {
-                            myAction = actionMap.get(params[0].toUpperCase());
-                            if (myAction != null) {
-                                ((PursuitAction) myAction).addPoint(params);
-                                telemetry.addData("Adding pursuit point to ", params[0]);
-
+                        else if (type.equalsIgnoreCase("DRIVEACTION")) {
+                            myAction = new DriveAction(params);
+                            myAction.init(telemetry, robot);
+                            this.addAction(myAction);
+                        }
+                        else if (type.equalsIgnoreCase("CAMERAACTION")) {
+                            myAction = new CameraAction(params);
+                            myAction.init(telemetry, robot);
+                            this.addAction(myAction);
+                        }
+                        else if (type.equalsIgnoreCase("TURNACTION")) {
+                            myAction = new TurnAction(params);
+                            myAction.init(telemetry, robot);
+                            this.addAction(myAction);
+                        }
+                        else if (type.equalsIgnoreCase("GYROACTION")) {
+                            myAction = new GyroAction(params);
+                            myAction.init(telemetry, robot);
+                            this.addAction(myAction);
+                        }
+                        else if (type.equalsIgnoreCase("FOUNDATIONACTION")) {
+                            myAction = new FoundationAction(params);
+                            myAction.init(telemetry, robot);
+                            this.addAction(myAction);
+                        }
+                        else if (type.equalsIgnoreCase("CHANGEOUTACTION")) {
+                            myAction = new ChangeOutAction(params);
+                            myAction.init(telemetry, robot);
+                            this.addAction(myAction);
+                        }
+                        else if (type.equalsIgnoreCase("INTAKEACTION")) {
+                            myAction = new IntakeAction(params);
+                            myAction.init(telemetry, robot);
+                            this.addAction(myAction);
+                        }
+                        else if (type.equalsIgnoreCase("LIFTACTION")) {
+                            myAction = new LiftAction(params);
+                            myAction.init(telemetry, robot);
+                            this.addAction(myAction);
+                        }
+                        else if (type.equalsIgnoreCase("LIFTHOMEACTION")) {
+                            myAction = new LiftAction(params);
+                            myAction.init(telemetry, robot);
+                            this.addAction(myAction);
+                        }
+                        else if (type.equalsIgnoreCase("DEPLOYSTONEACTION")) {
+                            myAction = new LiftAction(params);
+                            myAction.init(telemetry, robot);
+                            this.addAction(myAction);
+                        }
+                        else if (type.equalsIgnoreCase("INTAKESTONEACTION")) {
+                            myAction = new LiftAction(params);
+                            myAction.init(telemetry, robot);
+                            this.addAction(myAction);
+                        }
+                        else if (type.equalsIgnoreCase("PURSUITACTION")) {
+                            if (!actionMap.containsKey(params[0].toUpperCase())) {
+                                myAction = new PursuitAction(params);
+                                myAction.init(telemetry, robot);
+                                this.addAction(myAction);
                             }
                             else {
-                                telemetry.addData("addPoint() FAILED ", "--myAction equals null--");
+                                myAction = actionMap.get(params[0].toUpperCase());
+                                if (myAction != null) {
+                                    ((PursuitAction) myAction).addPoint(params);
+                                    telemetry.addData("Adding pursuit point to ", params[0]);
+
+                                }
+                                else {
+                                    telemetry.addData("addPoint() FAILED ", "--myAction equals null--");
+                                }
                             }
                         }
-                    }
-                    else {
-                        myAction = null;
-                    }
+                        else {
+                            myAction = null;
+                        }
 
-                    telemetry.addData("TheAction: ", myAction);
+                        telemetry.addData("TheAction: ", myAction);
+                    }
                 }
+
             }
 //            this.addRunAction("One");
         }
