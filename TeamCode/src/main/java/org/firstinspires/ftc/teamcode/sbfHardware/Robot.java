@@ -488,12 +488,8 @@ public class Robot
         {
             telemetry.addData("A drive motor is not configured properly", "");
         }
-
-
-        if (useCamera)
-        {
-            eyeOfSauron.stopCamera();
-        }
+        lift.stopLift();
+        intake.intakeStop();
 
 
     }
