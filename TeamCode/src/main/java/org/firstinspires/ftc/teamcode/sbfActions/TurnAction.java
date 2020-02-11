@@ -69,7 +69,7 @@ public class TurnAction extends RobotAction
     @Override
     public void exit()
     {
-        robot.stop();
+        robot.stopChassis();
         super.exit();
     }
 }

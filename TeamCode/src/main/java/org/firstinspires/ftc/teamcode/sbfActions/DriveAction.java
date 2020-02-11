@@ -89,8 +89,8 @@ public class DriveAction extends RobotAction
     @Override
     public void exit()
     {
-        robot.stop();
-        robot.intake.intakeStop();
+        robot.stopChassis();
+        robot.stopIntake();
         super.exit();
     }
 

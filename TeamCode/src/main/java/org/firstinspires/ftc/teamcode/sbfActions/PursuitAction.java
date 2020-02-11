@@ -116,7 +116,7 @@ public class PursuitAction extends RobotAction
     @Override
     public void exit()
     {
-        robot.stop();
+        robot.stopChassis();
         super.exit();
     }
 

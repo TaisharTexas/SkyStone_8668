@@ -476,7 +476,7 @@ public class Robot
     /**
      * Robot - Kill the Chassis and the Vision System
      */
-    public void stop()
+    public void stopEverything()
     {
         if(motorsValid())
         {
@@ -490,7 +490,26 @@ public class Robot
         }
         lift.stopLift();
         intake.intakeStop();
+    }
 
+    public void stopChassis()
+    {
+        if(motorsValid())
+        {
+            RF.setPower(0.0);
+            RR.setPower(0.0);
+            LF.setPower(0.0);
+            LR.setPower(0.0);
+        }
+    }
+    public void stopLift()
+    {
+        lift.stopLift();
+
+    }
+    public void stopIntake()
+    {
+        intake.intakeStop();
 
     }
 
@@ -729,7 +748,7 @@ public class Robot
 //        if (((Math.abs(bulkData.getMotorCurrentPosition(encoderMotor)- initialPosition)) >= driveDistance) || (getRuntime() > time))
         if (((Math.abs(encoderMotor.getCurrentPosition() - initialPosition)) >= driveDistance) || (getRuntime() > time))
         {
-            stop();
+            stopChassis();
             intake.intakeStop();
 
             setZeroBehavior("FLOAT");
@@ -812,7 +831,7 @@ public class Robot
 
         if(Math.abs(targetHeading - currentRawHeading) < 3.0 || getRuntime() > time)
         {
-            stop();
+            stopChassis();
 
             setZeroBehavior("FLOAT");
 

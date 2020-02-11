@@ -96,7 +96,7 @@ public class SBF_Autonomous extends OpMode
     @Override
     public void stop()
     {
-        robot.stop();
+        robot.stopEverything();
         super.stop();
     }
 }

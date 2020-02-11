@@ -54,7 +54,7 @@ public class SBF_Teleop extends OpMode
     @Override
     public void stop()
     {
-        robot.stop();
+        robot.stopEverything();
         super.stop();
     }
 

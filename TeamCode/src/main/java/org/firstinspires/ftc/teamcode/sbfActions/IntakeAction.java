@@ -69,8 +69,7 @@ public class IntakeAction extends RobotAction
     @Override
     public void exit()
     {
-        robot.stop();
-        robot.intake.intakeStop();
+        robot.stopIntake();
         super.exit();
     }
 }

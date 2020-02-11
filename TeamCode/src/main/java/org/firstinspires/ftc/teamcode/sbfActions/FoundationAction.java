@@ -43,7 +43,6 @@ public class FoundationAction extends RobotAction
     @Override
     public void exit()
     {
-        robot.stop();
         super.exit();
     }
 }

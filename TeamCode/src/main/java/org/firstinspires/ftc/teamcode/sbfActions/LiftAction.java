@@ -70,8 +70,7 @@ public class LiftAction extends RobotAction
     @Override
     public void exit()
     {
-        robot.stop();
-        robot.lift.stopLift();
+        robot.stopLift();
         super.exit();
     }
 }
