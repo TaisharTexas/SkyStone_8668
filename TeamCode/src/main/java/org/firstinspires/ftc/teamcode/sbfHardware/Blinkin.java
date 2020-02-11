@@ -88,7 +88,7 @@ public class Blinkin
         displayKind = DisplayKind.MANUAL;
 
         blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, "lights");
-        pattern = RevBlinkinLedDriver.BlinkinPattern.RAINBOW_RAINBOW_PALETTE;
+        setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
         blinkinLedDriver.setPattern(pattern);
 
         display = telemetry.addData("Display Kind: ", displayKind.toString());
@@ -104,7 +104,9 @@ public class Blinkin
 
         if (displayKind == DisplayKind.AUTO) {
             doAutoDisplay();
-        } else {
+        }
+        else
+        {
             /*
              * MANUAL mode: Nothing to do, setting the pattern as a result of a gamepad event.
              */
@@ -164,5 +166,10 @@ public class Blinkin
     {
         blinkinLedDriver.setPattern(pattern);
         patternName.setValue(pattern.toString());
+    }
+
+    public void setPattern(RevBlinkinLedDriver.BlinkinPattern thePattern)
+    {
+        blinkinLedDriver.setPattern(thePattern);
     }
 }

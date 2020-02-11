@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Environment;
 import android.os.storage.StorageManager;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
@@ -61,6 +62,7 @@ public class SBF_Teleop extends OpMode
     @Override
     public void init_loop()
     {
+        robot.ledLights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
 //        telemetry.addData("heading: ", robot.getRawHeading());
 
 //        telemetry.addData("path: ", Environment.getExternalStorageDirectory().getPath() + "/");

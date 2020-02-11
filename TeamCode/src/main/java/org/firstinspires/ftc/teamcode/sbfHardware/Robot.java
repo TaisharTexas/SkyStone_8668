@@ -43,7 +43,7 @@ public class Robot
 
     // Lift Class
     public Lift lift = new Lift();
-
+    public Blinkin lights = new Blinkin();
     public Intake intake = new Intake();
 
     // Vision System Items
@@ -190,7 +190,7 @@ public class Robot
         {
             eyeOfSauron.init(hwmap, whichCamera, telemetry);
         }
-
+        lights.init(telemetry, hardwareMap);
         lift.init(telemetry, hardwareMap);
 
         expansionHub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 2");
