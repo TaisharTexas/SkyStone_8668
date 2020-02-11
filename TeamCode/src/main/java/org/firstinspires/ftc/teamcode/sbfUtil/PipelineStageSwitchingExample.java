@@ -30,9 +30,10 @@ import java.util.List;
 @TeleOp
 public class PipelineStageSwitchingExample extends LinearOpMode
 {
-    OpenCvCamera phoneCam;
+    OpenCvCamera webCam;
     StageSwitchingPipeline stageSwitchingPipeline;
-
+    boolean isOff = false;
+    double elapsedTime = 0;
 
     @Override
     public void runOpMode()
@@ -45,17 +46,29 @@ public class PipelineStageSwitchingExample extends LinearOpMode
          */
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+        webCam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "rightCam"), cameraMonitorViewId);
 
-        phoneCam.openCameraDevice();
+//        webCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+
+        webCam.openCameraDevice();
+
         stageSwitchingPipeline = new StageSwitchingPipeline();
-        phoneCam.setPipeline(stageSwitchingPipeline);
-        phoneCam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+        webCam.setPipeline(stageSwitchingPipeline);
+        webCam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
 
         waitForStart();
 
         while (opModeIsActive())
         {
+            if(!isOff)
+            {
+                resetStartTime();
+                webCam.stopStreaming();
+                elapsedTime = getRuntime();
+                isOff = true;
+            }
+
+            telemetry.addData("Time to stop Streaming: ", elapsedTime);
             telemetry.addData("position: ",stageSwitchingPipeline.SSposition);
             telemetry.addData("Num contours found", stageSwitchingPipeline.getNumContoursFound());
 
@@ -141,33 +154,38 @@ public class PipelineStageSwitchingExample extends LinearOpMode
             Imgproc.cvtColor(input, yCbCrChan2Mat, Imgproc.COLOR_RGB2YCrCb);
             Core.extractChannel(yCbCrChan2Mat, yCbCrChan2Mat, 2);
             Imgproc.threshold(yCbCrChan2Mat, thresholdMat, 102, 255, Imgproc.THRESH_BINARY_INV);
-            Imgproc.findContours(thresholdMat, contoursList, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
-            numContoursFound = contoursList.size();
-            input.copyTo(contoursOnFrameMat);
-            Imgproc.drawContours(contoursOnFrameMat, contoursList, -1, new Scalar(0, 0, 255), 3, 8);
+//            Imgproc.findContours(thresholdMat, contoursList, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+//            numContoursFound = contoursList.size();
+//            input.copyTo(contoursOnFrameMat);
+//            Imgproc.drawContours(contoursOnFrameMat, contoursList, -1, new Scalar(0, 0, 255), 3, 8);
 
 
-            for(int c = (int)(thresholdMat.cols()*leftL); c < (int)(thresholdMat.cols()*leftR); c++)
+            int lowerC = (int)(thresholdMat.cols()*leftL);
+            int upperC = (int)(thresholdMat.cols()*leftR);
+            int lowerR = (int)(thresholdMat.rows()*.4);
+            int upperR = (int)(thresholdMat.rows()*.6);
+
+            for(int c = lowerC; c < upperC; c++)
             {
-                for(int r = (int)(thresholdMat.rows()*.4); r <= (thresholdMat.rows()*.6); r++)
+                for(int r = lowerR; r <= upperR ; r++)
                 {
                     leftSum = leftSum + (thresholdMat.get(r,c))[0];
                 }
             }
-            for(int c = (int)(thresholdMat.cols()*leftR); c < (int)(thresholdMat.cols()*rightL); c++)
-            {
-                for(int r = (int)(thresholdMat.rows()*.4); r <= (thresholdMat.rows()*.6); r++)
-                {
-                    centerSum = centerSum + (thresholdMat.get(r,c))[0];
-                }
-            }
-            for(int c = (int)(thresholdMat.cols()*rightL); c < (int)(thresholdMat.cols()*rightR); c++)
-            {
-                for(int r = (int)(thresholdMat.rows()*.4); r <= (thresholdMat.rows()*.6); r++)
-                {
-                    rightSum = rightSum + (thresholdMat.get(r,c))[0];
-                }
-            }
+//            for(int c = (int)(thresholdMat.cols()*leftR); c < (int)(thresholdMat.cols()*rightL); c++)
+//            {
+//                for(int r = (int)(thresholdMat.rows()*.4); r <= (thresholdMat.rows()*.6); r++)
+//                {
+//                    centerSum = centerSum + (thresholdMat.get(r,c))[0];
+//                }
+//            }
+//            for(int c = (int)(thresholdMat.cols()*rightL); c < (int)(thresholdMat.cols()*rightR); c++)
+//            {
+//                for(int r = (int)(thresholdMat.rows()*.4); r <= (thresholdMat.rows()*.6); r++)
+//                {
+//                    rightSum = rightSum + (thresholdMat.get(r,c))[0];
+//                }
+//            }
 
             if(leftSum < rightSum && leftSum < centerSum)
             {
@@ -213,34 +231,34 @@ public class PipelineStageSwitchingExample extends LinearOpMode
                             input.rows()*.6),
                     right, 4);
 
-            double maxSum = Math.max(Math.max(leftSum,centerSum), rightSum);
-            maxSum = Math.max(1, maxSum);
-            Imgproc.putText( input, String.format("%.4f",1-leftSum/maxSum), new Point( 40, 325), Imgproc.FONT_HERSHEY_DUPLEX, 1, left);
-            Imgproc.putText( input, String.format("%.4f",1-centerSum/maxSum), new Point( 260, 325), Imgproc.FONT_HERSHEY_DUPLEX, 1, center);
-            Imgproc.putText( input, String.format("%.4f",1-rightSum/maxSum), new Point( 470, 325), Imgproc.FONT_HERSHEY_DUPLEX, 1, right);
+//            double maxSum = Math.max(Math.max(leftSum,centerSum), rightSum);
+//            maxSum = Math.max(1, maxSum);
+//            Imgproc.putText( input, String.format("%.4f",1-leftSum/maxSum), new Point( 40, 325), Imgproc.FONT_HERSHEY_DUPLEX, 1, left);
+//            Imgproc.putText( input, String.format("%.4f",1-centerSum/maxSum), new Point( 260, 325), Imgproc.FONT_HERSHEY_DUPLEX, 1, center);
+//            Imgproc.putText( input, String.format("%.4f",1-rightSum/maxSum), new Point( 470, 325), Imgproc.FONT_HERSHEY_DUPLEX, 1, right);
 
 
             switch (stageToRenderToViewport)
             {
-                case YCbCr_CHAN2:
-                {
-                    return yCbCrChan2Mat;
-                }
-
-                case THRESHOLD:
-                {
-                    return thresholdMat;
-                }
-
-                case CONTOURS_OVERLAYED_ON_FRAME:
-                {
-                    return contoursOnFrameMat;
-                }
-
-                case RAW_IMAGE:
-                {
-                    return input;
-                }
+//                case YCbCr_CHAN2:
+//                {
+//                    return yCbCrChan2Mat;
+//                }
+//
+//                case THRESHOLD:
+//                {
+//                    return thresholdMat;
+//                }
+//
+//                case CONTOURS_OVERLAYED_ON_FRAME:
+//                {
+//                    return contoursOnFrameMat;
+//                }
+//
+//                case RAW_IMAGE:
+//                {
+//                    return input;
+//                }
 
                 default:
                 {
