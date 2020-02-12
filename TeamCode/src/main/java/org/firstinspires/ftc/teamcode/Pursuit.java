@@ -24,13 +24,15 @@ public class Pursuit
     public double currentAngularVelocity;
     public double joystickAngularVelocity;
 
-    public static double endZone = 6.0;
+    public static double endZone = 12.0;
     private double maxSpeed;
     private double maxAccel;
     private double gainValue;
     private double turnGain;
 
-    public static double pathLookahead = 5.0;
+    public static double pathLookahead = 10.0;
+    public static double maxTurnSpd = 550;
+    public static double maxFastAccelGain = 20;
 
     private double accelerationSteepness = 4.0;
     private double timeToAccelerate = 1.0;
@@ -43,6 +45,8 @@ public class Pursuit
     Telemetry telemetry;
     public double elapsedTime = 0;
     private PVector end;
+
+    public String auxAction;
 
     public Pursuit(float x, float y, Telemetry telem)
     {
@@ -62,7 +66,7 @@ public class Pursuit
         maxAccel = maxSpeed * gainValue;
 
         //unit: degrees per second turned -- max turn rate is 343 degrees/sec
-        turnGain = 250;
+        turnGain = maxTurnSpd;
 
     }
 
@@ -88,6 +92,7 @@ public class Pursuit
 
         double radius = theMaxSpeed / 6.0;
         radius = Range.clip(radius,1.0,radius);
+        auxAction = "NULL";
 
 
         if(theMaxSpeed >= 20 && theMaxSpeed < 26)
@@ -96,7 +101,7 @@ public class Pursuit
         }
         else if(theMaxSpeed >= 26)
         {
-            maxAccel = theMaxSpeed * 8;
+            maxAccel = theMaxSpeed * maxFastAccelGain;
             if (currentSegment == 0)
             {
                 maxAccel = maxAccel / (1.0 + Math.exp(-accelerationSteepness * (elapsedTime - timeToAccelerate)));
@@ -132,6 +137,8 @@ public class Pursuit
             currentSegment++;
             start = drivePath.pathPoints.get(currentSegment);
             end = drivePath.pathPoints.get(currentSegment + 1);
+            auxAction = drivePath.auxActions.get(currentSegment);
+
             theMaxSpeed = drivePath.maxSpeeds.get(currentSegment + 1);
             theTargetHeading = drivePath.targetHeadings.get(currentSegment + 1);
 

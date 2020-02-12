@@ -50,7 +50,7 @@ public class SBF_Teleop extends OpMode
         customPad2.init(telemetry, hardwareMap, gamepad2);
 
         robot.releaseFoundation();
-        shoulderPos = .83;
+        shoulderPos = .37;
 //        lift.horizontal.setPosition(.7);
         wristPos = .05;
 
@@ -120,11 +120,11 @@ public class SBF_Teleop extends OpMode
                 shoulderPos -= .05;
             }
         }
-        shoulderPos = Range.clip(shoulderPos, .58, .83);
+        shoulderPos = Range.clip(shoulderPos, .32, .55);
         robot.lift.horizontalDrive(shoulderPos);
 
-//        telemetry.addData("shoulder", robot.lift.horizontal.getPosition());
-//        telemetry.addData("shoulderPos", shoulderPos);
+        telemetry.addData("shoulder", robot.lift.horizontal.getPosition());
+        telemetry.addData("shoulderPos", shoulderPos);
 
 
 //        telemetry.addData("right trigger: ", customPad1.getRightTrigger());
@@ -152,8 +152,8 @@ public class SBF_Teleop extends OpMode
             robot.intake.servosDrive(1);
         }
 
-//        telemetry.addData("ramp signal: ", robot.intake.rampSignal());
-//        telemetry.addData("back signal: ", robot.intake.backSignal());
+        telemetry.addData("ramp signal: ", robot.intake.rampSignal());
+        telemetry.addData("back signal: ", robot.intake.backSignal());
 
         //foundation grabber controls
         if(customPad1.getX())

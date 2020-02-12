@@ -37,12 +37,20 @@ public class Lift
     int stateTwo = 0;
     // internal time tracking
     private long startTime = 0; // in nanoseconds
+    final double ENCODER_TICKS_PER_MTR_ROTATION = 3360; //encoder ticks
+    final double ROTATIONAL_IN_PER_MTR_ROTATION = 9.4; //inches rotation
+    final double ROTATIONAL_IN_PER_VERTICAL_IN = .43; //inches vertical
+    final double ENCODER_TICKS_PER_IN_VERTICAL = (ENCODER_TICKS_PER_MTR_ROTATION*ROTATIONAL_IN_PER_VERTICAL_IN)/(ROTATIONAL_IN_PER_MTR_ROTATION);
+    boolean moving;
+    double initialPosition;
+
 
 
     public void init(Telemetry telem, HardwareMap hwmap)
     {
         telemetry = telem;
         hardwareMap = hwmap;
+        moving = false;
 
         try
         {
@@ -82,8 +90,8 @@ public class Lift
         try
         {
             horizontal = hardwareMap.get(Servo.class, "horizontal");
-            horizontal.setDirection(Servo.Direction.FORWARD);
-            horizontal.setPosition(.81);
+            horizontal.setDirection(Servo.Direction.REVERSE);
+            horizontal.setPosition(.37);
         }
         catch (Exception p_exeception)
         {
@@ -111,6 +119,41 @@ public class Lift
             wrist = null;
         }
 
+    }
+
+    /**
+     * Drives the lift to a set position (inches).
+     *
+     * @param power  How fast the lift will drive.
+     * @param positionInches  Where the lift will be driven to in inches.
+     * @param time  The max time this move can take. A time-out feature: if the move stalls for some
+     *              reason, the timer will catch it.
+     * @return  A boolean that tells us whether or not the lift is moving.
+     */
+    public boolean vLiftDrive(double power, double positionInches, double time)
+    {
+        double driveDistance = ENCODER_TICKS_PER_IN_VERTICAL * positionInches;
+        telemetry.addData("drive distance: ", driveDistance);
+        double gain = 1;
+        double liftEncoderPos = encoder;
+
+
+        if (!moving)
+        {
+            initialPosition = liftEncoderPos;
+            resetLiftStartTime();
+            moving = true;
+        }
+
+        verticalDrive(power);
+
+        if (((Math.abs(liftEncoderPos - initialPosition)) >= driveDistance) || (getLiftRuntime() > time))
+        {
+            stopLift();
+            moving = false;
+        }
+
+        return !moving;
     }
 
     public void verticalDrive(double power)
@@ -158,7 +201,7 @@ public class Lift
     {
         if(claw != null)
         {
-            claw.setPosition(.77);
+            claw.setPosition(.785);
         }
     }
     public void releaseClaw()
@@ -196,7 +239,7 @@ public class Lift
     public void goHome()
     {
 
-        resetStartTime();
+        resetLiftStartTime();
 
         switch (state)
         {
@@ -205,14 +248,14 @@ public class Lift
                 wristRetract();
                 releaseClaw();
                 verticalDrive(0.3);
-                if(getRuntime() > 1.25)
+                if(getLiftRuntime() > 1.25)
                 {
-                    resetStartTime();
+                    resetLiftStartTime();
                     state++;
                 }
                 else if(touchL.isPressed() || touchR.isPressed())
                 {
-                    resetStartTime();
+                    resetLiftStartTime();
                     verticalDrive(0.0);
                     state = 2;
                 }
@@ -225,7 +268,7 @@ public class Lift
                 verticalDrive(1.0);
                 if(touchL.isPressed() || touchR.isPressed())
                 {
-                    resetStartTime();
+                    resetLiftStartTime();
                     verticalDrive(0.0);
                     state++;
                 }
@@ -239,7 +282,7 @@ public class Lift
 
     public void autoExtend()
     {
-        resetStartTime();
+        resetLiftStartTime();
 
         switch (stateTwo)
         {
@@ -248,22 +291,22 @@ public class Lift
                 if (leftVertical.getCurrentPosition() >= 150)
                 {
                     verticalDrive(0.0);
-                    resetStartTime();
+                    resetLiftStartTime();
                     stateTwo++;
                 }
                 break;
 
             case 1:
                 horizontalDrive(EXTEND);
-                if (getRuntime() > 1.5)
+                if (getLiftRuntime() > 1.5)
                 {
                     wristDeploy();
                     verticalDrive(.2);
-                    if (getRuntime() > 1.7)
+                    if (getLiftRuntime() > 1.7)
                     {
                         verticalDrive(0.0);
                     }
-                    resetStartTime();
+                    resetLiftStartTime();
                     stateTwo++;
                 }
                 break;
@@ -280,7 +323,7 @@ public class Lift
      * This method has sub millisecond accuracy.
      * @return number of seconds this op mode has been running
      */
-    public double getRuntime() {
+    public double getLiftRuntime() {
         final double NANOSECONDS_PER_SECOND = TimeUnit.SECONDS.toNanos(1);
         return (System.nanoTime() - startTime) / NANOSECONDS_PER_SECOND;
     }
@@ -288,7 +331,7 @@ public class Lift
     /**
      * Reset the start time to zero.
      */
-    public void resetStartTime() {
+    public void resetLiftStartTime() {
         startTime = System.nanoTime();
     }
 

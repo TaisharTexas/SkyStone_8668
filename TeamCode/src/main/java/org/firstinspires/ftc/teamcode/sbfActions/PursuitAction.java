@@ -26,6 +26,7 @@ public class PursuitAction extends RobotAction
     double xPoint;
     double yPoint;
     double theHeading;
+    String theAuxiliaryAction;
     Pursuit thePursuit;
 
     // internal time tracking
@@ -33,7 +34,7 @@ public class PursuitAction extends RobotAction
 
 
     /** Creates a new object from the supplied parameters. */
-    PursuitAction(String id, String nextAction, double duration, double power, double heading, double x, double y)
+    PursuitAction(String id, String nextAction, double duration, double power, double heading, double x, double y, String auxiliaryAction)
     {
         super(id, nextAction, duration);
         thePower = power;
@@ -41,6 +42,7 @@ public class PursuitAction extends RobotAction
         xPoint = x;
         yPoint = y;
         theHeading = heading;
+        theAuxiliaryAction = auxiliaryAction;
 //        timeout = duration;
 //        theId = id;
 //
@@ -64,7 +66,8 @@ public class PursuitAction extends RobotAction
              Double.parseDouble(params[3]),
              Double.parseDouble(params[4]),
              Double.parseDouble(params[5]),
-             Double.parseDouble(params[6]));
+             Double.parseDouble(params[6]),
+             params[7]);
 
         this.addPoint(params);
     }
@@ -126,8 +129,15 @@ public class PursuitAction extends RobotAction
         double y = Double.parseDouble(params[6]);
         double maxSpeed = Double.parseDouble(params[3]);
         double heading = Double.parseDouble(params[4]);
+        String auxAction = params[7];
 
-        thePath.addPoint((float)x, (float)y, maxSpeed, heading);
+        thePath.addPoint((float)x, (float)y, maxSpeed, heading, auxAction);
+    }
+
+    @Override
+    public String getAuxAction()
+    {
+        return thePursuit.auxAction;
     }
 
     /**
