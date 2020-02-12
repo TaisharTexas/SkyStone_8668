@@ -11,7 +11,6 @@ import org.firstinspires.ftc.teamcode.sbfHardware.Robot;
  * */
 public class LiftHomeAction extends RobotAction
 {
-    double thePower;
     double timePassed;
     double timeSnapshot;
     boolean done;
@@ -46,9 +45,9 @@ public class LiftHomeAction extends RobotAction
     public void entry()
     {
 
-        robot.intake.intakeDrive(thePower);
         state = 0;
         done = false;
+        timeSnapshot = getRuntime();
         super.entry();
     }
 
@@ -58,29 +57,25 @@ public class LiftHomeAction extends RobotAction
     {
         switch(state)
         {
-            //lift home
+            //horizontal home
             case 0:
-
-                robot.lift.grabClaw();
-
-                if(robot.lift.vLiftDrive(1,0,2.5))
-                {
-                    timeSnapshot = getRuntime();
-                    state++;
-                }
-
-
-                break;
-
-                //horizontal in
-            case 1:
-                robot.lift.horizontalDrive(.83);
+                robot.lift.horizontalDrive(.32);
                 timePassed = getRuntime()-timeSnapshot;
                 if(timePassed >= 2)
                 {
                     timeSnapshot = getRuntime();
                     state++;
 
+                }
+                break;
+
+                //lift home
+            case 1:
+                robot.lift.grabClaw();
+
+                if(robot.lift.vLiftDrive(1,0,2))
+                {
+                    state++;
                 }
                 break;
 
@@ -107,8 +102,7 @@ public class LiftHomeAction extends RobotAction
     @Override
     public void exit()
     {
-        robot.stop();
-        robot.intake.intakeStop();
+        robot.stopLift();
         super.exit();
     }
 }

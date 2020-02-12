@@ -11,12 +11,10 @@ import org.firstinspires.ftc.teamcode.sbfHardware.Robot;
  * */
 public class DeployStoneAction extends RobotAction
 {
-    double thePower;
     double timePassed;
     double timeSnapshot;
     boolean done;
     int state;
-    boolean theDirection;
 
     /** Creates a new object from the supplied parameters. */
     DeployStoneAction(String id, String nextAction, double duration)
@@ -45,9 +43,9 @@ public class DeployStoneAction extends RobotAction
     @Override
     public void entry()
     {
-
-        robot.intake.intakeDrive(thePower);
         state = 0;
+        timeSnapshot=0;
+        timePassed=0;
         done = false;
         super.entry();
     }
@@ -60,10 +58,11 @@ public class DeployStoneAction extends RobotAction
         {
             //intake up
             case 0:
+                robot.lift.grabClaw();
                 if(robot.location.x > 72)
                 {
 
-                    if(robot.lift.vLiftDrive(1,3,2))
+                    if(robot.lift.vLiftDrive(1,5,2))
                     {
                         timeSnapshot = getRuntime();
                         state++;
@@ -74,7 +73,7 @@ public class DeployStoneAction extends RobotAction
 
                 //horizontal out
             case 1:
-                robot.lift.horizontalDrive(.58);
+                robot.lift.horizontalDrive(.55);
                 timePassed = getRuntime()-timeSnapshot;
                 if(timePassed >= 2)
                 {
@@ -96,11 +95,12 @@ public class DeployStoneAction extends RobotAction
                 //lift up
             case 3:
 
-                if(robot.lift.vLiftDrive(1,1,1.5))
+                if(robot.lift.vLiftDrive(1,1.5,1.5))
                 {
                     state++;
                     done = true;
                 }
+                break;
 
             default:
                 break;
@@ -114,8 +114,7 @@ public class DeployStoneAction extends RobotAction
     @Override
     public void exit()
     {
-        robot.stop();
-        robot.intake.intakeStop();
+        robot.stopLift();
         super.exit();
     }
 }

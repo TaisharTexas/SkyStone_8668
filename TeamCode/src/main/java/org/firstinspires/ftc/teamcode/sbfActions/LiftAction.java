@@ -22,7 +22,7 @@ public class LiftAction extends RobotAction
         super(id, nextAction, duration);
         thePower = power;
         thePosition = position;
-//        timeout = duration;
+        timeout = duration;
 //        theId = id;
 //
 //        if(nextAction.isEmpty())
@@ -65,8 +65,8 @@ public class LiftAction extends RobotAction
     @Override
     public boolean execute()
     {
-        robot.lift.vLiftDrive(thePower, thePosition, timeout);
-        return super.execute();
+        return robot.lift.vLiftDrive(thePower, thePosition, timeout);
+//        return robot.liftDrive(thePower, thePosition, timeout);
     }
 
     /** Stops all the motors and calls the parent exit method. */

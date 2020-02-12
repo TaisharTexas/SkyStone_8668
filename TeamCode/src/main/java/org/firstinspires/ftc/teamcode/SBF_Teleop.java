@@ -35,7 +35,7 @@ public class SBF_Teleop extends OpMode
     SbfJoystick customPad2 = new SbfJoystick();
     CameraVision camera = new CameraVision();
 
-    Deadline pad2Wait = new Deadline(500, TimeUnit.MILLISECONDS);
+    Deadline pad2Wait = new Deadline(175, TimeUnit.MILLISECONDS);
     Deadline pad1Wait = new Deadline( 200, TimeUnit.MILLISECONDS);
 
     double shoulderPos;
@@ -55,8 +55,8 @@ public class SBF_Teleop extends OpMode
         customPad2.init(telemetry, hardwareMap, gamepad2);
 
         robot.releaseFoundation();
-        shoulderPos = .37;
-//        lift.horizontal.setPosition(.7);
+        shoulderPos = .33;
+        robot.lift.horizontal.setPosition(.33);
         wristPos = .05;
 
 
@@ -86,7 +86,7 @@ public class SBF_Teleop extends OpMode
         resetStartTime();
         pad1Wait.reset();
         pad2Wait.reset();
-        robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
+//        robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
 
 //        lift.wrist.setPosition(.9);
 //        lift.claw.setPosition(.1);
@@ -110,8 +110,8 @@ public class SBF_Teleop extends OpMode
 
 //        lift controls
         robot.lift.verticalDrive(customPad2.getRightStickY());
-//        telemetry.addData("right vertical: ", robot.lift.rightVertical.getCurrentPosition());
-//        telemetry.addData("left vertical: ", robot.lift.leftVertical.getCurrentPosition());
+        telemetry.addData("right vertical: ", robot.lift.rightVertical.getCurrentPosition());
+        telemetry.addData("left vertical: ", robot.lift.leftVertical.getCurrentPosition());
 
         double[] shoulderVals = {.86, .7, .62};
 
@@ -120,11 +120,11 @@ public class SBF_Teleop extends OpMode
             pad2Wait.reset();
             if(customPad2.getDpadDown())
             {
-                shoulderPos += .05;
+                shoulderPos -= .025;
             }
             else if(customPad2.getDpadUp())
             {
-                shoulderPos -= .05;
+                shoulderPos += .025;
             }
         }
         shoulderPos = Range.clip(shoulderPos, .32, .55);
@@ -151,7 +151,7 @@ public class SBF_Teleop extends OpMode
         }
         else
         {
-            robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
+//            robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
             robot.intake.intakeStop();
         }
 
@@ -166,12 +166,12 @@ public class SBF_Teleop extends OpMode
         //foundation grabber controls
         if(customPad1.getX())
         {
-            robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
+//            robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
             robot.grabFoundation();
         }
         else if(customPad1.getY())
         {
-            robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
+//            robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
             robot.releaseFoundation();
         }
 

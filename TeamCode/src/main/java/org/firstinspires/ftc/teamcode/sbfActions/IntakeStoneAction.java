@@ -19,9 +19,10 @@ public class IntakeStoneAction extends RobotAction
     boolean theDirection;
 
     /** Creates a new object from the supplied parameters. */
-    IntakeStoneAction(String id, String nextAction, double duration)
+    IntakeStoneAction(String id, String nextAction, double duration, double power)
     {
         super(id, nextAction, duration);
+        thePower = power;
 
     }
 
@@ -31,7 +32,8 @@ public class IntakeStoneAction extends RobotAction
     {
         this(params[0],
              params[1],
-             Double.parseDouble(params[2]));
+             Double.parseDouble(params[2]),
+             Double.parseDouble(params[3]));
     }
 
     /** Placeholder for initialization. Currently only calls the parent init method. */
@@ -46,7 +48,7 @@ public class IntakeStoneAction extends RobotAction
     public void entry()
     {
 
-        robot.intake.intakeDrive(thePower);
+        robot.intake.intakeDrive(thePower, true, true);
         state = 0;
         done = false;
         super.entry();
@@ -61,7 +63,7 @@ public class IntakeStoneAction extends RobotAction
             case 0:
                 if(robot.intake.rampSignal() && robot.location.x < 72)
                 {
-                    if(robot.lift.vLiftDrive(1,6, 2))
+                    if(robot.lift.vLiftDrive(1,4, 2))
                     {
                         state++;
                     }
@@ -103,8 +105,8 @@ public class IntakeStoneAction extends RobotAction
     @Override
     public void exit()
     {
-        robot.stop();
-        robot.intake.intakeStop();
+        robot.stopIntake();
+        robot.stopLift();
         super.exit();
     }
 }

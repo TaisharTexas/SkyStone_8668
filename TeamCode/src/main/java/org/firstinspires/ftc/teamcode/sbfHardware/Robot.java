@@ -44,7 +44,7 @@ public class Robot
 
     // Lift Class
     public Lift lift = new Lift();
-    public Blinkin lights = new Blinkin();
+//    public Blinkin lights = new Blinkin();
     public Intake intake = new Intake();
 
     // Vision System Items
@@ -191,7 +191,7 @@ public class Robot
         {
             eyeOfSauron.init(hwmap, whichCamera, telemetry);
         }
-        lights.init(telemetry, hardwareMap, isTeleop);
+//        lights.init(telemetry, hardwareMap, isTeleop);
         lift.init(telemetry, hardwareMap);
 
         expansionHub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 2");
@@ -351,7 +351,7 @@ public class Robot
      */
     public void start()
     {
-        lights.start();
+//        lights.start();
     }
 
     /**
@@ -513,6 +513,12 @@ public class Robot
     {
         intake.intakeStop();
 
+    }
+
+    public boolean liftDrive(double power, double positionInches, double time)
+    {
+        update();
+        return lift.vLiftDrive(power, positionInches, time);
     }
 
     /**
@@ -1059,17 +1065,17 @@ public class Robot
     {
         if(intake.rampSignal())
         {
-            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.LIME);
+//            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.LIME);
             intake.intakeIn(thePower, true, true);
         }
         else if(intake.backSignal() && intake.rampSignal())
         {
-            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+//            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
             intake.intakeIn(thePower, true, false);
         }
         else
         {
-            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
+//            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
             intake.intakeIn(thePower, true, true);
 
         }

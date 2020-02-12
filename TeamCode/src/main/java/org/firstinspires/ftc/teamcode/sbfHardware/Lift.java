@@ -37,6 +37,7 @@ public class Lift
     int stateTwo = 0;
     // internal time tracking
     private long startTime = 0; // in nanoseconds
+
     final double ENCODER_TICKS_PER_MTR_ROTATION = 3360; //encoder ticks
     final double ROTATIONAL_IN_PER_MTR_ROTATION = 9.4; //inches rotation
     final double ROTATIONAL_IN_PER_VERTICAL_IN = .43; //inches vertical
@@ -91,7 +92,7 @@ public class Lift
         {
             horizontal = hardwareMap.get(Servo.class, "horizontal");
             horizontal.setDirection(Servo.Direction.REVERSE);
-            horizontal.setPosition(.37);
+            horizontal.setPosition(.34);
         }
         catch (Exception p_exeception)
         {
@@ -134,9 +135,10 @@ public class Lift
     {
         double driveDistance = ENCODER_TICKS_PER_IN_VERTICAL * positionInches;
         telemetry.addData("drive distance: ", driveDistance);
+        telemetry.addData("moving: ", moving);
+        telemetry.addData("encoder: ", encoder);
         double gain = 1;
         double liftEncoderPos = encoder;
-
 
         if (!moving)
         {
@@ -145,7 +147,9 @@ public class Lift
             moving = true;
         }
 
-        verticalDrive(power);
+        verticalDrive(-power);
+//        leftVertical.setPower(power);
+//        rightVertical.setPower(power);
 
         if (((Math.abs(liftEncoderPos - initialPosition)) >= driveDistance) || (getLiftRuntime() > time))
         {
@@ -167,10 +171,10 @@ public class Lift
             leftVertical.setPower(0.25);
             rightVertical.setPower(0.25);
         }
-        else if ( encoder < 350  && power > 0)
+        else if ( encoder < 500  && power > 0)
         {
-            leftVertical.setPower(-0.3);
-            rightVertical.setPower(-0.3);
+            leftVertical.setPower(-power*.2);
+            rightVertical.setPower(-power*.2);
         }
 
         else if(power > .01 || power < -.01)
@@ -201,7 +205,7 @@ public class Lift
     {
         if(claw != null)
         {
-            claw.setPosition(.785);
+            claw.setPosition(.8);
         }
     }
     public void releaseClaw()
