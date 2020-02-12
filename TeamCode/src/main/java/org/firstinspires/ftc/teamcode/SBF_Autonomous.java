@@ -9,6 +9,13 @@ import org.firstinspires.ftc.teamcode.sbfHardware.Robot;
 
 import java.io.File;
 
+/**
+ * Contains the top level methods associated with driver controller button presses -- runs whatever
+ * autonomous drive path is selected and stops after 30 seconds.
+ *
+ * @author Andrew, 8668 Should Be Fine!
+ * @see OpMode
+ * */
 @Autonomous(name="SBF Autonomous", group="Yeltron")
 @Config
 public class SBF_Autonomous extends OpMode
@@ -42,7 +49,7 @@ public class SBF_Autonomous extends OpMode
 //        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         robot.whichCamera = this.whichCamera;
-        robot.init(telemetry, hardwareMap, true, offset);
+        robot.init(telemetry, hardwareMap, true, offset, false);
         robot.location.x = (float)startX;
         robot.location.y = (float)startY;
 
@@ -75,8 +82,6 @@ public class SBF_Autonomous extends OpMode
         skyStonePosition = ssPos;
         theMaster.setFirstAction(ssPos);
         robot.stopCamera();
-
-
 
         resetStartTime();
         pursuit.elapsedTime = 0;

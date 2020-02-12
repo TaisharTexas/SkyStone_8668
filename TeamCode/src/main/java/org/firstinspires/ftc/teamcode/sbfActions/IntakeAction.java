@@ -4,9 +4,10 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.sbfHardware.Robot;
 
 /**
- * Loaded into the run map as an action that turns the robot. Each action is parameterized by the CSV file.
+ * Loaded into the run map as an action that drives the intake wheels.
+ * Each action is parameterized by the CSV file.
  *
- * @author Andrew, Error 404: Team Name Not Found
+ * @author Andrew, 8668 Should Be Fine!
  * @see RobotAction
  * */
 public class IntakeAction extends RobotAction
@@ -14,7 +15,12 @@ public class IntakeAction extends RobotAction
     double thePower;
     boolean theDirection;
 
-    /** Creates a new object from the supplied parameters. */
+    /** Creates a new object from the supplied parameters.
+     * @param id  The unique name for the action
+     * @param nextAction  The next action the runmap needs to load.
+     * @param duration  The maximum time the action can take before being terminated.
+     * @param power  The power that the intake wheels will spin at (the sign determines the direction).
+     * */
     IntakeAction(String id, String nextAction, double duration, double power)
     {
         super(id, nextAction, duration);
@@ -49,23 +55,23 @@ public class IntakeAction extends RobotAction
         super.init(telem, theRobot);
     }
 
-    /** Placeholder for entry. Currently only calls the parent entry method.  */
+    /** Drives the intake motors at the specified speed and calls the super entry method.  */
     @Override
     public void entry()
     {
 
-        robot.intake.intakeDrive(thePower);
+        robot.intakeInWithLights(thePower);
         super.entry();
     }
 
-    /** Calls the pointTurn() method in MecanumChassis. */
+    /** Calls the super execute method. */
     @Override
     public boolean execute()
     {
         return super.execute();
     }
 
-    /** Stops all the motors and calls the parent exit method. */
+    /** Stops the intake motors and calls the super exit method. */
     @Override
     public void exit()
     {

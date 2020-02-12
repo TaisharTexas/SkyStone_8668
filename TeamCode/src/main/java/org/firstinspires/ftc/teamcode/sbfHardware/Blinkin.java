@@ -30,9 +30,6 @@
 package org.firstinspires.ftc.teamcode.sbfHardware;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -40,20 +37,18 @@ import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 
 import java.util.concurrent.TimeUnit;
 
-/*
- * Display patterns of a REV Robotics Blinkin LED Driver.
- * AUTO mode cycles through all of the patterns.
- * MANUAL mode allows the user to manually change patterns using the
- * left and right bumpers of a gamepad.
+
+/**
+ * Contains the hardware and usage methods for the REV Blinkin LED Driver
+ * and any attached LED light strips.
  *
- * Configure the driver on a servo port, and name it "blinkin".
- *
- * Displays the first pattern upon init.
- */
+ * @author Andrew, 8668 Should Be Fine!
+ * */
 public class Blinkin
 {
     private Telemetry telemetry;
     private HardwareMap hardwareMap;
+    private boolean isTeleop;
 
     /*
      * Change the pattern every 10 seconds in AUTO mode.
@@ -71,8 +66,11 @@ public class Blinkin
     Telemetry.Item patternName;
     Telemetry.Item display;
     DisplayKind displayKind;
-    Deadline ledCycleDeadline;
-    Deadline gamepadRateLimit;
+    private Deadline ledCycleDeadline;
+    private Deadline isEndgame;
+    private Deadline is15Seconds;
+    private Deadline is5Seconds;
+    private Deadline gamepadRateLimit;
 
 
     protected enum DisplayKind {
@@ -80,37 +78,52 @@ public class Blinkin
         AUTO
     }
 
-    public void init(Telemetry telem, HardwareMap hwMap)
+    public void init(Telemetry telem, HardwareMap hwMap, boolean theIsTeleop)
     {
         hardwareMap =hwMap;
         telemetry = telem;
+        isTeleop = theIsTeleop;
 
         displayKind = DisplayKind.MANUAL;
 
-        blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, "lights");
-        setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
-        blinkinLedDriver.setPattern(pattern);
+        try
+        {
+            blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, "lights");
+            setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
+            blinkinLedDriver.setPattern(pattern);
+        }
+        catch(Exception p_exception)
+        {
+            blinkinLedDriver = null;
+            telemetry.addData("blinkin driver not found in config file", "...");
+        }
+
 
         display = telemetry.addData("Display Kind: ", displayKind.toString());
         patternName = telemetry.addData("Pattern: ", pattern.toString());
 
         ledCycleDeadline = new Deadline(LED_PERIOD, TimeUnit.SECONDS);
         gamepadRateLimit = new Deadline(GAMEPAD_LOCKOUT, TimeUnit.MILLISECONDS);
+        isEndgame = new Deadline(90, TimeUnit.SECONDS);
+        is15Seconds = new Deadline(105, TimeUnit.SECONDS);
+        is5Seconds = new Deadline(115, TimeUnit.SECONDS);
     }
 
     public void loop()
     {
-//        handleGamepad();
 
-        if (displayKind == DisplayKind.AUTO) {
-            doAutoDisplay();
-        }
-        else
-        {
-            /*
-             * MANUAL mode: Nothing to do, setting the pattern as a result of a gamepad event.
-             */
-        }
+    }
+
+    /**
+     * Is called when the START button is pressed on the drivers station.
+     * Resets all the internal timers that control the light patterns (different light patterns activate
+     * based on how much time is left in the match).
+     * */
+    public void start()
+    {
+        isEndgame.reset();
+        is15Seconds.reset();
+        is5Seconds.reset();
     }
 
 //    /*
@@ -164,12 +177,48 @@ public class Blinkin
 
     protected void displayPattern()
     {
-        blinkinLedDriver.setPattern(pattern);
-        patternName.setValue(pattern.toString());
+        if (blinkinLedDriver != null)
+        {
+            blinkinLedDriver.setPattern(pattern);
+            patternName.setValue(pattern.toString());
+        }
+
     }
 
+    /** A control method that sets the lights on the robot to equal one of four possible states:
+     * 1) If there is 30 seconds left in the match, set the lights to solid red.
+     * 2) If there is 15 seconds left in the match, set the lights to slow blink red.
+     * 3) If there es 5 seconds left in the match, set the lights to fast blink red.
+     * 4) If none of the above are met, set lights to whatever the user specifies.
+     *
+     * @param thePattern  Accesses an enum type that is all the pre-programmed light patterns/colors*/
     public void setPattern(RevBlinkinLedDriver.BlinkinPattern thePattern)
     {
-        blinkinLedDriver.setPattern(thePattern);
+        if(blinkinLedDriver!=null)
+        {
+            if(isTeleop)
+            {
+                if(is5Seconds.hasExpired())
+                {
+                    blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.STROBE_RED);
+                }
+                else if(is15Seconds.hasExpired())
+                {
+                    blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.HEARTBEAT_RED);
+                }
+                else if(isEndgame.hasExpired())
+                {
+                    blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
+                }
+                else
+                {
+                    blinkinLedDriver.setPattern(thePattern);
+                }
+            }
+            else
+            {
+                blinkinLedDriver.setPattern(thePattern);
+            }
+        }
     }
 }

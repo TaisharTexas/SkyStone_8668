@@ -21,7 +21,12 @@ import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
 @TeleOp(name="SBF Teleop", group="Amazing")
-
+/**
+ * Contains all the controls for operating the robot with gamepads.
+ *
+ * @author Andrew, 8668 Should Be Fine!
+ * @see OpMode
+ * */
 public class SBF_Teleop extends OpMode
 {
     Pursuit pursuit = new Pursuit(0, 0, telemetry);
@@ -45,7 +50,7 @@ public class SBF_Teleop extends OpMode
 
     public void init()
     {
-        robot.init(telemetry, hardwareMap, false, 0.0);
+        robot.init(telemetry, hardwareMap, false, 0.0, true);
         customPad1.init(telemetry, hardwareMap, gamepad1);
         customPad2.init(telemetry, hardwareMap, gamepad2);
 
@@ -67,7 +72,7 @@ public class SBF_Teleop extends OpMode
     @Override
     public void init_loop()
     {
-        robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
+
 //        telemetry.addData("heading: ", robot.getRawHeading());
 
 //        telemetry.addData("path: ", Environment.getExternalStorageDirectory().getPath() + "/");
@@ -81,6 +86,8 @@ public class SBF_Teleop extends OpMode
         resetStartTime();
         pad1Wait.reset();
         pad2Wait.reset();
+        robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
+
 //        lift.wrist.setPosition(.9);
 //        lift.claw.setPosition(.1);
     }
@@ -102,7 +109,7 @@ public class SBF_Teleop extends OpMode
                             afterburners());
 
 //        lift controls
-        robot.lift.verticalDrive(customPad2.getRightStickY()*.75);
+        robot.lift.verticalDrive(customPad2.getRightStickY());
 //        telemetry.addData("right vertical: ", robot.lift.rightVertical.getCurrentPosition());
 //        telemetry.addData("left vertical: ", robot.lift.leftVertical.getCurrentPosition());
 
@@ -136,14 +143,15 @@ public class SBF_Teleop extends OpMode
         //intake controls
         if(customPad1.getLeftTrigger() != 0)
         {
-            robot.intake.intakeIn(customPad1.getLeftTrigger());
+            robot.intakeInWithLights(customPad1.getLeftTrigger());
         }
         else if(customPad1.getRightTrigger() != 0)
         {
-            robot.intake.intakeOut(customPad1.getRightTrigger());
+            robot.intake.intakeOut(customPad1.getRightTrigger(), true, true);
         }
         else
         {
+            robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
             robot.intake.intakeStop();
         }
 
@@ -158,10 +166,12 @@ public class SBF_Teleop extends OpMode
         //foundation grabber controls
         if(customPad1.getX())
         {
+            robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
             robot.grabFoundation();
         }
         else if(customPad1.getY())
         {
+            robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
             robot.releaseFoundation();
         }
 

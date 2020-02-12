@@ -163,9 +163,9 @@ public class Intake
      * Intake - Rotate the intake wheels to reverse a stone out of the intake.
      * @param power
      */
-    public void intakeOut(double power)
+    public void intakeOut(double power, boolean useServos, boolean useMotors)
     {
-        intakeDrive(-power);
+        intakeDrive(-power, useServos, useMotors);
     }
 
     public boolean rampSignal()
@@ -220,9 +220,9 @@ public class Intake
      * Intake - Rotate the intake wheels to take in a stone into the intake.
      * @param power  the power input from the gamepad
      */
-    public void intakeIn(double power)
+    public void intakeIn(double power, boolean useServos, boolean useMotors)
     {
-        intakeDrive(power);
+        intakeDrive(power, useServos, useMotors);
     }
 
     public void servosDrive(double power)
@@ -296,11 +296,17 @@ public class Intake
      *               - power = eject
      *               + power = intake
      * */
-    public void intakeDrive(double power)
+    public void intakeDrive(double power, boolean useServos, boolean useMotors)
     {
-        leftIntake.setPower(-power*leftMaxIntakeSpdAuto);
-        rightIntake.setPower(-power*rightMaxIntakeSpdAuto);
-        servosDrive(power);
+        if(useMotors)
+        {
+            leftIntake.setPower(-power*leftMaxIntakeSpdAuto);
+            rightIntake.setPower(-power*rightMaxIntakeSpdAuto);
+        }
+        if(useServos)
+        {
+            servosDrive(power);
+        }
 
     }
 

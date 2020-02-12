@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.sbfHardware;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -178,7 +179,7 @@ public class Robot
      *               specific classes for initializing hardware.
      * @param useVision A boolean flag which tells the class whether or not the camera should be used.
      * */
-    public void init(Telemetry telem, HardwareMap hwmap, boolean useVision, double theOffset )
+    public void init(Telemetry telem, HardwareMap hwmap, boolean useVision, double theOffset, boolean isTeleop )
     {
         telemetry = telem;
         hardwareMap = hwmap;
@@ -190,7 +191,7 @@ public class Robot
         {
             eyeOfSauron.init(hwmap, whichCamera, telemetry);
         }
-        lights.init(telemetry, hardwareMap);
+        lights.init(telemetry, hardwareMap, isTeleop);
         lift.init(telemetry, hardwareMap);
 
         expansionHub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 2");
@@ -345,10 +346,12 @@ public class Robot
      * Robot - Method that is intended to be called when the START button is pressed and handled
      * in an OpMode.  If there is something which should happen when start() is called in the
      * OpMode, put it in this method.
+     *
+     * Currently starts the timers inside of the Blinkin LED Driver class.
      */
     public void start()
     {
-
+        lights.start();
     }
 
     /**
@@ -694,7 +697,7 @@ public class Robot
 
         double actual = currentRawHeading;
 
-        intake.intakeDrive(intakePower);
+        intake.intakeDrive(intakePower, true, true);
 //        telemetry.addData( "Is RR-Diagonal?: ", direction ==  REVERSE_RIGHT_DIAGONAL);
 //        telemetry.addData("Direction: ", direction);
 //        telemetry.addData("RR-Diag: ", REVERSE_RIGHT_DIAGONAL);
@@ -1044,5 +1047,31 @@ public class Robot
     public void updateHeading( double heading )
     {
         currentRawHeading = heading;
+    }
+
+    /**
+     * Drives the intake motors to suck in -- combined with lights and distance sensors to show
+     * where the stone is inside the robot.
+     *
+     * @param thePower  The power at which the intake wheels will spin (sign determines direction).
+     * */
+    public void intakeInWithLights(double thePower)
+    {
+        if(intake.rampSignal())
+        {
+            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.LIME);
+            intake.intakeIn(thePower, true, true);
+        }
+        else if(intake.backSignal() && intake.rampSignal())
+        {
+            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+            intake.intakeIn(thePower, true, false);
+        }
+        else
+        {
+            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
+            intake.intakeIn(thePower, true, true);
+
+        }
     }
 }
