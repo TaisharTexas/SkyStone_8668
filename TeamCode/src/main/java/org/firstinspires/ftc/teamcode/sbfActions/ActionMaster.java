@@ -118,17 +118,17 @@ public class ActionMaster
                             this.addAction(myAction);
                         }
                         else if (type.equalsIgnoreCase("LIFTHOMEACTION")) {
-                            myAction = new LiftAction(params);
+                            myAction = new LiftHomeAction(params);
                             myAction.init(telemetry, robot);
                             this.addAction(myAction);
                         }
                         else if (type.equalsIgnoreCase("DEPLOYSTONEACTION")) {
-                            myAction = new LiftAction(params);
+                            myAction = new DeployStoneAction(params);
                             myAction.init(telemetry, robot);
                             this.addAction(myAction);
                         }
                         else if (type.equalsIgnoreCase("INTAKESTONEACTION")) {
-                            myAction = new LiftAction(params);
+                            myAction = new IntakeStoneAction(params);
                             myAction.init(telemetry, robot);
                             this.addAction(myAction);
                         }
