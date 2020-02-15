@@ -44,37 +44,34 @@ public class LiftHomeAction extends RobotAction
     @Override
     public void entry()
     {
-
+        super.entry();
         state = 0;
         done = false;
         timeSnapshot = getRuntime();
-        super.entry();
     }
 
     /** Calls the pointTurn() method in MecanumChassis. */
     @Override
     public boolean execute()
     {
+        telemetry.addData("state: ", state);
+        telemetry.addData("done: ", done);
+        telemetry.addData("time passed: ", timePassed);
         switch(state)
         {
             //horizontal home
             case 0:
-                robot.lift.horizontalDrive(.32);
-                timePassed = getRuntime()-timeSnapshot;
-                if(timePassed >= 2)
+                robot.lift.horizontalDrive(.29);
+                if(getRuntime()>1.7)
                 {
-                    timeSnapshot = getRuntime();
                     state++;
-
                 }
                 break;
 
-                //lift home
             case 1:
-                robot.lift.grabClaw();
-
-                if(robot.lift.vLiftDrive(1,0,2))
+                if(robot.lift.vLiftDrive(-1,5.5,2.5))
                 {
+                    timeSnapshot = getRuntime();
                     state++;
                 }
                 break;
@@ -82,9 +79,9 @@ public class LiftHomeAction extends RobotAction
                 //claw open
             case 2:
                 robot.lift.releaseClaw();
+                timePassed = getRuntime()-timeSnapshot;
                 if(timePassed >= 1)
                 {
-                    timeSnapshot = getRuntime();
                     state++;
                     done = true;
                 }

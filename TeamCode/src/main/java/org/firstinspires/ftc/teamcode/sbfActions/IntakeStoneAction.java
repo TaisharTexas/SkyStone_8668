@@ -48,10 +48,11 @@ public class IntakeStoneAction extends RobotAction
     public void entry()
     {
 
+        super.entry();
         robot.intake.intakeDrive(thePower, true, true);
+        robot.lift.releaseClaw();
         state = 0;
         done = false;
-        super.entry();
     }
 
     /** Calls the pointTurn() method in MecanumChassis. */
@@ -61,10 +62,11 @@ public class IntakeStoneAction extends RobotAction
         switch(state)
         {
             case 0:
-                if(robot.intake.rampSignal() && robot.location.x < 72)
+                if(robot.intake.rampSignal() /*&& robot.location.x < 72*/)
                 {
-                    if(robot.lift.vLiftDrive(1,4, 2))
+                    if(robot.lift.vLiftDrive(1,2.5, 2))
                     {
+                        timeSnapshot = getRuntime();
                         state++;
                     }
 
@@ -72,9 +74,10 @@ public class IntakeStoneAction extends RobotAction
                 break;
 
             case 1:
-                if(robot.intake.backSignal())
+                timePassed = getRuntime()-timeSnapshot;
+                if(robot.intake.backSignal() || timePassed>=2.5)
                 {
-                    if(robot.lift.vLiftDrive(1, 0, 2))
+                    if(robot.lift.vLiftDrive(-1, 3.5, 3.2))
                     {
                         timeSnapshot = getRuntime();
                         state++;
@@ -85,7 +88,7 @@ public class IntakeStoneAction extends RobotAction
             case 2:
                 robot.lift.grabClaw();
                 timePassed = getRuntime()-timeSnapshot;
-                if(timePassed >= 1.2)
+                if(timePassed >= 1)
                 {
                     state++;
                     done = true;

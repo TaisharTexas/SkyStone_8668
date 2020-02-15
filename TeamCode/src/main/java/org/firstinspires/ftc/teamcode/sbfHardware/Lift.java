@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.openftc.revextensions2.ExpansionHubMotor;
@@ -29,8 +30,8 @@ public class Lift
 
     public int encoder = 0;
 
-    private final double HOME = .89;
-    private final double EXTEND = .62;
+    private final double HOME = .29;
+    private final double EXTEND = .46;
 
     double thePosition;
     int state = 0;
@@ -92,7 +93,7 @@ public class Lift
         {
             horizontal = hardwareMap.get(Servo.class, "horizontal");
             horizontal.setDirection(Servo.Direction.REVERSE);
-            horizontal.setPosition(.34);
+//            horizontal.setPosition(.3);
         }
         catch (Exception p_exeception)
         {
@@ -155,13 +156,17 @@ public class Lift
         {
             stopLift();
             moving = false;
+
         }
 
         return !moving;
+
     }
 
     public void verticalDrive(double power)
     {
+        telemetry.addData("velocity: ", leftVertical.getVelocity());
+
         if ( encoder > 4700 && power < 0 ) {
             leftVertical.setPower(0.0);
             rightVertical.setPower(0.0);
@@ -171,10 +176,10 @@ public class Lift
             leftVertical.setPower(0.25);
             rightVertical.setPower(0.25);
         }
-        else if ( encoder < 500  && power > 0)
+        else if ( encoder < 700  && power > 0)
         {
-            leftVertical.setPower(-power*.2);
-            rightVertical.setPower(-power*.2);
+            leftVertical.setPower(Range.clip(-power,-.5,.5));
+            rightVertical.setPower(Range.clip(-power,-.5,.5));
         }
 
         else if(power > .01 || power < -.01)

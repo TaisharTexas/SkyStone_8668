@@ -55,8 +55,8 @@ public class SBF_Teleop extends OpMode
         customPad2.init(telemetry, hardwareMap, gamepad2);
 
         robot.releaseFoundation();
-        shoulderPos = .33;
-        robot.lift.horizontal.setPosition(.33);
+        shoulderPos = .29;
+        robot.lift.horizontal.setPosition(.29);
         wristPos = .05;
 
 
@@ -113,7 +113,7 @@ public class SBF_Teleop extends OpMode
         telemetry.addData("right vertical: ", robot.lift.rightVertical.getCurrentPosition());
         telemetry.addData("left vertical: ", robot.lift.leftVertical.getCurrentPosition());
 
-        double[] shoulderVals = {.86, .7, .62};
+//        double[] shoulderVals = {.86, .7, .62};
 
         if(pad2Wait.hasExpired())
         {
@@ -127,7 +127,7 @@ public class SBF_Teleop extends OpMode
                 shoulderPos += .025;
             }
         }
-        shoulderPos = Range.clip(shoulderPos, .32, .55);
+        shoulderPos = Range.clip(shoulderPos, .29, .46);
         robot.lift.horizontalDrive(shoulderPos);
 
         telemetry.addData("shoulder", robot.lift.horizontal.getPosition());

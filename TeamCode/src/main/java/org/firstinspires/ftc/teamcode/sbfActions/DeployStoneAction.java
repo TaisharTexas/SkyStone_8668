@@ -59,16 +59,21 @@ public class DeployStoneAction extends RobotAction
             //intake up
             case 0:
                 robot.lift.grabClaw();
-                if(robot.location.x > 72)
+                if(robot.lift.vLiftDrive(1,5,2))
                 {
-
-                    if(robot.lift.vLiftDrive(1,5,2))
-                    {
-                        timeSnapshot = getRuntime();
-                        state++;
-                    }
-
+                    timeSnapshot = getRuntime();
+                    state++;
                 }
+//                if(robot.location.x > 72)
+//                {
+//
+//                    if(robot.lift.vLiftDrive(1,5,2))
+//                    {
+//                        timeSnapshot = getRuntime();
+//                        state++;
+//                    }
+//
+//                }
                 break;
 
                 //horizontal out
@@ -85,9 +90,10 @@ public class DeployStoneAction extends RobotAction
                 //lift down
             case 2:
 
-                if(robot.lift.vLiftDrive(1,0,2))
+                if(robot.lift.vLiftDrive(-1,5,2))
                 {
                     robot.lift.releaseClaw();
+                    timeSnapshot = getRuntime();
                     state++;
                 }
                 break;
@@ -95,10 +101,14 @@ public class DeployStoneAction extends RobotAction
                 //lift up
             case 3:
 
-                if(robot.lift.vLiftDrive(1,1.5,1.5))
+                timePassed = getRuntime()-timeSnapshot;
+                if(timePassed >= 1)
                 {
-                    state++;
-                    done = true;
+                    if(robot.lift.vLiftDrive(1,1.5,1.5))
+                    {
+                        state++;
+                        done = true;
+                    }
                 }
                 break;
 
