@@ -29,14 +29,14 @@ import java.io.Serializable;
 
 
 /**
- * ( begin BluePursuitQuarry-generated from PVector.xml )
- *
- * A class to describe a two or three dimensional vector. This datatype
+ * Based on the PVector class found in the Processing language, a class to
+ * describe a two or three dimensional vector. This datatype
  * stores two or three variables that are commonly used as a position,
  * velocity, and/or acceleration. Technically, <em>position</em> is a point
  * and <em>velocity</em> and <em>acceleration</em> are vectors, but this is
- * often simplified to consider all three as vectors. For example, if you
- * consider a rectangle moving across the screen, at any given instant it
+ * often simplified to consider all three as vectors.
+ *
+ * For example, if you consider a rectangle moving across the screen, at any given instant it
  * has a position (the object's location, expressed as a point.), a
  * velocity (the rate at which the object's position changes per time unit,
  * expressed as a vector), and acceleration (the rate at which the object's
@@ -46,14 +46,7 @@ import java.io.Serializable;
  * math, which is made easy by the methods inside the <b>PVector</b>
  * class.<br />
  * <br />
- * The methods for this class are extensive. For a complete list, visit the
- * <a
- * href="http://processing.googlecode.com/svn/trunk/processing/build/javadoc/core/">developer's reference.</a>
  *
- * ( end BluePursuitQuarry-generated )
- *
- * A class to describe a two or three dimensional vector.
- * <p>
  * The result of all functions are applied to the vector itself, with the
  * exception of cross(), which returns a new PVector (or writes to a specified
  * 'target' PVector). That is, add() will add the contents of one vector to
@@ -63,52 +56,28 @@ import java.io.Serializable;
  * expensive, most functions include an optional 'target' PVector, so that a
  * new PVector object is not created with each operation.
  * <p>
- * Initially based on the Vector3D class by <a href="http://www.shiffman.net">Dan Shiffman</a>.
  *
- * @webref math
+ * @see <a href="https://processing.org">Processing reference</a>
+ * @see <a href="https://processing.org/reference/PVector.html">Original PVector class</a>
  */
 public class PVector implements Serializable
 {
 
     /**
-     * ( begin BluePursuitQuarry-generated from PVector_x.xml )
-     *
      * The x component of the vector. This field (variable) can be used to both
      * get and set the value (see above example.)
-     *
-     * ( end BluePursuitQuarry-generated )
-     *
-     * @webref pvector:field
-     * @usage web_application
-     * @brief The x component of the vector
      */
     public float x;
 
     /**
-     * ( begin BluePursuitQuarry-generated from PVector_y.xml )
-     *
      * The y component of the vector. This field (variable) can be used to both
      * get and set the value (see above example.)
-     *
-     * ( end BluePursuitQuarry-generated )
-     *
-     * @webref pvector:field
-     * @usage web_application
-     * @brief The y component of the vector
      */
     public float y;
 
     /**
-     * ( begin BluePursuitQuarry-generated from PVector_z.xml )
-     *
      * The z component of the vector. This field (variable) can be used to both
      * get and set the value (see above example.)
-     *
-     * ( end BluePursuitQuarry-generated )
-     *
-     * @webref pvector:field
-     * @usage web_application
-     * @brief The z component of the vector
      */
     public float z;
 
@@ -151,18 +120,12 @@ public class PVector implements Serializable
 
 
     /**
-     * ( begin BluePursuitQuarry-generated from PVector_set.xml )
-     *
      * Sets the x, y, and z component of the vector using two or three separate
      * variables, the data from a PVector, or the values from a float array.
      *
-     * ( end BluePursuitQuarry-generated )
-     *
-     * @webref pvector:method
      * @param x the x component of the vector
      * @param y the y component of the vector
      * @param z the z component of the vector
-     * @brief Set the components of the vector
      */
     public PVector set(float x, float y, float z)
     {
@@ -221,132 +184,10 @@ public class PVector implements Serializable
     }
 
 
-    /**
-     * ( begin BluePursuitQuarry-generated from PVector_random2D.xml )
-     *
-     * Make a new 2D unit vector with a random direction.  If you pass in "this"
-     * as an argument, it will use the PApplet's random number generator.  You can
-     * also pass in a target PVector to fill.
-     *
-     * @webref pvector:method
-     * @usage web_application
-     * @return the random PVector
-     * @brief Make a new 2D unit vector with a random direction.
-     * @see PVector#random3D()
-     */
-//  static public PVector random2D() {
-//    return random2D(null, null);
-//  }
-
 
     /**
-     * Make a new 2D unit vector with a random direction
-     * using Processing's current random number generator
-     * @param parent current PApplet instance
-     * @return the random PVector
-     */
-//  static public PVector random2D(PApplet parent) {
-//    return random2D(null, parent);
-//  }
-
-    /**
-     * Set a 2D vector to a random unit vector with a random direction
-     * @param target the target vector (if null, a new vector will be created)
-     * @return the random PVector
-     */
-//  static public PVector random2D(PVector target) {
-//    return random2D(target, null);
-//  }
-
-
-    /**
-     * Make a new 2D unit vector with a random direction. Pass in the parent
-     * PApplet if you want randomSeed() to work (and be predictable). Or leave
-     * it null and be... random.
-     * @return the random PVector
-     */
-//  static public PVector random2D(PVector target, PApplet parent) {
-//    return (parent == null) ?
-//      fromAngle((float) (Math.random() * Math.PI*2), target) :
-//      fromAngle(parent.random(PConstants.TAU), target);
-//  }
-
-
-//  /**
-//   * ( begin BluePursuitQuarry-generated from PVector_random3D.xml )
-//   *
-//   * Make a new 3D unit vector with a random direction.  If you pass in "this"
-//   * as an argument, it will use the PApplet's random number generator.  You can
-//   * also pass in a target PVector to fill.
-//   *
-//   * @webref pvector:method
-//   * @usage web_application
-//   * @return the random PVector
-//   * @brief Make a new 3D unit vector with a random direction.
-//   * @see PVector#random2D()
-//   */
-//  static public PVector random3D() {
-//    return random3D(null, null);
-//  }
-
-
-    /**
-     * Make a new 3D unit vector with a random direction
-     * using Processing's current random number generator
-     * @param parent current PApplet instance
-     * @return the random PVector
-     */
-//  static public PVector random3D(PApplet parent) {
-//    return random3D(null, parent);
-//  }
-
-
-    /**
-     * Set a 3D vector to a random unit vector with a random direction
-     * @param target the target vector (if null, a new vector will be created)
-     * @return the random PVector
-     */
-//  static public PVector random3D(PVector target) {
-//    return random3D(target, null);
-//  }
-
-
-//  /**
-//   * Make a new 3D unit vector with a random direction
-//   * @return the random PVector
-//   */
-//  static public PVector random3D(PVector target, PApplet parent) {
-//    float angle;
-//    float vz;
-//    if (parent == null) {
-//      angle = (float) (Math.random()*Math.PI*2);
-//      vz    = (float) (Math.random()*2-1);
-//    } else {
-//      angle = parent.random(PConstants.TWO_PI);
-//      vz    = parent.random(-1,1);
-//    }
-//    float vx = (float) (Math.sqrt(1-vz*vz)*Math.cos(angle));
-//    float vy = (float) (Math.sqrt(1-vz*vz)*Math.sin(angle));
-//    if (target == null) {
-//      target = new PVector(vx, vy, vz);
-//      //target.normalize(); // Should be unnecessary
-//    } else {
-//      target.set(vx,vy,vz);
-//    }
-//    return target;
-//  }
-
-
-    /**
-     * ( begin BluePursuitQuarry-generated from PVector_sub.xml )
-     *
      * Make a new 2D unit vector from an angle.
      *
-     * ( end BluePursuitQuarry-generated )
-     *
-     * @webref pvector:method
-     * @usage web_application
-     * @brief Make a new 2D unit vector from an angle
      * @param angle the angle in radians
      * @return the new unit PVector
      */
@@ -377,15 +218,7 @@ public class PVector implements Serializable
 
 
     /**
-     * ( begin BluePursuitQuarry-generated from PVector_copy.xml )
-     *
      * Gets a copy of the vector, returns a PVector object.
-     *
-     * ( end BluePursuitQuarry-generated )
-     *
-     * @webref pvector:method
-     * @usage web_application
-     * @brief Get a copy of the vector
      */
     public PVector copy()
     {
@@ -423,16 +256,9 @@ public class PVector implements Serializable
 
 
     /**
-     * ( begin BluePursuitQuarry-generated from PVector_mag.xml )
-     *
      * Calculates the magnitude (length) of the vector and returns the result
      * as a float (this is simply the equation <em>sqrt(x*x + y*y + z*z)</em>.)
      *
-     * ( end BluePursuitQuarry-generated )
-     *
-     * @webref pvector:method
-     * @usage web_application
-     * @brief Calculate the magnitude of the vector
      * @return magnitude (length) of the vector
      * @see PVector#magSq()
      */
@@ -443,18 +269,10 @@ public class PVector implements Serializable
 
 
     /**
-     * ( begin BluePursuitQuarry-generated from PVector_mag.xml )
-     *
      * Calculates the squared magnitude of the vector and returns the result
      * as a float (this is simply the equation <em>(x*x + y*y + z*z)</em>.)
      * Faster if the real length is not required in the
      * case of comparing vectors, etc.
-     *
-     * ( end BluePursuitQuarry-generated )
-     *
-     * @webref pvector:method
-     * @usage web_application
-     * @brief Calculate the magnitude of the vector, squared
      * @return squared magnitude of the vector
      * @see PVector#mag()
      */
@@ -465,20 +283,12 @@ public class PVector implements Serializable
 
 
     /**
-     * ( begin BluePursuitQuarry-generated from PVector_add.xml )
-     *
      * Adds x, y, and z components to a vector, adds one vector to another, or
      * adds two independent vectors together. The version of the method that
      * adds two vectors together is a static method and returns a PVector, the
      * others have no return value -- they act directly on the vector. See the
      * examples for more context.
-     *
-     * ( end BluePursuitQuarry-generated )
-     *
-     * @webref pvector:method
-     * @usage web_application
      * @param v the vector to be added
-     * @brief Adds x, y, and z components to a vector, one vector to another, or two independent vectors
      */
     public PVector add(PVector v)
     {
@@ -544,20 +354,12 @@ public class PVector implements Serializable
 
 
     /**
-     * ( begin BluePursuitQuarry-generated from PVector_sub.xml )
-     *
      * Subtracts x, y, and z components from a vector, subtracts one vector
      * from another, or subtracts two independent vectors. The version of the
      * method that subtracts two vectors is a static method and returns a
      * PVector, the others have no return value -- they act directly on the
      * vector. See the examples for more context.
-     *
-     * ( end BluePursuitQuarry-generated )
-     *
-     * @webref pvector:method
-     * @usage web_application
      * @param v any variable of type PVector
-     * @brief Subtract x, y, and z components from a vector, one vector from another, or two independent vectors
      */
     public PVector sub(PVector v)
     {
@@ -622,15 +424,8 @@ public class PVector implements Serializable
 
 
     /**
-     * ( begin BluePursuitQuarry-generated from PVector_mult.xml )
-     *
      * Multiplies a vector by a scalar or multiplies one vector by another.
      *
-     * ( end BluePursuitQuarry-generated )
-     *
-     * @webref pvector:method
-     * @usage web_application
-     * @brief Multiply a vector by a scalar
      * @param n the number to multiply with the vector
      */
     public PVector mult(double n)
@@ -670,15 +465,7 @@ public class PVector implements Serializable
 
 
     /**
-     * ( begin BluePursuitQuarry-generated from PVector_div.xml )
-     *
      * Divides a vector by a scalar or divides one vector by another.
-     *
-     * ( end BluePursuitQuarry-generated )
-     *
-     * @webref pvector:method
-     * @usage web_application
-     * @brief Divide a vector by a scalar
      * @param n the number by which to divide the vector
      */
     public PVector div(float n)
@@ -720,17 +507,9 @@ public class PVector implements Serializable
 
 
     /**
-     * ( begin BluePursuitQuarry-generated from PVector_dist.xml )
-     *
      * Calculates the Euclidean distance between two points (considering a
      * point as a vector object).
-     *
-     * ( end BluePursuitQuarry-generated )
-     *
-     * @webref pvector:method
-     * @usage web_application
      * @param v the x, y, and z coordinates of a PVector
-     * @brief Calculate the distance between two points
      */
     public float dist(PVector v)
     {
@@ -756,17 +535,9 @@ public class PVector implements Serializable
 
 
     /**
-     * ( begin BluePursuitQuarry-generated from PVector_dot.xml )
-     *
      * Calculates the dot product of two vectors.
-     *
-     * ( end BluePursuitQuarry-generated )
-     *
-     * @webref pvector:method
-     * @usage web_application
      * @param v any variable of type PVector
      * @return the dot product
-     * @brief Calculate the dot product of two vectors
      */
     public float dot(PVector v)
     {
@@ -796,16 +567,9 @@ public class PVector implements Serializable
 
 
     /**
-     * ( begin BluePursuitQuarry-generated from PVector_cross.xml )
-     *
      * Calculates and returns a vector composed of the cross product between
      * two vectors.
-     *
-     * ( end BluePursuitQuarry-generated )
-     *
-     * @webref pvector:method
      * @param v the vector to calculate the cross product
-     * @brief Calculate and return the cross product
      */
     public PVector cross(PVector v)
     {
@@ -859,15 +623,7 @@ public class PVector implements Serializable
 
 
     /**
-     * ( begin BluePursuitQuarry-generated from PVector_normalize.xml )
-     *
      * Normalize the vector to length 1 (make it a unit vector).
-     *
-     * ( end BluePursuitQuarry-generated )
-     *
-     * @webref pvector:method
-     * @usage web_application
-     * @brief Normalize the vector to a length of 1
      */
     public PVector normalize()
     {
@@ -904,16 +660,8 @@ public class PVector implements Serializable
 
 
     /**
-     * ( begin BluePursuitQuarry-generated from PVector_limit.xml )
-     *
      * Limit the magnitude of this vector to the value used for the <b>max</b> parameter.
-     *
-     * ( end BluePursuitQuarry-generated )
-     *
-     * @webref pvector:method
-     * @usage web_application
      * @param max the maximum magnitude for the vector
-     * @brief Limit the magnitude of the vector
      */
     public PVector limit(double max)
     {
@@ -927,16 +675,8 @@ public class PVector implements Serializable
 
 
     /**
-     * ( begin BluePursuitQuarry-generated from PVector_setMag.xml )
-     *
      * Set the magnitude of this vector to the value used for the <b>len</b> parameter.
-     *
-     * ( end BluePursuitQuarry-generated )
-     *
-     * @webref pvector:method
-     * @usage web_application
      * @param len the new length for this vector
-     * @brief Set the magnitude of the vector
      */
     public PVector setMag(double len)
     {
@@ -961,16 +701,8 @@ public class PVector implements Serializable
 
 
     /**
-     * ( begin BluePursuitQuarry-generated from PVector_setMag.xml )
-     *
      * Calculate the angle of rotation for this vector (only 2D vectors)
-     *
-     * ( end BluePursuitQuarry-generated )
-     *
-     * @webref pvector:method
-     * @usage web_application
      * @return the angle of rotation
-     * @brief Calculate the angle of rotation for this vector
      */
     public float heading()
     {
@@ -987,15 +719,7 @@ public class PVector implements Serializable
 
 
     /**
-     * ( begin BluePursuitQuarry-generated from PVector_rotate.xml )
-     *
      * Rotate the vector by an angle (only 2D vectors), magnitude remains the same
-     *
-     * ( end BluePursuitQuarry-generated )
-     *
-     * @webref pvector:method
-     * @usage web_application
-     * @brief Rotate the vector by an angle (2D only)
      * @param theta the angle of rotation
      */
     public PVector rotate(float theta)
@@ -1014,15 +738,7 @@ public class PVector implements Serializable
 
 
     /**
-     * ( begin BluePursuitQuarry-generated from PVector_rotate.xml )
-     *
      * Linear interpolate the vector to another vector
-     *
-     * ( end BluePursuitQuarry-generated )
-     *
-     * @webref pvector:method
-     * @usage web_application
-     * @brief Linear interpolate the vector to another vector
      * @param v the vector to lerp to
      * @param amt  The amount of interpolation; some value between 0.0 (old vector) and 1.0 (new vector). 0.1 is very near the old vector; 0.5 is halfway in between.
      */
@@ -1064,17 +780,9 @@ public class PVector implements Serializable
 
 
     /**
-     * ( begin BluePursuitQuarry-generated from PVector_angleBetween.xml )
-     *
      * Calculates and returns the angle (in radians) between two vectors.
-     *
-     * ( end BluePursuitQuarry-generated )
-     *
-     * @webref pvector:method
-     * @usage web_application
      * @param v1 the x, y, and z components of a PVector
      * @param v2 the x, y, and z components of a PVector
-     * @brief Calculate and return the angle between two vectors
      */
     static public float angleBetween(PVector v1, PVector v2)
     {
@@ -1114,17 +822,9 @@ public class PVector implements Serializable
 
 
     /**
-     * ( begin BluePursuitQuarry-generated from PVector_array.xml )
-     *
      * Return a representation of this vector as a float array. This is only
      * for temporary use. If used in any other fashion, the contents should be
      * copied by using the <b>PVector.get()</b> method to copy into your own array.
-     *
-     * ( end BluePursuitQuarry-generated )
-     *
-     * @webref pvector:method
-     * @usage: web_application
-     * @brief Return a representation of the vector as a float array
      */
     public float[] array()
     {
