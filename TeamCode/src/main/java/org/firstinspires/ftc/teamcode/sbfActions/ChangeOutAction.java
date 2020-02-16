@@ -5,14 +5,15 @@ import org.firstinspires.ftc.teamcode.SBF_Autonomous;
 import org.firstinspires.ftc.teamcode.sbfHardware.Robot;
 
 /**
- * Loaded into the run map as an action that uses the camera. Each action is parameterized by the CSV file.
+ * Loaded into the run map as an action that uses the the variable set by the CameraAction action.
+ * Based on what the ssPosition variable reads, sets the next action.
  *
- * @author Andrew, Error 404: Team Name Not Found
+ * @author Andrew, 8668 Should Be Fine!
  * @see RobotAction
  * */
 public class ChangeOutAction extends RobotAction
 {
-    /** The location of the gold mineral. */
+    /** The location of the sky stone. */
     String ssPosition = "LEFT";
     /** A truth value that is whether or not the method is done. */
     boolean done = false;
@@ -43,7 +44,9 @@ public class ChangeOutAction extends RobotAction
         super.init(telem, theRobot);
     }
 
-    /** Sets the count variable to zero and calls the parent init method.  */
+    /** Based on what the camera saw during init_loop() before the match, sets ssPosition to the
+     * recorded location of the skystone.
+     * Also sets the count variable to zero and calls the parent entry method.*/
     public void entry()
     {
         ssPosition = SBF_Autonomous.skyStonePosition;
@@ -52,8 +55,8 @@ public class ChangeOutAction extends RobotAction
         super.entry();
     }
 
-    /** The body of the action to be executed: Based on the location of the gold mineral returned by
-     * the ssPosition() method, sets the next action
+    /** The body of the action to be executed: Based on the location of the skystone, recorded
+     * earlier in the autonomous run, sets the correct next action.
      * */
     @Override
     public boolean execute()
@@ -88,7 +91,7 @@ public class ChangeOutAction extends RobotAction
 
     }
 
-    /** Shuts down the camera and calls the parent exit method. */
+    /** Calls the parent exit method. */
     @Override
     public void exit()
     {

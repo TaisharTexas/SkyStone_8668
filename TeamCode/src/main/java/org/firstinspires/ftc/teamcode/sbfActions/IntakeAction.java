@@ -38,8 +38,11 @@ public class IntakeAction extends RobotAction
 //        }
     }
 
-    /** Takes the parameters from the CSV file, converts them appropriately, and calls the
-     * parameterized constructor */
+    /**
+     * Takes the parameters from the CSV file, converts them appropriately, and calls the
+     *      * parameterized constructor
+     * @param params  An array that stores all the parameters that define the action variables.
+     */
     IntakeAction(String[] params)
     {
         this(params[0],
@@ -48,7 +51,12 @@ public class IntakeAction extends RobotAction
              Double.parseDouble(params[3]));
     }
 
-    /** Placeholder for initialization. Currently only calls the parent init method. */
+    /**
+     * Placeholder for initialization. Currently only calls the parent init method.
+     * @param telem  A telemetry object which is passed down from the opmode to where the
+     *               hardware is actually used.
+     * @param theRobot  A robot action which is passed down from the opmode.
+     */
     @Override
     public void init(Telemetry telem, Robot theRobot)
     {

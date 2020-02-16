@@ -22,7 +22,7 @@ import java.util.Vector;
  * ActionMaster is responsible for managing the run list of actions and moving each action to the
  * run map and then removing it in sequence.
  *
- * @author Andrew, Error 404: Team Name Not Found
+ * @author Andrew, 8668 Should Be Fine!
  * */
 public class ActionMaster
 {
@@ -38,7 +38,8 @@ public class ActionMaster
     boolean firstRun = true;
     String firstAction = "One";
 
-    /** Initializes telemetry. */
+    /** Initializes the telemetry, csv file, and robot.
+     * **/
     public void init(Telemetry telem, File autoFile, Robot robot)
     {
         telemetry = telem;

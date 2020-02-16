@@ -9,13 +9,15 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * Loaded into the run map as an action that drives the robot. Each action is parameterized by the CSV file.
+ * Loaded into the run map as an action that drives the robot using vectors between coordinate points.
+ * Each action is parameterized by the CSV file.
  *
- * @author Andrew, 8668 SBF
+ * @author Andrew, 8668 Should Be Fine!
  * @see RobotAction
  * */
 public class PursuitAction extends RobotAction
 {
+    /** A collection of points that forms the drive path for the robot to follow. */
     Path thePath = new Path();
 
     /** The robot's power. */

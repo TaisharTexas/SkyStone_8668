@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.sbfHardware.Robot;
 /**
  * Loaded into the run map as an action that drives the robot. Each action is parameterized by the CSV file.
  *
- * @author Andrew, Error 404: Team Name Not Found
+ * @author Andrew, 8668 Should Be Fine!
  * @see RobotAction
  * */
 public class DriveAction extends RobotAction
@@ -19,9 +19,19 @@ public class DriveAction extends RobotAction
     double theGain;
     /** The distance the robot will drive. */
     double theDistance;
+    /** The power at which the intake motors will spin. */
     double theIntake;
 
-    /** Creates a new object from the supplied parameters. */
+    /**
+     *  Creates a new object from the supplied parameters.
+     * @param id  The unique identifier by which the action is identified.
+     * @param nextAction  The id of the next action.
+     * @param duration  The maximum time the action can take.
+     * @param power  The power at which the robot drives.
+     * @param direction  The direction in which the robot will drive.
+     * @param distance  The distance the robot will drive.
+     * @param intake  The power at which the intake will drive.
+     */
     DriveAction(String id, String nextAction, double duration, double power, double direction,
                 double distance, double intake)
     {
@@ -45,8 +55,11 @@ public class DriveAction extends RobotAction
 //        }
     }
 
-    /** Takes the parameters from the CSV file, converts them appropriately, and calls the
-     * parameterized constructor */
+    /**
+     * Takes the parameters from the CSV file, converts them appropriately, and calls the
+     *      * parameterized constructor
+     * @param params  An array that stores all the parameters that define the action variables.
+     */
     DriveAction(String[] params)
     {
         this(params[0],
@@ -58,7 +71,12 @@ public class DriveAction extends RobotAction
              Double.parseDouble(params[6]));
     }
 
-    /** Placeholder for initialization. Currently only calls the parent init method. */
+    /**
+     * Placeholder for initialization. Currently only calls the parent init method.
+     * @param telem  A telemetry object which is passed down from the opmode to where the
+     *               hardware is actually used.
+     * @param theRobot  A robot action which is passed down from the opmode.
+     */
     @Override
     public void init(Telemetry telem, Robot theRobot)
     {
@@ -72,7 +90,7 @@ public class DriveAction extends RobotAction
         super.entry();
     }
 
-    /** The body of the action to be executed: Calls the drive() method in MecanumChassis. */
+    /** The body of the action to be executed: Calls the drive() method in robot. */
     @Override
     public boolean execute()
     {
@@ -85,7 +103,7 @@ public class DriveAction extends RobotAction
     }
 
 
-    /** Stops all the motors on the robot and calls the parent exit method. */
+    /** Stops the drive and intake motors and calls the parent exit method. */
     @Override
     public void exit()
     {
