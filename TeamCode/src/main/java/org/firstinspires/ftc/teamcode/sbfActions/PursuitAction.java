@@ -9,11 +9,12 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
+
  * Loaded into the run map as an action that causes the robot to use Pursuit to follow a path and
  * possibly execute parallel actions along the way.  The segements for the path that will be followed
  * are loaded in from the CSV file.
  *
- * @author Andrew, 8668 SBF
+ * @author Andrew, 8668 Should Be Fine!
  * @see RobotAction
  * @see Path
  * @see Pursuit
@@ -21,8 +22,8 @@ import java.util.concurrent.TimeUnit;
 public class PursuitAction extends RobotAction
 {
     /**
-     * Holds the information which defines the path segments which the robot should follow using
-     * the Pursuit algorithm.
+     *  Holds the information which defines the path segments which the robot should follow using
+     *  Pursuit algorithm.
      */
     Path thePath = new Path();
 
@@ -32,12 +33,14 @@ public class PursuitAction extends RobotAction
     double thePower;
     /** The number by which the robot will correct error. */
 //    double theGain;
-
+    /** Stores the x component of a path point. */
     double xPoint;
+    /** Stores the y component of a path point. */
     double yPoint;
+    /** The heading the robot needs to end a path segment at.*/
     double theHeading;
+    /** The ID for any aux actions that need to be loaded along with the path points. */
     String theAuxiliaryAction;
-
     /**
      * Based on the robot's position and velocity, causes the robot to follow a path defined in the
      * Path object provided to it.
@@ -49,7 +52,15 @@ public class PursuitAction extends RobotAction
 
 
     /**
-     * Creates a new object from the supplied parameters.
+     *  Creates a new object from the supplied parameters.
+     * @param id  The unique identifier by which the action is identified.
+     * @param nextAction  The id of the next action.
+     * @param duration  The maximum time the action can take.
+     * @param power  The max power the robot can use when driving.
+     * @param heading  The heading the robot needs to be at by the end of a path segment.
+     * @param x  The x position the robot needs to drive to.
+     * @param y  The y position the robot needs to drive to.
+     * @param auxiliaryAction  The id of the auxiliary action (if any) that needs to be loaded into the runmap.
      */
     PursuitAction(String id, String nextAction, double duration, double power, double heading, double x, double y, String auxiliaryAction)
     {

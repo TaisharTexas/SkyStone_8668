@@ -6,12 +6,12 @@ import org.firstinspires.ftc.teamcode.sbfHardware.Robot;
 /**
  * Loaded into the run map as an action that uses the camera. Each action is parameterized by the CSV file.
  *
- * @author Andrew, Error 404: Team Name Not Found
+ * @author Andrew, 8668 Should Be Fine!
  * @see RobotAction
  * */
 public class CameraAction extends RobotAction
 {
-    /** The location of the gold mineral. */
+    /** The location of the sky stone. */
     String ssPosition = "null";
     /** A truth value that is whether or not the method is done. */
     boolean done = false;
@@ -55,8 +55,8 @@ public class CameraAction extends RobotAction
         super.entry();
     }
 
-    /** The body of the action to be executed: Based on the location of the gold mineral returned by
-     * the ssPosition() method, sets the next action
+    /** The body of the action to be executed: Based on the location of the sky stone returned by
+     * the ssPosition variable, sets the next action
      * */
     @Override
     public boolean execute()
@@ -99,7 +99,7 @@ public class CameraAction extends RobotAction
 
     }
 
-    /** Shuts down the camera and calls the parent exit method. */
+    /** Closes the camera and calls the parent exit method. */
     @Override
     public void exit()
     {

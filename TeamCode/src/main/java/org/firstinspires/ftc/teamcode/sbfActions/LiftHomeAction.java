@@ -4,28 +4,39 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.sbfHardware.Robot;
 
 /**
- * Loaded into the run map as an action that turns the robot. Each action is parameterized by the CSV file.
+ * Loaded into the run map as an action that retracts the horizontal slide and drops the vertical lift.
+ * Each action is parameterized by the CSV file.
  *
- * @author Andrew, Error 404: Team Name Not Found
+ * @author Andrew, 8668 Should Be Fine!
  * @see RobotAction
  * */
 public class LiftHomeAction extends RobotAction
 {
+    /** A variable that stores the time elapsed since the last time snapshot. */
     double timePassed;
+    /** Used to mark when an action starts. Used to determine the change in time since the snapshot. */
     double timeSnapshot;
+    /** A boolean that marks whether or not the action has completed successfully. */
     boolean done;
+    /** An int that records the current state that the state machine is currently in. */
     int state;
-    boolean theDirection;
 
-    /** Creates a new object from the supplied parameters. */
-    LiftHomeAction(String id, String nextAction, double duration)
+    /**
+     *  Creates a new object from the supplied parameters.
+     * @param id  The unique identifier by which the action is identified.
+     * @param nextAction  The id of the next action.
+     * @param duration  The maximum time the action can take.
+     */    LiftHomeAction(String id, String nextAction, double duration)
     {
         super(id, nextAction, duration);
 
     }
 
-    /** Takes the parameters from the CSV file, converts them appropriately, and calls the
-     * parameterized constructor */
+    /**
+     * Takes the parameters from the CSV file, converts them appropriately, and calls the
+     *      * parameterized constructor
+     * @param params  An array that stores all the parameters that define the action variables.
+     */
     LiftHomeAction(String[] params)
     {
         this(params[0],
@@ -33,14 +44,20 @@ public class LiftHomeAction extends RobotAction
              Double.parseDouble(params[2]));
     }
 
-    /** Placeholder for initialization. Currently only calls the parent init method. */
+    /**
+     * Placeholder for initialization. Currently only calls the parent init method.
+     * @param telem  A telemetry object which is passed down from the opmode to where the
+     *               hardware is actually used.
+     * @param theRobot  A robot action which is passed down from the opmode.
+     */
     @Override
     public void init(Telemetry telem, Robot theRobot)
     {
         super.init(telem, theRobot);
     }
 
-    /** Placeholder for entry. Currently only calls the parent entry method.  */
+    /** Calls the parent method, sets state to zero, sets done to false, and sets timeSnapshot to
+     * the current time.  */
     @Override
     public void entry()
     {
@@ -50,7 +67,8 @@ public class LiftHomeAction extends RobotAction
         timeSnapshot = getRuntime();
     }
 
-    /** Calls the pointTurn() method in MecanumChassis. */
+    /** Starts a state machine that brings the lift mechanism home in preparation for collecting
+     * another stone. */
     @Override
     public boolean execute()
     {
@@ -95,7 +113,7 @@ public class LiftHomeAction extends RobotAction
         return done || super.execute();
     }
 
-    /** Stops all the motors and calls the parent exit method. */
+    /** Stops the lift motors and calls the parent exit method. */
     @Override
     public void exit()
     {

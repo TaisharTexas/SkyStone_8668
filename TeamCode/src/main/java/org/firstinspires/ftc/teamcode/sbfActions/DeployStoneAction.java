@@ -4,16 +4,21 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.sbfHardware.Robot;
 
 /**
- * Loaded into the run map as an action that turns the robot. Each action is parameterized by the CSV file.
+ * Loaded into the run map as an action that grips a stone and deposits it onto the foundation.
+ * Each action is parameterized by the CSV file.
  *
- * @author Andrew, Error 404: Team Name Not Found
+ * @author Andrew, 8668 Should Be Fine!
  * @see RobotAction
  * */
 public class DeployStoneAction extends RobotAction
 {
+    /** A variable that stores the time elapsed since the last time snapshot. */
     double timePassed;
+    /** Used to mark when an action starts. Used to determine the change in time since the snapshot. */
     double timeSnapshot;
+    /** A boolean that marks whether or not the action has completed successfully. */
     boolean done;
+    /** An int that records the current state that the state machine is currently in. */
     int state;
 
     /** Creates a new object from the supplied parameters. */
@@ -39,7 +44,8 @@ public class DeployStoneAction extends RobotAction
         super.init(telem, theRobot);
     }
 
-    /** Placeholder for entry. Currently only calls the parent entry method.  */
+    /** Sets state, timeSnapshot, and timePassed to zero. Sets done equal to false and calls the
+     * parent entry method.  */
     @Override
     public void entry()
     {
@@ -50,7 +56,7 @@ public class DeployStoneAction extends RobotAction
         super.entry();
     }
 
-    /** Calls the pointTurn() method in MecanumChassis. */
+    /** Starts a state machine that steps through lifting up and depositing the stone onto the foundation. */
     @Override
     public boolean execute()
     {
@@ -120,7 +126,7 @@ public class DeployStoneAction extends RobotAction
         return done || super.execute();
     }
 
-    /** Stops all the motors and calls the parent exit method. */
+    /** Stops the lift motors and calls the parent exit method. */
     @Override
     public void exit()
     {
