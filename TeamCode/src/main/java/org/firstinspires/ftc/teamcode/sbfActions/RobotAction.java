@@ -6,10 +6,12 @@ import org.firstinspires.ftc.teamcode.sbfHardware.Robot;
 import java.util.concurrent.TimeUnit;
 
 /**
- *
+ * The base class for all robot actions that occur during autonomous.  This class implements the
+ * basic timeout functionality that all autonomous actions should have.  It also holds the ID
+ * for the next action to execute.
  *
  * @author Andrew, Error 404: Team Name Not Found
- * */
+ */
 public class RobotAction
 {
     String theId = "";

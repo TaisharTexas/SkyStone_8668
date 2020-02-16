@@ -9,31 +9,48 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * Loaded into the run map as an action that drives the robot. Each action is parameterized by the CSV file.
+ * Loaded into the run map as an action that causes the robot to use Pursuit to follow a path and
+ * possibly execute parallel actions along the way.  The segements for the path that will be followed
+ * are loaded in from the CSV file.
  *
  * @author Andrew, 8668 SBF
  * @see RobotAction
+ * @see Path
+ * @see Pursuit
  * */
 public class PursuitAction extends RobotAction
 {
+    /**
+     * Holds the information which defines the path segments which the robot should follow using
+     * the Pursuit algorithm.
+     */
     Path thePath = new Path();
 
-    /** The robot's power. */
+    /**
+     * The robot's power.
+     */
     double thePower;
     /** The number by which the robot will correct error. */
 //    double theGain;
-    /** The distance the robot will drive. */
+
     double xPoint;
     double yPoint;
     double theHeading;
     String theAuxiliaryAction;
+
+    /**
+     * Based on the robot's position and velocity, causes the robot to follow a path defined in the
+     * Path object provided to it.
+     */
     Pursuit thePursuit;
 
     // internal time tracking
-    private long startTime = 0; // in nanoseconds
+//    private long startTime = 0; // in nanoseconds
 
 
-    /** Creates a new object from the supplied parameters. */
+    /**
+     * Creates a new object from the supplied parameters.
+     */
     PursuitAction(String id, String nextAction, double duration, double power, double heading, double x, double y, String auxiliaryAction)
     {
         super(id, nextAction, duration);
@@ -43,21 +60,14 @@ public class PursuitAction extends RobotAction
         yPoint = y;
         theHeading = heading;
         theAuxiliaryAction = auxiliaryAction;
-//        timeout = duration;
-//        theId = id;
-//
-//        if(nextAction.isEmpty())
-//        {
-//            theNextAction = null;
-//        }
-//        else
-//        {
-//            theNextAction = nextAction;
-//        }
     }
 
-    /** Takes the parameters from the CSV file, converts them appropriately, and calls the
-     * parameterized constructor */
+    /**
+     * Takes the parameters from the CSV file, converts them appropriately, and calls the
+     * parameterized constructor
+     *
+     * @param params the parameters read from the CSV file
+     */
     PursuitAction(String[] params)
     {
         this(params[0],
@@ -72,28 +82,40 @@ public class PursuitAction extends RobotAction
         this.addPoint(params);
     }
 
-    /** Placeholder for initialization. */
+    /**
+     * Initialize the Pursuit Action by constructing the Pursuit object which will do the
+     * heavy lifting of calculating the commands needed to control the robot along the Path.
+     * @param telem the telemetry object used for passing data to the Drivers Station
+     * @param theRobot the robot object that will be controlled when the action executes
+     * @see Pursuit
+     */
     @Override
     public void init(Telemetry telem, Robot theRobot)
     {
         thePursuit = new Pursuit((float)xPoint, (float)yPoint, telem);
-//        thePath= new Path();
         super.init(telem, theRobot);
 
     }
 
-    /** Placeholder for entry. */
+    /**
+     * Called once when this action is loaded in preparation for executing.
+     */
     @Override
     public void entry()
     {
-//        thePath.addPoint((float)xPoint, (float)yPoint, thePower, theHeading);
+        /**
+         * Tell Pursuit object where it is located.
+         */
         thePursuit.location.x = robot.location.x;
         thePursuit.location.y = robot.location.y;
-        resetStartTime();
+
         super.entry();
     }
 
-    /** The body of the action to be executed. */
+    /**
+     * Executes the pursuit of the path.
+     * @return boolean that indicates the pursuit is complete.
+     */
     @Override
     public boolean execute()
     {
@@ -114,8 +136,10 @@ public class PursuitAction extends RobotAction
     }
 
 
-    /** Stops all the motors on the robot and calls the p
-     * arent exit method. */
+    /**
+     * Stops all of the drive motors so that the robot does not continue moving. Executes once as
+     * the very last thing for the action.
+     */
     @Override
     public void exit()
     {
@@ -123,6 +147,11 @@ public class PursuitAction extends RobotAction
         super.exit();
     }
 
+    /**
+     * Adds a point to the Path object from the list of parameters which have been read in from the
+     * CSV file.
+     * @param params which are the values read in from the CSV file.
+     */
     public void addPoint(String[] params)
     {
         double x = Double.parseDouble(params[5]);
@@ -134,28 +163,31 @@ public class PursuitAction extends RobotAction
         thePath.addPoint((float)x, (float)y, maxSpeed, heading, auxAction);
     }
 
+    /**
+     * If the Pursuit has an auxiliary action to perfrom, this will provide the ID of the action.
+     * @return String which is the ID of the action to run in parallel
+     */
     @Override
     public String getAuxAction()
     {
         return thePursuit.auxAction;
     }
 
-    /**
-     * Get the number of seconds this op mode has been running
-     * <p>
-     * This method has sub millisecond accuracy.
-        * @return number of seconds this op mode has been running
-     */
-    public double getRuntime() {
-        final double NANOSECONDS_PER_SECOND = TimeUnit.SECONDS.toNanos(1);
-        return (System.nanoTime() - startTime) / NANOSECONDS_PER_SECOND;
-    }
-
-    /**
-     * Reset the start time to zero.
-     */
-    public void resetStartTime() {
-        startTime = System.nanoTime();
-    }
+//    /**
+//     * Get the number of seconds this op mode has been running
+//     * <p>
+//     * This method has sub millisecond accuracy.
+//        * @return number of seconds this op mode has been running
+//     */
+//    public double getRuntime() {
+//        final double NANOSECONDS_PER_SECOND = TimeUnit.SECONDS.toNanos(1);
+//        return (System.nanoTime() - startTime) / NANOSECONDS_PER_SECOND;
+//    }
+//    /**
+//     * Reset the start time to zero.
+//     */
+//    public void resetStartTime() {
+//        startTime = System.nanoTime();
+//    }
 
 }
