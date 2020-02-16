@@ -5,15 +5,28 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.sbfUtil.PVector;
 
-@Config
+
 /**
- * Credit:
+ * Implements a pursuit robot maneuvering algorithm based on the steering behavior algorithm originally
+ * published by Craig Reynolds in "Steering Behavior for Autonomous Characters".
+ *
+ * Takes a Path which describes a series of line segments and computes the deisred velocity for the
+ * robot to follow the path and traverse the segments, finally arriving at its goal.  The robot
+ * is not following a predetermined path, rather, it is computing needed velocities to point the robot
+ * towards the line segment which leads to the next point in the path.
+ *
+ * The concepts in this class are most directly influenced by Daniel Shiffman and his presentations
+ * on the Nature of Code, specifically chapter 6 on Autonomous Agents.
+ *
+ * @see <a href="https://natureofcode.com/book/chapter-6-autonomous-agents/">Autonomous Agents by Daniel Shiffman</a>
+ * @see <a href="https://youtu.be/2qGsBClh3hE">Great video lecture on Path Following by Daniel Shiffman</a>
+ * @see <a href="http://www.red3d.com/cwr/papers/1999/gdc99steer.pdf">Steering Bheavior for Autonomous Characters</a>
  *
  * @author Andrew, SBF Robotics
  */
+@Config
 public class Pursuit
 {
-    // TODO: figure out if there are any variables here that do not need to be used.  Also comment!
     public PVector location;
     public PVector velocity;
     public PVector localVelocity;
@@ -40,7 +53,6 @@ public class Pursuit
     public int currentSegment = 0;
     private boolean lastSegment = false;
     private boolean done = false;
-    private boolean moving = false;
 
     Telemetry telemetry;
     public double elapsedTime = 0;
@@ -48,6 +60,12 @@ public class Pursuit
 
     public String auxAction;
 
+    /**
+     *
+     * @param x
+     * @param y
+     * @param telem
+     */
     public Pursuit(float x, float y, Telemetry telem)
     {
         telemetry = telem;
@@ -71,16 +89,12 @@ public class Pursuit
     }
 
     /**
-     * Given a start waypoint and end waypoint, take the robot's current location and move the robot
-     * first to the start point and then to the end point.
+     * Use robot's current location and move the robot along the path starting from the start point
+     * and moving to the end point.
+     * @param drivePath contains the points which the robot should follow
      */
-//    public boolean follow(Path drivePath)
     public void follow(Path drivePath)
     {
-        if(!moving)
-        {
-            moving = true;
-        }
         PVector target;
         PVector start = drivePath.pathPoints.get(currentSegment);
         end = drivePath.pathPoints.get(currentSegment + 1);
@@ -347,7 +361,6 @@ public class Pursuit
 
     public boolean getDone()
     {
-//        return !moving;
         return done;
     }
 
