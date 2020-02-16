@@ -93,7 +93,6 @@ public class PVector implements Serializable
 
     }
 
-
     /**
      * Constructor for a 3D vector.
      *
@@ -182,7 +181,6 @@ public class PVector implements Serializable
         }
         return this;
     }
-
 
 
     /**
