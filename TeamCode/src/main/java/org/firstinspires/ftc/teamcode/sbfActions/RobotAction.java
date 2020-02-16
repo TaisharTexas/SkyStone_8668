@@ -6,19 +6,12 @@ import org.firstinspires.ftc.teamcode.sbfHardware.Robot;
 import java.util.concurrent.TimeUnit;
 
 /**
-<<<<<<< HEAD
- * The model action that all other actions source from.
- *
- * @author Andrew, 8668 Should Be Fine!
- * */
-=======
  * The base class for all robot actions that occur during autonomous.  This class implements the
  * basic timeout functionality that all autonomous actions should have.  It also holds the ID
  * for the next action to execute.
  *
- * @author Andrew, Error 404: Team Name Not Found
+ * @author Andrew, 8668 Should Be Fine!
  */
->>>>>>> 780a6a825f5d098f2d116cfe185127f9b79d9a8c
 public class RobotAction
 {
     /** The unique identifier by which each action is identified. */
@@ -44,7 +37,8 @@ public class RobotAction
      * @param anID  The unique identifier by which the action is identified.
      * @param next  The id of the next action.
      * @param theTimeout  The maximum time the action can take.
-     */    RobotAction( String anID, String next, double theTimeout)
+     */
+    RobotAction( String anID, String next, double theTimeout)
     {
         theId = anID.toUpperCase();
         if(next.isEmpty())
