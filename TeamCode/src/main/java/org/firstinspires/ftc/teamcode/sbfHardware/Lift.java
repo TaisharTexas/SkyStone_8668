@@ -3,21 +3,27 @@ package org.firstinspires.ftc.teamcode.sbfHardware;
 import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.openftc.revextensions2.ExpansionHubMotor;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Contains the hardware and usage methods for the lift mechanism.
+ *
+ * @author Andrew, 8668 Should Be Fine!
+ */
 public class Lift
 {
+    /** A telemetry object passed down from the opmode. */
     private Telemetry telemetry;
+    /** A telemetry object passed down from the opmode. */
     private HardwareMap hardwareMap;
 
+    
     private RevTouchSensor touchL = null;
     private RevTouchSensor touchR = null;
 
