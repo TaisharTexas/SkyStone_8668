@@ -33,70 +33,100 @@ public class Robot
 {
 
     // Robot - Generic Items
+    /** A telemetry object passed down from the opmode */
     private Telemetry telemetry;
+    /** A hardware map object passed down from the opmode. */
     private HardwareMap hardwareMap;
+    /** The robot heading offset -- makes what angle the robot starts at not zero.*/
     private double offset;
+    /** A string that describes which camera should be used by an autonomous opmode -- is overridden
+     * in the child autonomous classes. */
     public String whichCamera = "leftCam";
-
+    /** Sets the starting location vector for the robot -- overridden in the child autonomous classes. */
     public PVector location = new PVector(39,9);
+    /** The starting robot velocity, */
     public PVector velocity = new PVector(0,0);
+    /** The robot's current rate of heading change. */
     public double currentAngularVelocity;
 
     // Lift Class
+    /** The lift object -- imports the all the hardware and methods for the lift mechanism. */
     public Lift lift = new Lift();
+    /** The Blinkin object -- imports all the hardware and methods for the Blinkin LED driver. */
 //    public Blinkin lights = new Blinkin();
+    /** The intake object -- imports all the hardware and methods for the intake mechanim. */
     public Intake intake = new Intake();
 
     // Vision System Items
+    /** The camera object -- imports all the hardware and methods for the webcams and image pipeline. */
     private CameraVision eyeOfSauron = new CameraVision();
+    /** Marks whether or not to run the camera in the opmode. */
     boolean useCamera;
 
     /**
      * Robot - REV Hub Items
      */
+    /** A bulk data object for the primary rev hub. */
     private RevBulkData bulkData;
+    /** A bulk data object for the secondary rev hub. */
     private RevBulkData bulkDataAux;
+    /** Declares the primary rev hub as an extended expansion hub. */
     private ExpansionHubEx expansionHub;
+    /** Declares the secondary rev hub as an extended expansion hub. */
     private ExpansionHubEx expansionHubAux;
 
     /**
      * Chassis Items
       */
+    /** Declares the right front motor as an expanded rev hub motor.*/
     private ExpansionHubMotor RF = null;
+    /** Declares the right rear motor as an expanded rev hub motor.*/
     private ExpansionHubMotor RR = null;
+    /** Declares the left front motor as an expanded rev hub motor.*/
     private ExpansionHubMotor LF = null;
+    /** Declares the left rear motor as an expanded rev hub motor.*/
     private ExpansionHubMotor LR = null;
+    /** Declares the internal rev imu. */
     private BNO055IMU gyro;
     /** The dc motor whose encoder is being used for distance measurements. */
     ExpansionHubMotor encoderMotor;
 
-
-
     /**
      * Foundation Fingers Items
      */
+    /** The left fonudation finger servo. */
     private Servo leftFoundation = null;
+    /** The right foundation finger servo. */
     private Servo rightFoundation = null;
 
     /**
      * Robot - Odometry Items
      */
+    /** Declares the xEncoder as an expanded rev hub motor. */
     private ExpansionHubMotor xEncoder = null;
+    /** Declares the yEncoder as an expanded rev hub motor. */
     private ExpansionHubMotor yEncoder = null;
 
     /**
      * Robot - Encoder information used in odometry
      */
+    /** An x-axis velocity measurement. */
     private double xEncInPerSec;
+    /** A y-axis velocity measurement. */
     private double yEncInPerSec;
-
+    /** The radius of the encoder wheels. */
     private final double encWheelRadius = 1.96/2.0; //in inches ... encoder is a 50mm diameter wheel.
 //    private final double encTickPerRotation = 2400;
+    /** The number of encoder ticks per rotation of the encoder wheel. */
     private final double encTickPerRotation = 3200;
 //    public static double encDistanceConstant = 195.5/192; //calibrated over 16' & 12' on foam tiles -- 9/13/19
+    /** A constant used in calculating robot position change. */
     public static double encDistanceConstant = 1;
+    /** The number of inches moved per rotation of the encoder wheel. */
     private final double encInchesPerRotation = 2.0 * encWheelRadius * Math.PI * encDistanceConstant; // this is the encoder wheel distancd
+    /** The gearing on the drive train. */
     private final double gearRatio = 1.733333333;
+    /** The number of encoder ticks per inch moved. */
     private final double encTicksPerInch = encTickPerRotation / (encInchesPerRotation);
 
     private int prevXEncoder = 0;
