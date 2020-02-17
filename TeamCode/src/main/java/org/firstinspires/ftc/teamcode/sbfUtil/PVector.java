@@ -26,8 +26,6 @@ package org.firstinspires.ftc.teamcode.sbfUtil;
 
 import java.io.Serializable;
 
-
-
 /**
  * Based on the PVector class found in the Processing language, a class to
  * describe a two or three dimensional vector. This datatype

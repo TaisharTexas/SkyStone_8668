@@ -22,56 +22,76 @@ import org.firstinspires.ftc.teamcode.sbfUtil.PVector;
  * @see <a href="https://youtu.be/2qGsBClh3hE">Great video lecture on Path Following by Daniel Shiffman</a>
  * @see <a href="http://www.red3d.com/cwr/papers/1999/gdc99steer.pdf">Steering Bheavior for Autonomous Characters</a>
  *
- * @author Andrew, SBF Robotics
+ * @author Andrew, 8668 Should Be Fine!
  */
 @Config
 public class Pursuit
 {
+    /** The robot's current location. */
     public PVector location;
+    /** The robot's current velocity. */
     public PVector velocity;
-    public PVector localVelocity;
-    public PVector acceleration;
+//    /** not used */
+//    public PVector localVelocity;
+//    /** not used */
+//    public PVector acceleration;
+    /** The desired direction and length of travel. */
     public PVector desiredVelocity;
-    public PVector initialPosition;
+    /** The current heading of the robot */
     public double currentHeading;
+    /** The current rate of directional change and direction of change. */
     public double currentAngularVelocity;
+    /** The angular velocity the robot needs to have converted to a joystick command. */
     public double joystickAngularVelocity;
-
+    /** The minimum distance away from the target point before the robot can switch path segments. */
     public static double endZone = 12.0;
+    /** The max speed the robot can drive at -- used to calculate maxAccel */
     private double maxSpeed;
+    /** A measure of how quickly the robot can change velocity. */
     private double maxAccel;
+    /** A gain used when calculating macAccel. */
     private double gainValue;
+    /** A gain dictating how rapidly the robot can turn. */
     private double turnGain;
-
+    /** How far ahead the robot projects its location -- allows the robot to respond to changes in
+     * the path before arriving at the actual change. Makes movements smooth. */
     public static double pathLookahead = 10.0;
+    /** Maximum rate the robot can turn at. */
     public static double maxTurnSpd = 550;
+    /** Used when calculating maxAccel.*/
     public static double maxFastAccelGain = 20;
-
+    /** Used on the first segment of a path to determine how quickly the robot can accelerate from zero. */
     private double accelerationSteepness = 4.0;
+    /** How long the robot can take to accelerate -- used when determining how steeply the robot
+     * can accelerate from zero. */
     private double timeToAccelerate = 1.0;
-
+    /** The current path segment the robot is on. */
     public int currentSegment = 0;
+    /** Marks whether or not the current segment is the last segment of the path. */
     private boolean lastSegment = false;
+    /** Marks whether or not the robot has completed its move.*/
     private boolean done = false;
-
+    /** A telemetry object passed down from the opmode.*/
     Telemetry telemetry;
+    /** The time elapsed since the variable was last reset. */
     public double elapsedTime = 0;
+    /** */
     private PVector end;
-
+    /** The ID for any secondary actions that need to be loaded to the runmap simultaneously with the path points.*/
     public String auxAction;
 
     /**
-     *
-     * @param x
-     * @param y
-     * @param telem
+     * Class constructor. Sets any variables that require a value before pursuit starts.
+     * @param x The start x position.
+     * @param y The start y position.
+     * @param telem A telemetry object passed down from the opmode.
      */
     public Pursuit(float x, float y, Telemetry telem)
     {
         telemetry = telem;
-        acceleration = new PVector(0, 0);
+//        acceleration = new PVector(0, 0);
         velocity = new PVector(0,0);
-        localVelocity = new PVector( 0,0);
+//        localVelocity = new PVector( 0,0);
         location = new PVector(x,y);
         desiredVelocity = new PVector(0,0);
 //        endZone = 6; //inch
@@ -210,10 +230,13 @@ public class Pursuit
         }
     }
 
+    /**
+     * Calculate the needed linear velocity to arrive at the target.
+     * @param target The target the linear velocity needs to point towards
+     * @param theMaxSpeed The max speed the robot can use to get to the target.
+     */
     private void arrive(PVector target, double theMaxSpeed)
     {
-        //converts the 0-1 power scale of the csv file to the 0-30 power scale used by the pursuit algorithm
-//        theMaxSpeed = theMaxSpeed * 30.0;
 
         //find the needed velocity to move to target and call it desiredVelocity
         desiredVelocity = PVector.sub(target, location);
@@ -266,6 +289,11 @@ public class Pursuit
 
     }
 
+    /**
+     * Calculates the needed angular acceleration to arrive at the target heading by the end of the segment.
+     * @param targetHeading The heading desired at the end of the move.
+     * @param theMaxTurnSpeed The max rate the robot can turn.
+     */
     private void point(double targetHeading, double theMaxTurnSpeed)
     {
         double desiredAngularVelocity = (targetHeading-currentHeading);
@@ -322,26 +350,51 @@ public class Pursuit
     }
 
 
+    /**
+     * Scales a vector by the imputed parameters.
+     * @param value The thing being scaled
+     * @param start1
+     * @param stop1
+     * @param start2
+     * @param stop2
+     * @return The scaled vector
+     */
     private float scaleVector(float value, float start1, float stop1, float start2, float stop2)
     {
         return  start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1));
     }
 
+    /**
+     * Updates the robot's current location.
+     * @param currentPosition The position being added to the location vector.
+     */
     public void updatePosition(PVector currentPosition)
     {
         location = PVector.add(location, currentPosition);
     }
 
+    /**
+     * Updates the robot's velocity.
+     * @param currentVelocity The velocity vector being set.
+     */
     public void updateVelocity(PVector currentVelocity)
     {
         velocity.set(currentVelocity.x, currentVelocity.y);
     }
 
+    /**
+     * Updates the robot's angular velocity.
+     * @param angularVelocity The angular velocity being set.
+     */
     public void updateAngularVelocity( double angularVelocity )
     {
         currentAngularVelocity = angularVelocity;
     }
 
+    /**
+     * Updates the robot's current heading.
+     * @param heading The heading being set.
+     */
     public void updateHeading( double heading )
     {
         // check to see if the heading changes unrealistically due to gyro rollover
@@ -359,6 +412,10 @@ public class Pursuit
         currentHeading = heading;
     }
 
+    /**
+     * Marks whether or not pursuit has reported complete.
+     * @return True: pursuit is done -- False: pursuit is not done
+     */
     public boolean getDone()
     {
         return done;

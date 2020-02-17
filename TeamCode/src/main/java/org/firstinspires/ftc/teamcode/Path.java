@@ -1,12 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
 import org.firstinspires.ftc.teamcode.sbfUtil.PVector;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
- * Represents the data necesary for a path that Pursuit will follow.
+ * Represents the data necessary for a path that Pursuit will follow.
  *
  * @author Andrew, 8668 Should Be Fine!
  */
@@ -45,11 +43,12 @@ public class Path
     /**
      * Adds a point to the Path to be used by the Pursuit class.  This creates another segment.
      *
-     * @param x
-     * @param y
-     * @param maxSpeed
-     * @param desiredHeading
-     * @param auxAction
+     * @param x The x-component of the path segment
+     * @param y The y-component of the path segment
+     * @param maxSpeed The max speed the algorithm can command from the robot.
+     * @param desiredHeading The target heading the robot needs to be at by the end of the segment.
+     * @param auxAction The ID for any secondary actions that needs to be added to the runmap
+     *                  alongside the path segment.
      */
     public void addPoint(float x, float y, double maxSpeed, double desiredHeading, String auxAction)
     {

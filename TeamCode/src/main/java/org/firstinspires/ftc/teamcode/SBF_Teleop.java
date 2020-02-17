@@ -29,25 +29,44 @@ import java.util.concurrent.TimeUnit;
  * */
 public class SBF_Teleop extends OpMode
 {
+    /**
+     * Sets the robot's starting position to 0,0 -- not used right now.
+     */
     Pursuit pursuit = new Pursuit(0, 0, telemetry);
+    /** Declares a robot object. */
     Robot robot = new Robot();
+    /** Declares a custom gamepad1 object -- gamepad 1 controls the chassis and intake. */
     SbfJoystick customPad1 = new SbfJoystick();
+    /** Declares a custom gamepad2 object -- gamepad 2 controls the lift and horizontal slides. */
     SbfJoystick customPad2 = new SbfJoystick();
+    /** Declares a camera object -- not used right now. */
     CameraVision camera = new CameraVision();
 
+    /** Limits how quickly the dpad on gamepad2 can be incremented. */
     Deadline pad2Wait = new Deadline(175, TimeUnit.MILLISECONDS);
+    /** A currently unused limit for gamepad 1. */
     Deadline pad1Wait = new Deadline( 200, TimeUnit.MILLISECONDS);
 
+    /** The position the horizontal slide needs to be driven to (incremented up and down by the dpad on gamepad 2). */
     double shoulderPos;
+    /** The position the wrist needs to be turned to. */
     double wristPos;
 
+    /** Stores the current x position of the robot. */
     int currentXEncoder = 0;
+    /** Stores the current y position of the robot. */
     int currentYEncoder = 0;
+    /** The current heading of the robot. */
     double currentHeading = 0;
 
+    /** How long each iteration through loop() takes. */
     double loopTime=0;
 
 
+    /** Runs once when INIT is pressed on the driver station.
+     * Initializes all the robot hardware and both gamepads.
+     * Sets all the servos to their starting positions.
+     * */
     public void init()
     {
         robot.init(telemetry, hardwareMap, false, 0.0, true);
@@ -62,6 +81,9 @@ public class SBF_Teleop extends OpMode
 
     }
 
+    /** Runs once when STOP is pressed on the driver station.
+     * Stops all motors on the robot and terminates any running programs/processes.
+     */
     @Override
     public void stop()
     {
@@ -69,6 +91,7 @@ public class SBF_Teleop extends OpMode
         super.stop();
     }
 
+    /** Runs repeatedly after init() is done but before START is pressed. */
     @Override
     public void init_loop()
     {
@@ -80,6 +103,9 @@ public class SBF_Teleop extends OpMode
 
     }
 
+    /** Runs once when START is pressed on the driver station.
+     * Calls the robot start and resets all the timers.
+     * Upon completion initiates loop().*/
     public void start()
     {
         robot.start();
@@ -92,6 +118,8 @@ public class SBF_Teleop extends OpMode
 //        lift.claw.setPosition(.1);
     }
 
+    /** Runs repeatedly after start() until STOP is pressed on the driver station.
+     * Contains all the control links between the gamepads and the robot. */
     public void loop()
     {
         robot.update();
@@ -244,6 +272,11 @@ public class SBF_Teleop extends OpMode
 
     }
 
+    /**
+     * Sets the maximum speed for the chassis --
+     * default is forty-five percent, afterburners is one-hundred percent.
+     * @return The max speed.
+     */
     public double afterburners()
     {
         double maximumSpeed;
@@ -265,9 +298,9 @@ public class SBF_Teleop extends OpMode
 
     /**
      * Get external sd card path using reflection
-     * @param mContext
+     * @param mContext Talks to the android device
      * @param is_removable is external storage removable
-     * @return
+     * @return returns the path to the sd card, if found.
      */
     private static String getExternalStoragePath(Context mContext, boolean is_removable) {
 
