@@ -129,12 +129,18 @@ public class Robot
     /** The number of encoder ticks per inch moved. */
     private final double encTicksPerInch = encTickPerRotation / (encInchesPerRotation);
 
+    /** Used to calculate the change in x position. */
     private int prevXEncoder = 0;
+    /** Used to calculate the change in y position. */
     private int prevYEncoder = 0;
+    /** Stores the change in x position. */
     private int xEncoderChange = 0;
+    /** Stores the change in y position. */
     private int yEncoderChange = 0;
 
+    /** The current raw heading of the robot (no offset). */
     private double currentRawHeading = 0;
+    /** Marks whether or not the servos are done. */
     private boolean servoDone = false;
 
     /** Directional variables used to simulate joystick commands in autonomous.
@@ -190,7 +196,9 @@ public class Robot
     /** A double that stores the starting heading of the robot for use in reseting the robot's
      * heading to its start heading. */
     private double resetHeading;
+    /** Marks whether or not the robot is moving. */
     private boolean moving;
+    /** Sets the start time to zero (in nanoseconds). */
     private long startTime = 0; // in nanoseconds
     /** A double that is the number of nanoseconds per second. */
     double NANOSECONDS_PER_SECOND = TimeUnit.SECONDS.toNanos(1);
@@ -207,7 +215,9 @@ public class Robot
      * @param telem  An instance of Telemetry which allows the use of Telemtry in this class.
      * @param hwmap  An instance of the FIRST-provided HardwareMap which is passed onto more
      *               specific classes for initializing hardware.
-     * @param useVision A boolean flag which tells the class whether or not the camera should be used.
+     * @param useVision  A boolean flag which tells the class whether or not the camera should be used.
+     * @param theOffset  The heading offset which is set by the child autonomous classes.
+     * @param isTeleop  Marks whether or not the opmode is teleop.
      * */
     public void init(Telemetry telem, HardwareMap hwmap, boolean useVision, double theOffset, boolean isTeleop )
     {
@@ -476,6 +486,7 @@ public class Robot
         joystickDrive(x, y, turn, 0, 1);
     }
 
+    /** Fetches the telemetry relating to the encdoers. */
     public void getEncoderTelem()
     {
         getXChange();
@@ -506,7 +517,7 @@ public class Robot
     }
 
     /**
-     * Robot - Kill the Chassis and the Vision System
+     * Robot - Kills the Chassis, Lift, and Intake systems.
      */
     public void stopEverything()
     {
@@ -524,6 +535,7 @@ public class Robot
         intake.intakeStop();
     }
 
+    /** Stops the drive train. */
     public void stopChassis()
     {
         if(motorsValid())
@@ -534,17 +546,26 @@ public class Robot
             LR.setPower(0.0);
         }
     }
+    /** Stops the lift mechanism. */
     public void stopLift()
     {
         lift.stopLift();
 
     }
+    /** Stops the intake mechanism. */
     public void stopIntake()
     {
         intake.intakeStop();
 
     }
 
+    /**
+     * Drives the lift to a specific position at a specified power.
+     * @param power  The power that the lift drives at.
+     * @param positionInches  The position the lift needs to move to.
+     * @param time  The maximum time the move can take.
+     * @return Whether or not the method has finished.
+     */
     public boolean liftDrive(double power, double positionInches, double time)
     {
         update();
@@ -557,7 +578,6 @@ public class Robot
 
     /**
      * Robot - Used to query the IMU and get the robot's heading.  Internal method only.
-     *
      * @return  the robot's heading as an double
      */
     private double updateHeadingRaw()
@@ -712,7 +732,7 @@ public class Robot
     }
 
     /**
-     * Chassis - The mecanum Drive method moves the four drive motors on the robot and will move the robot forward,
+     * Chassis - Drives the four drive motors on the robot and will move the robot forward,
      * backward, left, right, or at a 45 degree angle in any direction.
      *
      * @param power  How fast the robot will drive.
@@ -973,6 +993,10 @@ public class Robot
         eyeOfSauron.stopCamera();
     }
 
+    /**
+     * Sets the camera to the imputed name.
+     * @param device  The name the camera is set to.
+     */
     public void setCameraDeviceName( String device )
     {
         eyeOfSauron.setCamDeviceName( device );
@@ -1065,21 +1089,36 @@ public class Robot
     }
 
 
+    /** Update the current location of the robot.
+     * @param currentPosition The position being added to location.
+     * */
     public void updatePosition(PVector currentPosition)
     {
         location = PVector.add(location, currentPosition);
     }
 
+    /**
+     * Update the current velocity.
+     * @param currentVelocity  The velocity being set.
+     */
     public void updateVelocity(PVector currentVelocity)
     {
         velocity.set(currentVelocity.x, currentVelocity.y);
     }
 
+    /**
+     * Update the current angular velocity.
+     * @param angularVelocity  The angular velocity being set.
+     */
     public void updateAngularVelocity( double angularVelocity )
     {
         currentAngularVelocity = angularVelocity;
     }
 
+    /**
+     * Update the current heading.
+     * @param heading  The heading being set.
+     */
     public void updateHeading( double heading )
     {
         currentRawHeading = heading;
