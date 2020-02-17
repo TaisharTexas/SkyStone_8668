@@ -19,6 +19,8 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Manages opening and using the webcams for detecting SkyStones.
+ *
+ * @author Andrew, 8668 Should Be Fine!
  */
 public class CameraVision
 {
@@ -249,6 +251,10 @@ public class CameraVision
 
     }
 
+    /**
+     * Sets the name of a imported camera.
+     * @param camDeviceName  The name the camera is set to.
+     */
     public void setCamDeviceName(String camDeviceName)
     {
         this.camDeviceName = camDeviceName;

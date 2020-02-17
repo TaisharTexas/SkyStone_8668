@@ -1,67 +1,61 @@
 package org.firstinspires.ftc.teamcode.sbfHardware;
 
-import android.app.Activity;
-import android.graphics.Color;
-import android.view.View;
 
-import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.robotcontroller.external.samples.SensorDigitalTouch;
-import org.firstinspires.ftc.robotcontroller.external.samples.SensorREVColorDistance;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.openftc.revextensions2.ExpansionHubEx;
 import org.openftc.revextensions2.ExpansionHubMotor;
-
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
+
+/**
+ * Contains the hardware and usage methods for the Intake mechanism.
+ * @author Andrew, 8668 Should Be Fine!
+ * */
 public class Intake
 {
+    /** A telemetry object passed down from the opmode. */
     private Telemetry telemetry;
+    /** A hardware map object passed down from the opmode. */
     private HardwareMap hardwareMap;
 
-    /**
-     * Intake Items
-     */
+    /** The left intake motor -- initialized as an expansion hub motor. */
     public ExpansionHubMotor leftIntake = null;
+    /** The right intake motor -- initialized as an expansion hub motor. */
     public ExpansionHubMotor rightIntake = null;
+    /** The left intake servo -- initialized as a continuous rotation servo. */
     private CRServo leftInSupport = null;
+    /** The right intake servo -- initialized as a continuous rotation servo. */
     private CRServo rightInSupport = null;
-//    private ColorSensor rampSignalC = null;
+    /** The ramp distance sensor -- senses when a stone is on the ramp. */
     private DistanceSensor rampSignalD = null;
+    /** The back distance sensor -- senses when a stone is ready to be deployed. */
     private DistanceSensor backSignal = null;
-//    private CRServo rightInSupport2 = null;
-//    private CRServo leftInSupport2 = null;
+    /** The electrical current a motor uses when stalled at full speed. */
     private double stallCurrent = 5100;
+    /** A speed gain for the left intake motor in teleop. */
     private static double leftMaxIntakeSpd = 0.95;
+    /** A speed gain for the right intake motor in teleop. */
     private static double rightMaxIntakeSpd = 0.9;
+    /** A speed gain for the left intake motor in autonomous. */
     private static double leftMaxIntakeSpdAuto = 1;
+    /** A speed gain for the right intake motor in autonomous. */
     private static double rightMaxIntakeSpdAuto = .9;
+    /** The reading the front sensor returns when a stone is on the ramp. */
     private double stoneDistanceFront = 6;
+    /** The reading the rear sensor returns when a stone is positioned for deployment. */
     private double stoneDistanceBack = 6;
 
-    // hsvValues is an array that will hold the hue, saturation, and value information.
-    float hsvValues[] = {0F, 0F, 0F};
-
-    // values is a reference to the hsvValues array.
-    final float values[] = hsvValues;
-
-    // sometimes it helps to multiply the raw RGB values with a scale factor
-    // to amplify/attentuate the measured values.
-    final double SCALE_FACTOR = 255;
-
-    private int relativeLayoutId;
-    private View relativeLayout;
-
+    /**
+     * Runs once when the init button is pressed on the driver station. Initializes all the hardware
+     * used by the class, initiates the telemetry and hardware map objects, and sets any needed
+     * variables to their correct starting values.
+     * @param telem  A telemetry object passed down from the opmode.
+     * @param hwmap  A hardware object passed down from the opmode.
+     */
     public void init(Telemetry telem, HardwareMap hwmap)
     {
         telemetry = telem;
@@ -160,14 +154,20 @@ public class Intake
     }
 
     /**
-     * Intake - Rotate the intake wheels to reverse a stone out of the intake.
-     * @param power
+     * Intake - Rotate the intake wheels to eject a stone out of the robot.
+     * @param power  The power the intake motors are driven at.
+     * @param useServos  Whether or not to run the servos.
+     * @param useMotors  Whether or not to run the motors.
      */
     public void intakeOut(double power, boolean useServos, boolean useMotors)
     {
         intakeDrive(-power, useServos, useMotors);
     }
 
+    /**
+     * A method that monitors whether or not a stone is on the intake ramp.
+     * @return Returns whether or not the ramp sensor has been triggered.
+     */
     public boolean rampSignal()
     {
         // send the info back to driver station using telemetry function.
@@ -189,10 +189,12 @@ public class Intake
             return false;
         }
 
-
-
     }
 
+    /**
+     * A method that monitors whether or not a stone is in posiiton to be grabbed by the claw.
+     * @return Returns whether or not the back distance sensor has been triggered.
+     */
     public boolean backSignal()
     {
         // send the info back to driver station using telemetry function.
@@ -216,15 +218,22 @@ public class Intake
 
     }
 
+
     /**
      * Intake - Rotate the intake wheels to take in a stone into the intake.
-     * @param power  the power input from the gamepad
+     * @param power  The power the intake motors are driven at.
+     * @param useServos  Whether or not to run the servos.
+     * @param useMotors  Whether or not to run the motors.
      */
     public void intakeIn(double power, boolean useServos, boolean useMotors)
     {
         intakeDrive(power, useServos, useMotors);
     }
 
+    /**
+     * Drives the two intake servos.
+     * @param power The power determines whether the servo is on or off and in what direction.
+     */
     public void servosDrive(double power)
     {
         leftInSupport.setPower(-power);
@@ -259,9 +268,7 @@ public class Intake
 //        }
 //    }
 
-    /**
-     * Intake - stop the intake wheels
-     */
+    /** Stops the intake motors. */
     public void intakeStop()
     {
 //        xEncoder.setPower(0.0);
@@ -295,6 +302,8 @@ public class Intake
      * @param power  the power at which the motors drive
      *               - power = eject
      *               + power = intake
+     * @param useServos  Determines whether or not to use the servos.
+     * @param useMotors  Determines whether or not to use the motors.
      * */
     public void intakeDrive(double power, boolean useServos, boolean useMotors)
     {
@@ -308,18 +317,6 @@ public class Intake
             servosDrive(power);
         }
 
-    }
-
-    public void sensorDone()
-    {
-        // Set the panel back to the default color
-        relativeLayout.post(new Runnable()
-        {
-            public void run()
-            {
-                relativeLayout.setBackgroundColor(Color.WHITE);
-            }
-        });
     }
 
 

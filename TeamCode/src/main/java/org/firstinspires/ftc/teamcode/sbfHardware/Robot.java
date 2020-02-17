@@ -24,10 +24,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @Config
 /**
- * Defines the robot. Has objects needed for each mechanism in use on the robot and contains the all
- * the methods used by the robot.
+ * Defines the robot. Has hardware objects for the chassis system, all the mechanisms on the robot,
+ * and all the functionality methods for the chassis as well as any methods that use multiple mechanisms.
  *
- * @author Andrew, SBF Robotics, Team 8668
+ * @author Andrew, 8668 Should Be Fine!
  */
 public class Robot
 {

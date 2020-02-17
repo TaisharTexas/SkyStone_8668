@@ -46,38 +46,60 @@ import java.util.concurrent.TimeUnit;
  * */
 public class Blinkin
 {
+    /** A telemetry object passed down from the opmode -- used to send data to the driver station screen. */
     private Telemetry telemetry;
+    /** A hardware map object passed down from the opmode -- used to access the hardware libraries. */
     private HardwareMap hardwareMap;
+    /** A boolean that marks whether the class is being used in an autonomous opmode or a teleop opmode. */
     private boolean isTeleop;
 
-    /*
+    /**
      * Change the pattern every 10 seconds in AUTO mode.
      */
     private final static int LED_PERIOD = 10;
 
-    /*
+    /**
      * Rate limit gamepad button presses to every 500ms.
      */
     private final static int GAMEPAD_LOCKOUT = 500;
 
+    /** The actual driver that controls the LEDs */
     RevBlinkinLedDriver blinkinLedDriver;
+    /** An enum that lists all the preprogrammed LED colors and patterns. */
     RevBlinkinLedDriver.BlinkinPattern pattern;
 
+    /**  */
     Telemetry.Item patternName;
+    /**  */
     Telemetry.Item display;
+    /**  */
     DisplayKind displayKind;
+    /** A deadline object that limits how quickly the LED's pattern can be changed. */
     private Deadline ledCycleDeadline;
+    /** Tracks when there is 30 seconds left. */
     private Deadline isEndgame;
+    /** Tracks when there is 15 seconds left. */
     private Deadline is15Seconds;
+    /** Tracks when there is 5 seconds left. */
     private Deadline is5Seconds;
+    /** Limits how quickly the gamepad can cycle the LED pattern. */
     private Deadline gamepadRateLimit;
 
 
+    /** An enum that stores the display mode of the LEDs */
     protected enum DisplayKind {
         MANUAL,
         AUTO
     }
 
+    /**
+     * Runs once when the init button is pressed on the driver station. Initializes all the hardware
+     * used by the class, initiates the telemetry and hardware map objects, and sets any needed
+     * variables to their correct starting values.
+     * @param telem  A telemetry object passed down from the opmode.
+     * @param hwMap  A hardware object passed down from the opmode.
+     * @param theIsTeleop  Tracks whether the class is being used by a teleop or an autonomous opmode.
+     */
     public void init(Telemetry telem, HardwareMap hwMap, boolean theIsTeleop)
     {
         hardwareMap =hwMap;
@@ -160,12 +182,19 @@ public class Blinkin
 //        }
 //    }
 
+    /**
+     * Sets the display type used by the LED driver.
+     * @param displayKind  An enum with two options: Manual and Auto
+     */
     protected void setDisplayKind(DisplayKind displayKind)
     {
         this.displayKind = displayKind;
         display.setValue(displayKind.toString());
     }
 
+    /**
+     * Automatically cycles through the preprogrammed LED patterns.
+     */
     protected void doAutoDisplay()
     {
         if (ledCycleDeadline.hasExpired()) {
@@ -175,6 +204,9 @@ public class Blinkin
         }
     }
 
+    /**
+     * Sets the LEDs to the specified pattern.
+     */
     protected void displayPattern()
     {
         if (blinkinLedDriver != null)
