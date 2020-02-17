@@ -1,23 +1,23 @@
 package org.firstinspires.ftc.teamcode.sbfAutonomousClasses;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.SBF_Autonomous;
 
 import java.io.File;
 
+@Disabled
 @Autonomous(name="RedFoundationNav", group="Zombie")
-/** The autonomous class that handles autonomous from the crater side of the lander.
- * This class loads data from a spreadsheet and uses the data to create a sequential list of robot
- * actions.  It lands, samples, goes to the depot, drops the marker, and comes back to the crater.
+/** The autonomous class that starts on the audience side and moves the foundation before parking
+ * under the bridge next to the wall.
  *
- * @author Andrew, SBF Robotics
+ * @author Andrew, 8668 Should Be Fine!
  * @see SBF_Autonomous
  * */
 public class RedFoundationNav extends SBF_Autonomous
 {
-    /** Calls the init methods for needed classes and locates the correct file path to the CSV file
-     * for the crater face drive path. */
+    /** Locates the Red Foundation Nav CSV file and sets the robot's starting position. */
     public RedFoundationNav()
     {
         this.autoFile = new File("/storage/9016-4EF8/RedFoundationNav.csv");
@@ -25,6 +25,9 @@ public class RedFoundationNav extends SBF_Autonomous
         startY = 9;
     }
 
+    /** Called once after the init button is pressed.
+     *
+     * Sets the heading offset, selects the correct camera, and calls the parent method.*/
     @Override
     public void init()
     {
