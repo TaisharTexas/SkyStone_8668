@@ -68,22 +68,13 @@ public class Blinkin
     /** An enum that lists all the preprogrammed LED colors and patterns. */
     RevBlinkinLedDriver.BlinkinPattern pattern;
 
-    /**  */
-    Telemetry.Item patternName;
-    /**  */
-    Telemetry.Item display;
-    /**  */
-    DisplayKind displayKind;
-    /** A deadline object that limits how quickly the LED's pattern can be changed. */
-    private Deadline ledCycleDeadline;
+
     /** Tracks when there is 30 seconds left. */
     private Deadline isEndgame;
     /** Tracks when there is 15 seconds left. */
     private Deadline is15Seconds;
     /** Tracks when there is 5 seconds left. */
     private Deadline is5Seconds;
-    /** Limits how quickly the gamepad can cycle the LED pattern. */
-    private Deadline gamepadRateLimit;
 
 
     /** An enum that stores the display mode of the LEDs */
@@ -106,13 +97,12 @@ public class Blinkin
         telemetry = telem;
         isTeleop = theIsTeleop;
 
-        displayKind = DisplayKind.MANUAL;
-
         try
         {
             blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, "lights");
-            setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
-            blinkinLedDriver.setPattern(pattern);
+            pattern = RevBlinkinLedDriver.BlinkinPattern.BREATH_BLUE;
+            setPattern(pattern);
+            telemetry.addData("success", " blinkin configured");
         }
         catch(Exception p_exception)
         {
@@ -120,12 +110,6 @@ public class Blinkin
             telemetry.addData("blinkin driver not found in config file", "...");
         }
 
-
-        display = telemetry.addData("Display Kind: ", displayKind.toString());
-        patternName = telemetry.addData("Pattern: ", pattern.toString());
-
-        ledCycleDeadline = new Deadline(LED_PERIOD, TimeUnit.SECONDS);
-        gamepadRateLimit = new Deadline(GAMEPAD_LOCKOUT, TimeUnit.MILLISECONDS);
         isEndgame = new Deadline(90, TimeUnit.SECONDS);
         is15Seconds = new Deadline(105, TimeUnit.SECONDS);
         is5Seconds = new Deadline(115, TimeUnit.SECONDS);
@@ -146,75 +130,6 @@ public class Blinkin
         isEndgame.reset();
         is15Seconds.reset();
         is5Seconds.reset();
-    }
-
-//    /*
-//     * handleGamepad
-//     *
-//     * Responds to a gamepad button press.  Demonstrates rate limiting for
-//     * button presses.  If loop() is called every 10ms and and you don't rate
-//     * limit, then any given button press may register as multiple button presses,
-//     * which in this application is problematic.
-//     *
-//     * A: Manual mode, Right bumper displays the next pattern, left bumper displays the previous pattern.
-//     * B: BluePursuitQuarry mode, pattern cycles, changing every LED_PERIOD seconds.
-//     */
-//    protected void handleGamepad()
-//    {
-//        if (!gamepadRateLimit.hasExpired()) {
-//            return;
-//        }
-//
-//        if (gamepad1.a) {
-//            setDisplayKind(DisplayKind.MANUAL);
-//            gamepadRateLimit.reset();
-//        } else if (gamepad1.b) {
-//            setDisplayKind(DisplayKind.AUTO);
-//            gamepadRateLimit.reset();
-//        } else if ((displayKind == DisplayKind.MANUAL) && (gamepad1.left_bumper)) {
-//            pattern = pattern.previous();
-//            displayPattern();
-//            gamepadRateLimit.reset();
-//        } else if ((displayKind == DisplayKind.MANUAL) && (gamepad1.right_bumper)) {
-//            pattern = pattern.next();
-//            displayPattern();
-//            gamepadRateLimit.reset();
-//        }
-//    }
-
-    /**
-     * Sets the display type used by the LED driver.
-     * @param displayKind  An enum with two options: Manual and Auto
-     */
-    protected void setDisplayKind(DisplayKind displayKind)
-    {
-        this.displayKind = displayKind;
-        display.setValue(displayKind.toString());
-    }
-
-    /**
-     * Automatically cycles through the preprogrammed LED patterns.
-     */
-    protected void doAutoDisplay()
-    {
-        if (ledCycleDeadline.hasExpired()) {
-            pattern = pattern.next();
-            displayPattern();
-            ledCycleDeadline.reset();
-        }
-    }
-
-    /**
-     * Sets the LEDs to the specified pattern.
-     */
-    protected void displayPattern()
-    {
-        if (blinkinLedDriver != null)
-        {
-            blinkinLedDriver.setPattern(pattern);
-            patternName.setValue(pattern.toString());
-        }
-
     }
 
     /** A control method that sets the lights on the robot to equal one of four possible states:
@@ -253,4 +168,5 @@ public class Blinkin
             }
         }
     }
+
 }

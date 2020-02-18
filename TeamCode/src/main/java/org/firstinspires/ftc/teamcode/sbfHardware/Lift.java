@@ -39,6 +39,8 @@ public class Lift
     public Servo claw = null;
     /** The servo that drives the gripper wrist. */
     public Servo wrist = null;
+    /** The servo that releases the capstone. */
+    public Servo capStone = null;
 
     /** Stores the current value of the left lift motor's encoder. */
     public int encoder = 0;
@@ -130,12 +132,23 @@ public class Lift
         {
             horizontal = hardwareMap.get(Servo.class, "horizontal");
             horizontal.setDirection(Servo.Direction.REVERSE);
-//            horizontal.setPosition(.3);
+//            horizontal.setPosition(.29);
         }
         catch (Exception p_exeception)
         {
             telemetry.addData("horizontal not found in config file", 0);
             horizontal = null;
+        }
+        try
+        {
+            capStone = hardwareMap.get(Servo.class, "cap");
+            capStone.setDirection(Servo.Direction.REVERSE);
+            capStone.setPosition(.6);
+        }
+        catch (Exception p_exeception)
+        {
+            telemetry.addData("capStone Servo not found in config file", 0);
+            capStone = null;
         }
         try
         {
@@ -280,7 +293,7 @@ public class Lift
     {
         if(claw != null)
         {
-            claw.setPosition(.44);
+            claw.setPosition(.6);
         }
     }
 
@@ -363,6 +376,14 @@ public class Lift
         else
         {
             return false;
+        }
+    }
+
+    public void releaseCap()
+    {
+        if(capStone!=null)
+        {
+            capStone.setPosition(.2);
         }
     }
 

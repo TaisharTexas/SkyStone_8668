@@ -53,7 +53,7 @@ public class Robot
     /** The lift object -- imports the all the hardware and methods for the lift mechanism. */
     public Lift lift = new Lift();
     /** The Blinkin object -- imports all the hardware and methods for the Blinkin LED driver. */
-//    public Blinkin lights = new Blinkin();
+    public Blinkin lights = new Blinkin();
     /** The intake object -- imports all the hardware and methods for the intake mechanim. */
     public Intake intake = new Intake();
 
@@ -231,7 +231,7 @@ public class Robot
         {
             eyeOfSauron.init(hwmap, whichCamera, telemetry);
         }
-//        lights.init(telemetry, hardwareMap, isTeleop);
+        lights.init(telemetry, hardwareMap, isTeleop);
         lift.init(telemetry, hardwareMap);
 
         expansionHub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 2");

@@ -43,7 +43,7 @@ public class SBF_Teleop extends OpMode
     CameraVision camera = new CameraVision();
 
     /** Limits how quickly the dpad on gamepad2 can be incremented. */
-    Deadline pad2Wait = new Deadline(175, TimeUnit.MILLISECONDS);
+//    Deadline pad2Wait = new Deadline(175, TimeUnit.MILLISECONDS);
     /** A currently unused limit for gamepad 1. */
     Deadline pad1Wait = new Deadline( 200, TimeUnit.MILLISECONDS);
 
@@ -74,8 +74,8 @@ public class SBF_Teleop extends OpMode
         customPad2.init(telemetry, hardwareMap, gamepad2);
 
         robot.releaseFoundation();
-        shoulderPos = .29;
-        robot.lift.horizontal.setPosition(.29);
+//        shoulderPos = .29;
+        robot.lift.horizontalDrive(.25);
         wristPos = .05;
 
 
@@ -111,7 +111,7 @@ public class SBF_Teleop extends OpMode
         robot.start();
         resetStartTime();
         pad1Wait.reset();
-        pad2Wait.reset();
+//        pad2Wait.reset();
 //        robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
 
 //        lift.wrist.setPosition(.9);
@@ -143,19 +143,53 @@ public class SBF_Teleop extends OpMode
 
 //        double[] shoulderVals = {.86, .7, .62};
 
-        if(pad2Wait.hasExpired())
+//        if(pad2Wait.hasExpired())
+//        {
+//            pad2Wait.reset();
+//            if(customPad2.getDpadDown())
+//            {
+//                shoulderPos -= .025;
+//            }
+//            else if(customPad2.getDpadUp())
+//            {
+//                shoulderPos += .025;
+//            }
+//        }
+
+        if(customPad2.getDpadDown())
         {
-            pad2Wait.reset();
-            if(customPad2.getDpadDown())
-            {
-                shoulderPos -= .025;
-            }
-            else if(customPad2.getDpadUp())
-            {
-                shoulderPos += .025;
-            }
+//            if(customPad2.getRightBumper())
+//            {
+//                shoulderPos -= .01;
+//            }
+//            else
+//            {
+//                shoulderPos -= .025;
+//            }
+            shoulderPos -= .02;
+
         }
-        shoulderPos = Range.clip(shoulderPos, .29, .46);
+        else if(customPad2.getDpadUp())
+        {
+//            if(customPad2.getRightBumper())
+//            {
+//                shoulderPos += .01;
+//            }
+//            else
+//            {
+//                shoulderPos += .025;
+//            }
+            shoulderPos += .02;
+        }
+        else if(customPad2.getLeftBumper())
+        {
+            shoulderPos = .41;
+        }
+        else if(customPad2.getRightBumper())
+        {
+            shoulderPos = .34;
+        }
+        shoulderPos = Range.clip(shoulderPos, .24, .46);
         robot.lift.horizontalDrive(shoulderPos);
 
         telemetry.addData("shoulder", robot.lift.horizontal.getPosition());
@@ -182,6 +216,17 @@ public class SBF_Teleop extends OpMode
 //            robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
             robot.intake.intakeStop();
         }
+
+        if(customPad2.getLeftStickY()<-0.6)
+        {
+            robot.lift.releaseCap();
+        }
+        else if(customPad2.getLeftStickY()>.6)
+        {
+            robot.lift.capStone.setPosition(.6);
+        }
+//        telemetry.addData("left y: ", customPad2.getLeftStickY());
+//        telemetry.addData("cap stone: ", robot.lift.capStone.getPosition());
 
         if(customPad1.getLeftBumper())
         {
@@ -226,18 +271,27 @@ public class SBF_Teleop extends OpMode
             robot.lift.wristRetract();
             wristPos = 0.05;
         }
-        else if(customPad2.getLeftBumper())
+        else if(customPad2.getLeftTrigger()>.001)
         {
             wristPos += 0.01;
             wristPos = Range.clip( wristPos, 0.01, 0.9);
             robot.lift.wristDrive(wristPos);
         }
-        else if ( customPad2.getRightBumper())
+        else if ( customPad2.getRightTrigger()>.001)
         {
             wristPos -= 0.01;
             wristPos = Range.clip( wristPos, 0.01, 0.9);
             robot.lift.wristDrive(wristPos);
         }
+
+//        if(customPad1.getB())
+//        {
+//            robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
+//        }
+//        else
+//        {
+//            robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
+//        }
 
 //        if(customPad1.getB())
 //        {
