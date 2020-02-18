@@ -66,7 +66,6 @@ public class PursuitAction extends RobotAction
     {
         super(id, nextAction, duration);
         thePower = power;
-//        theGain = .01;
         xPoint = x;
         yPoint = y;
         theHeading = heading;
@@ -105,7 +104,6 @@ public class PursuitAction extends RobotAction
     {
         thePursuit = new Pursuit((float)xPoint, (float)yPoint, telem);
         super.init(telem, theRobot);
-
     }
 
     /**

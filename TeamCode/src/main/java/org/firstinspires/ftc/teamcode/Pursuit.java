@@ -31,10 +31,6 @@ public class Pursuit
     public PVector location;
     /** The robot's current velocity. */
     public PVector velocity;
-//    /** not used */
-//    public PVector localVelocity;
-//    /** not used */
-//    public PVector acceleration;
     /** The desired direction and length of travel. */
     public PVector desiredVelocity;
     /** The current heading of the robot */
@@ -128,7 +124,11 @@ public class Pursuit
         radius = Range.clip(radius,1.0,radius);
         auxAction = "NULL";
 
-
+        /**
+         * Determine the maximum acceleration by basing it off the maximum speed.  However, if
+         * we are accelerating from stop on the first segment, use a smoother acceleration value
+         * that comes from the exponential calculation.
+         */
         if(theMaxSpeed >= 20 && theMaxSpeed < 26)
         {
             maxAccel = theMaxSpeed *  5;
@@ -139,7 +139,6 @@ public class Pursuit
             if (currentSegment == 0)
             {
                 maxAccel = maxAccel / (1.0 + Math.exp(-accelerationSteepness * (elapsedTime - timeToAccelerate)));
-//                maxAccel = Math.sqrt(elapsedTime * 15.0 * 240);
                 maxAccel = Range.clip( maxAccel, 0, 240);
             }
         }
@@ -150,18 +149,46 @@ public class Pursuit
 
 //        telemetry.addData("v.elapsedTime: ", elapsedTime);
 //        telemetry.addData("v.gain: ", maxAccel);
+
+        /**
+         * Determine if I am targeting the last point, then set a flag which indicates I am on the
+         * last segment.  This has implications for when I get to the end.... I need to slow down
+         * and stop, since it is the last point.
+         */
         if(drivePath.pathPoints.size() == currentSegment + 2)
         {
             lastSegment = true;
         }
-
         telemetry.addData("CurrentSegment, Last Segment?: ", "%d, %s", currentSegment, String.valueOf(lastSegment ));
+
+        /**
+         * 1. Calculate a Projected Future Location
+         *
+         * Do this by taking the current location and current velocity and calculating a
+         * projected location a few inches out from the current location in the direction the current
+         * velocity is pointing.
+         */
         PVector velocityCopy = velocity.copy();
         velocityCopy.setMag(2);
 
         PVector projectedLoc = PVector.add(location, velocityCopy);
 
-
+        /**
+         * 2. Calculate the Desired Target Location to shoot for
+         *
+         * Do this by taking the Projected Location and projecting it onto the current path segment.
+         * This projection is the point on the path segment which is closest to the Projected Location
+         * calculated in the previous step.  This point is called the Normal Point since it represents
+         * the point on the path which is perpendicular to the Projected Location of the robot.
+         *
+         * Once this Normal Point has been calculated, shift this point along the path towards the
+         * endpoint to give the robot a nice target ahead to shoot for.
+         *
+         * There are a few cases that have to be checked when the Normal Point is close to the
+         * start and end of the path segment.  For example, if the Normal Point is close to the
+         * end point, it's time to switch to the next segment.  Also, if the Normal Point is calculated
+         * to be outside of the segment defined by start and end, it must be corrected.
+         */
         if(projectedLoc.dist(end) < radius && lastSegment)
         {
             target = end.copy();
@@ -221,7 +248,15 @@ public class Pursuit
         }
 
         telemetry.addData("Target loc: ", target);
+
+        /**
+         * 3.  Calcualte the Steering Vector to achieve the Target Location
+         */
         arrive(target, theMaxSpeed);
+
+        /**
+         * 4.  Calculate the Rotation Speed to achieve the Target Heading
+         */
         point(theTargetHeading, 200);
 
         if(lastSegment && location.dist(end) <= 3.5 && (Math.abs(currentHeading)-Math.abs(theTargetHeading)) <= 3)
@@ -238,7 +273,12 @@ public class Pursuit
     private void arrive(PVector target, double theMaxSpeed)
     {
 
-        //find the needed velocity to move to target and call it desiredVelocity
+        /**
+         * Find the needed velocity to move to target and call it desiredVelocity.  This is calculated
+         * by subtraction my current vector location from the target vector location.  We care calling
+         * this velocity because it represents a change in position we desire to achieve over the
+         * next period of time.
+         */
         desiredVelocity = PVector.sub(target, location);
         telemetry.addData("Robot Loc: ", location );
 //        telemetry.addData("Desired velocity: ", desiredVelocity);
@@ -246,6 +286,10 @@ public class Pursuit
         //speed is the magnitude of desiredVelocity
         float speed = desiredVelocity.mag();
 
+        /**
+         * If the robot is close to the end of the segment, slow down by scaling the desiredVelocitiy
+         * based on the distance to the end.
+         */
         if(location.dist(end) < endZone)
         {
             float m = scaleVector(speed, 0, (float)endZone, 1.0f, (float)theMaxSpeed);
@@ -259,8 +303,12 @@ public class Pursuit
 
 //        telemetry.addData("v.desired velocity set maxSpd: ", desiredVelocity);
 
-
-        // steerAcceleration is the amount of needed change in velocity
+        /**
+         *  Find the amount of velocity change is needed and call it steerAcceleration.  This is
+         *  calculated by taking the desiredVelocity to reach the target location and subtract the
+         *  robot's current velocity.  We care calling this acceleration because it represents a
+         *  change in velocity we desire to achieve over the next period of time.
+         */
         PVector steerAcceleration = PVector.sub(desiredVelocity, velocity);
         telemetry.addData("Robot Velocity: ", velocity);
 
@@ -272,17 +320,19 @@ public class Pursuit
 
         if (currentSegment == 0 && !lastSegment)
         {
-            steerAcceleration.setMag(maxAccel);  // try this
+            steerAcceleration.setMag(maxAccel);
         }
 
 //        telemetry.addData("v.setMag steerAcceleration: ", steerAcceleration);
 
-        //corrects robot velocity by adding error (steerAcceleration)
+        /**
+         * Corrects robot velocity by adding our steerAcceleration to it.  This results in a new
+         * desiredVelocity that is changed to help the robot move towards the target location.
+         */
 //        telemetry.addData("v.velocity: ", velocity);
         desiredVelocity = PVector.add(velocity, steerAcceleration);
 
 //        telemetry.addData("Robot Desired velocity: ", desiredVelocity);
-
 
         //make sure final velocity isn't too fast
         desiredVelocity.limit(theMaxSpeed);
