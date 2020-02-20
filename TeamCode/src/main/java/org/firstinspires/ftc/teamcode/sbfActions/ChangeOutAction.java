@@ -87,7 +87,7 @@ public class ChangeOutAction extends RobotAction
         telemetry.addData("SS Position: ", ssPosition);
         telemetry.addData("Camera Action done? ", done);
 
-        return done || super.execute();  // the super.execute is temporary so that we have time to see what is going on.
+        return done /*|| super.execute() */;  // the super.execute is temporary so that we have time to see what is going on.
 
     }
 

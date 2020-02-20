@@ -71,6 +71,9 @@ public class CameraVision
         Mat yCbCrChan2Mat = new Mat();
         Mat thresholdMat = new Mat();
         Mat Cb = new Mat();
+        double leftSum = 0;
+        double centerSum = 0;
+        double rightSum = 0;
 
         Deadline elapsedTime = new Deadline(250, TimeUnit.MILLISECONDS);
 
@@ -126,9 +129,6 @@ public class CameraVision
         @Override
         public Mat processFrame(Mat input)
         {
-            double leftSum = 0;
-            double centerSum = 0;
-            double rightSum = 0;
 
             Scalar green = new Scalar(0,250,0);
 

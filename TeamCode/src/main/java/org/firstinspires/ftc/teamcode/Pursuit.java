@@ -348,7 +348,7 @@ public class Pursuit
     {
         double desiredAngularVelocity = (targetHeading-currentHeading);
 
-        double slowDown = 30;
+        double slowDown = 22;
 
         if(Math.abs(desiredAngularVelocity) < slowDown)
         {
