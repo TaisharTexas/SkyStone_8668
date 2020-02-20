@@ -45,17 +45,21 @@ public class Pursuit
     private double maxSpeed;
     /** A measure of how quickly the robot can change velocity. */
     private double maxAccel;
-    /** A gain used when calculating macAccel. */
-    private double gainValue;
     /** A gain dictating how rapidly the robot can turn. */
-    private double turnGain;
+    public static double turnGain = 10;
     /** How far ahead the robot projects its location -- allows the robot to respond to changes in
      * the path before arriving at the actual change. Makes movements smooth. */
     public static double pathLookahead = 10.0;
     /** Maximum rate the robot can turn at. */
-    public static double maxTurnSpd = 550;
+    public static double maxTurnSpd = 350;
+    /** Maximum rate the robot can turn at. */
+    private double maxTurnAccel;
     /** Used when calculating maxAccel.*/
     public static double maxFastAccelGain = 20;
+    /** Used when calculating maxAccel.*/
+    public static double maxMedAccelGain = 15;
+    /** Used when calculating maxAccel.*/
+    public static double maxLowAccelGain = 10;
     /** Used on the first segment of a path to determine how quickly the robot can accelerate from zero. */
     private double accelerationSteepness = 4.0;
     /** How long the robot can take to accelerate -- used when determining how steeply the robot
@@ -96,11 +100,10 @@ public class Pursuit
         //  30.615 in/sec = 15.7 rad/sec * 1.3 gearing * 1.5 in wheel radius
         maxSpeed = 13; //inches/second
 
-        gainValue = 2.8;
-        maxAccel = maxSpeed * gainValue;
+        maxAccel = maxSpeed * maxMedAccelGain;
 
         //unit: degrees per second turned -- max turn rate is 343 degrees/sec
-        turnGain = maxTurnSpd;
+        maxTurnAccel = maxTurnSpd * turnGain;
 
     }
 
@@ -131,7 +134,7 @@ public class Pursuit
          */
         if(theMaxSpeed >= 20 && theMaxSpeed < 26)
         {
-            maxAccel = theMaxSpeed *  5;
+            maxAccel = theMaxSpeed * maxMedAccelGain;
         }
         else if(theMaxSpeed >= 26)
         {
@@ -139,13 +142,14 @@ public class Pursuit
             if (currentSegment == 0)
             {
                 maxAccel = maxAccel / (1.0 + Math.exp(-accelerationSteepness * (elapsedTime - timeToAccelerate)));
-                maxAccel = Range.clip( maxAccel, 0, 240);
+                maxAccel = Range.clip( maxAccel, 0, 35*maxFastAccelGain);
             }
         }
         else
         {
-            maxAccel = theMaxSpeed * gainValue;
+            maxAccel = theMaxSpeed * maxLowAccelGain;
         }
+        maxTurnAccel = maxTurnSpd * turnGain;
 
 //        telemetry.addData("v.elapsedTime: ", elapsedTime);
 //        telemetry.addData("v.gain: ", maxAccel);
@@ -257,7 +261,7 @@ public class Pursuit
         /**
          * 4.  Calculate the Rotation Speed to achieve the Target Heading
          */
-        point(theTargetHeading, 200);
+        point(theTargetHeading, maxTurnSpd);
 
         if(lastSegment && location.dist(end) <= 3.5 && (Math.abs(currentHeading)-Math.abs(theTargetHeading)) <= 3)
         {
@@ -365,7 +369,7 @@ public class Pursuit
 
 //        telemetry.addData("mp.currentAngularVel: ", currentAngularVelocity);
         double requiredAngularAccel = desiredAngularVelocity - currentAngularVelocity;
-        requiredAngularAccel = Range.clip(requiredAngularAccel, -turnGain, turnGain);
+        requiredAngularAccel = Range.clip(requiredAngularAccel, -maxTurnAccel, maxTurnAccel);
 
 //        telemetry.addData("mp.requiredAngularAccel: ", requiredAngularAccel);
 

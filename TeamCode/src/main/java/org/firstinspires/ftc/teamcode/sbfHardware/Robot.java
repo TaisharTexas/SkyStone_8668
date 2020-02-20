@@ -924,7 +924,7 @@ public class Robot
      * Chassis - Tell the chassis motors what to do when power is set to 0
      * @param mode - which indicates the desired behavior
      */
-    private void setZeroBehavior(String mode)
+    public void setZeroBehavior(String mode)
     {
         if(mode.equalsIgnoreCase("FLOAT"))
         {

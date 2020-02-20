@@ -118,6 +118,7 @@ public class PursuitAction extends RobotAction
         thePursuit.location.x = robot.location.x;
         thePursuit.location.y = robot.location.y;
 
+        robot.setZeroBehavior("BRAKE");
         super.entry();
     }
 
@@ -136,12 +137,10 @@ public class PursuitAction extends RobotAction
 
         telemetry.addData("current segment: ", thePursuit.currentSegment);
 
-
         thePursuit.elapsedTime = getRuntime();
         thePursuit.follow(thePath);
         robot.updateMotors(thePursuit.desiredVelocity.copy(), thePursuit.joystickAngularVelocity);
         return thePursuit.getDone() || super.execute();
-//        return false;
     }
 
 
@@ -154,6 +153,7 @@ public class PursuitAction extends RobotAction
     {
         robot.stopChassis();
         super.exit();
+        robot.setZeroBehavior("FLOAT");
     }
 
     /**
