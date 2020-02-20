@@ -40,16 +40,18 @@ public class Pursuit
     /** The angular velocity the robot needs to have converted to a joystick command. */
     public double joystickAngularVelocity;
     /** The minimum distance away from the target point before the robot can switch path segments. */
-    public static double endZone = 12.0;
+    public static double endZone = 10.0;
     /** The max speed the robot can drive at -- used to calculate maxAccel */
     private double maxSpeed;
     /** A measure of how quickly the robot can change velocity. */
     private double maxAccel;
     /** A gain dictating how rapidly the robot can turn. */
-    public static double turnGain = 10;
+    public static double turnGain = 50;
+    /** A gain dictating how rapidly the robot can turn. */
+    public static double turnEndZone = 55;
     /** How far ahead the robot projects its location -- allows the robot to respond to changes in
      * the path before arriving at the actual change. Makes movements smooth. */
-    public static double pathLookahead = 10.0;
+    public static double pathLookahead = 6.0;
     /** Maximum rate the robot can turn at. */
     public static double maxTurnSpd = 350;
     /** Maximum rate the robot can turn at. */
@@ -125,6 +127,7 @@ public class Pursuit
 
         double radius = theMaxSpeed / 6.0;
         radius = Range.clip(radius,1.0,radius);
+        radius = endZone;
         auxAction = "NULL";
 
         /**
@@ -173,7 +176,7 @@ public class Pursuit
          * velocity is pointing.
          */
         PVector velocityCopy = velocity.copy();
-        velocityCopy.setMag(2);
+        velocityCopy.setMag(pathLookahead);
 
         PVector projectedLoc = PVector.add(location, velocityCopy);
 
@@ -193,9 +196,11 @@ public class Pursuit
          * end point, it's time to switch to the next segment.  Also, if the Normal Point is calculated
          * to be outside of the segment defined by start and end, it must be corrected.
          */
+
         if(projectedLoc.dist(end) < radius && lastSegment)
         {
             target = end.copy();
+
         }
         else if(projectedLoc.dist(end) < radius)
         {
@@ -219,7 +224,7 @@ public class Pursuit
             }
 
             PVector pathDirection = PVector.sub(end, start);
-            pathDirection.setMag(pathLookahead);
+            pathDirection.setMag(2);
 
             target = normalPoint.copy();
             target.add(pathDirection);
@@ -244,6 +249,8 @@ public class Pursuit
             target = normalPoint.copy();
             target.add(pathDirection);
         }
+        telemetry.addData("ProjectedLoc: ", projectedLoc);
+        telemetry.addData("Distance Proj to End: ", projectedLoc.dist(end));
 
 
         if(location.dist(end) < radius && !lastSegment)
@@ -262,8 +269,11 @@ public class Pursuit
          * 4.  Calculate the Rotation Speed to achieve the Target Heading
          */
         point(theTargetHeading, maxTurnSpd);
+        telemetry.addData("end: ", end);
 
-        if(lastSegment && location.dist(end) <= 3.5 && (Math.abs(currentHeading)-Math.abs(theTargetHeading)) <= 3)
+        telemetry.addData("Distance to end: ", location.dist(end));
+
+        if(lastSegment && location.dist(end) <= 3.5 && (Math.abs(currentHeading)-Math.abs(theTargetHeading)) <= 2)
         {
             done = true;
         }
@@ -296,7 +306,7 @@ public class Pursuit
          */
         if(location.dist(end) < endZone)
         {
-            float m = scaleVector(speed, 0, (float)endZone, 1.0f, (float)theMaxSpeed);
+            float m = scaleVector(speed, 0, (float)endZone, 8.0f, (float)theMaxSpeed);
             desiredVelocity.setMag(m);
         }
         else
@@ -352,12 +362,11 @@ public class Pursuit
     {
         double desiredAngularVelocity = (targetHeading-currentHeading);
 
-        double slowDown = 22;
-
-        if(Math.abs(desiredAngularVelocity) < slowDown)
+        if(Math.abs(desiredAngularVelocity) < turnEndZone)
         {
             double wantedAngularVelocity = Math.abs(desiredAngularVelocity);
-            float m = (float)(theMaxTurnSpeed * (wantedAngularVelocity/slowDown));
+            float m = (float)(theMaxTurnSpeed * (wantedAngularVelocity/turnEndZone));
+            m = Range.clip(m, 5, (float)theMaxTurnSpeed);
             desiredAngularVelocity = m * Math.signum(desiredAngularVelocity);
         }
         else
@@ -365,7 +374,7 @@ public class Pursuit
             desiredAngularVelocity = theMaxTurnSpeed * Math.signum(desiredAngularVelocity);
         }
 
-        telemetry.addData("mp.desiredAngularVel: ", desiredAngularVelocity);
+//        telemetry.addData("mp.desiredAngularVel: ", desiredAngularVelocity);
 
 //        telemetry.addData("mp.currentAngularVel: ", currentAngularVelocity);
         double requiredAngularAccel = desiredAngularVelocity - currentAngularVelocity;

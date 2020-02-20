@@ -391,7 +391,7 @@ public class Robot
      */
     public void start()
     {
-//        lights.start();
+        lights.start();
     }
 
     /**
@@ -404,7 +404,7 @@ public class Robot
          * Update the sensor data using bulk transferes from the Rev Hubs
          */
         currentRawHeading = updateHeadingRaw();
-        telemetry.addData("raw heading", currentRawHeading);
+//        telemetry.addData("raw heading", currentRawHeading);
         telemetry.addData("pursuitHeading: ", getHeadingPursuit());
         bulkData = expansionHub.getBulkInputData();
         bulkDataAux = expansionHubAux.getBulkInputData();
@@ -435,8 +435,8 @@ public class Robot
         prevXEncoder = bulkDataAux.getMotorCurrentPosition(xEncoder);
         prevYEncoder = bulkDataAux.getMotorCurrentPosition(yEncoder);
 
-        telemetry.addData("x encoder: ", xEncoder.getCurrentPosition());
-        telemetry.addData("y encoder: ", yEncoder.getCurrentPosition()) ;
+        telemetry.addData("x encoder: ", prevXEncoder);
+        telemetry.addData("y encoder: ", prevYEncoder) ;
 
         updateVelocity(this.getVelocity());
         updatePosition(this.getLocationChange());
@@ -477,8 +477,8 @@ public class Robot
         double x = neededVelocity.x / 40.0; //bot.maxSpeed; //max speed is 31.4 in/sec
         double y = neededVelocity.y / 40.0; // bot.maxSpeed;
 
-        telemetry.addData("x encoder: ", xEncoder.getCurrentPosition());
-        telemetry.addData("y encoder: ", yEncoder.getCurrentPosition());
+//        telemetry.addData("x encoder: ", xEncoder.getCurrentPosition());
+//        telemetry.addData("y encoder: ", yEncoder.getCurrentPosition());
         telemetry.addData("SbfJoystick x, y: ", "%.3f, %.3f", x, y );
 
         double turn = spin / 343;
@@ -503,7 +503,7 @@ public class Robot
     {
         AngularVelocity gyroReading;
         gyroReading = gyro.getAngularVelocity();
-        telemetry.addData("mp.rot rate: ", -gyroReading.zRotationRate);
+//        telemetry.addData("mp.rot rate: ", -gyroReading.zRotationRate);
         return -gyroReading.zRotationRate;
     }
 
@@ -673,8 +673,8 @@ public class Robot
               - The right joystick control turning.
         */
 
-        telemetry.addData("x encoder: ", xEncoder.getCurrentPosition());
-        telemetry.addData("y encoder: ", yEncoder.getCurrentPosition());
+//        telemetry.addData("x encoder: ", xEncoder.getCurrentPosition());
+//        telemetry.addData("y encoder: ", yEncoder.getCurrentPosition());
         double forward = leftStickY;
         double right = -leftStickX;
         double clockwise = rightStickX;

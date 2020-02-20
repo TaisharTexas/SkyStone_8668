@@ -135,7 +135,7 @@ public class PursuitAction extends RobotAction
         thePursuit.updateHeading(robot.getHeadingPursuit());
         thePursuit.updateAngularVelocity(robot.getAngularVelocity());
 
-        telemetry.addData("current segment: ", thePursuit.currentSegment);
+//        telemetry.addData("current segment: ", thePursuit.currentSegment);
 
         thePursuit.elapsedTime = getRuntime();
         thePursuit.follow(thePath);
