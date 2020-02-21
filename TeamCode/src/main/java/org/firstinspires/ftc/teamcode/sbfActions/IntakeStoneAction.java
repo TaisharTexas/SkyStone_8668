@@ -79,7 +79,7 @@ public class IntakeStoneAction extends RobotAction
         switch(state)
         {
             case 0:
-                if(robot.intake.rampSignal() /*&& robot.location.x < 72*/)
+                if(robot.intake.rampSignal() && robot.location.x < 72)
                 {
                     if(robot.lift.vLiftDrive(1,2.5, 2))
                     {

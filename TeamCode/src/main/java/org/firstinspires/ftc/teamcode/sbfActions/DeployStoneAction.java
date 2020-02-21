@@ -65,21 +65,20 @@ public class DeployStoneAction extends RobotAction
             //intake up
             case 0:
                 robot.lift.grabClaw();
-                if(robot.lift.vLiftDrive(1,5,2))
-                {
-                    timeSnapshot = getRuntime();
-                    state++;
-                }
-//                if(robot.location.x > 72)
+//                if(robot.lift.vLiftDrive(1,5,2))
 //                {
-//
-//                    if(robot.lift.vLiftDrive(1,5,2))
-//                    {
-//                        timeSnapshot = getRuntime();
-//                        state++;
-//                    }
-//
+//                    timeSnapshot = getRuntime();
+//                    state++;
 //                }
+                if(robot.location.x > 72)
+                {
+                    if(robot.lift.vLiftDrive(1,5,2))
+                    {
+                        timeSnapshot = getRuntime();
+                        state++;
+                    }
+
+                }
                 break;
 
                 //horizontal out
