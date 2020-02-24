@@ -5,7 +5,6 @@ import java.io.File;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-@Disabled
 @Autonomous(name="RedNav", group="Zombie")
 /** The autonomous class that starts on the quarry side of the field and parks under the bridge next to the wall.
  *

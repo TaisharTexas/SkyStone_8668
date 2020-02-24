@@ -51,6 +51,7 @@ public class SBF_Teleop extends OpMode
     double shoulderPos;
     /** The position the wrist needs to be turned to. */
     double wristPos;
+    Deadline capWait;
 
     /** Stores the current x position of the robot. */
     int currentXEncoder = 0;
@@ -77,6 +78,7 @@ public class SBF_Teleop extends OpMode
 //        shoulderPos = .29;
         robot.lift.horizontalDrive(.25);
         wristPos = .05;
+        capWait = new Deadline(75, TimeUnit.SECONDS);
 
 
     }
@@ -109,6 +111,7 @@ public class SBF_Teleop extends OpMode
     public void start()
     {
         robot.start();
+        capWait.reset();
         resetStartTime();
         pad1Wait.reset();
 //        pad2Wait.reset();
@@ -209,7 +212,7 @@ public class SBF_Teleop extends OpMode
         }
         else if(customPad1.getRightTrigger() != 0)
         {
-            robot.intake.intakeOut(customPad1.getRightTrigger(), true, true);
+            robot.intake.intakeOut(customPad1.getRightTrigger()*0.6, true, true);
         }
         else
         {
@@ -217,13 +220,24 @@ public class SBF_Teleop extends OpMode
             robot.intake.intakeStop();
         }
 
+
         if(customPad2.getLeftStickY()<-0.6)
         {
-            robot.lift.releaseCap();
+//            if(capWait.hasExpired())
+//            {
+//                robot.lift.releaseCap();
+//            }
+                robot.lift.releaseCap();
+
         }
         else if(customPad2.getLeftStickY()>.6)
         {
-            robot.lift.capStone.setPosition(.6);
+//            if(capWait.hasExpired())
+//            {
+//                robot.lift.capStone.setPosition(.6);
+//            }
+               robot.lift.capStone.setPosition(.6);
+
         }
 //        telemetry.addData("left y: ", customPad2.getLeftStickY());
 //        telemetry.addData("cap stone: ", robot.lift.capStone.getPosition());

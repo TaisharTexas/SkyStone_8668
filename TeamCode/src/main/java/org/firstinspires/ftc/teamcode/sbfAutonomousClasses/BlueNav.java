@@ -7,7 +7,6 @@ import org.firstinspires.ftc.teamcode.SBF_Autonomous;
 
 import java.io.File;
 
-@Disabled
 @Autonomous(name="BlueNav", group="Zombie")
 /** The autonomous class that starts on the quarry side of the field and parks under the bridge next to the wall.
  *
