@@ -9,17 +9,15 @@ import java.io.File;
 
 
 @Autonomous(name="BluePursuitQuarry", group="Pursuit")
-/** The autonomous class that handles autonomous from the crater side of the lander.
- * This class loads data from a spreadsheet and uses the data to create a sequential list of robot
- * actions.  It lands, samples, goes to the depot, drops the marker, and comes back to the crater.
+/** The autonomous class that uses pursuit to deliver both skystones, move the foundation, and park
+ * under the bridge next to the skybridge.
  *
- * @author Andrew, SBF Robotics
+ * @author Andrew, 8668 Should Be Fine!
  * @see SBF_Autonomous
  * */
 public class BluePursuitQuarry extends SBF_Autonomous
 {
-    /** Calls the init methods for needed classes and locates the correct file path to the CSV file
-     * for the crater face drive path. */
+    /** Locates the Blue Pursuit Quarry CSV file and sets the robot's starting position. */
     public BluePursuitQuarry()
     {
         autoFile = new File("/storage/9016-4EF8/BluePursuitQuarry.csv");
@@ -27,7 +25,10 @@ public class BluePursuitQuarry extends SBF_Autonomous
         startY = 9;
 
     }
-
+    /** Called once after the init button is pressed.
+     *
+     * Sets elapsed time to the current time, sets the heading offset, selects the correct camera,
+     * and calls the parent method.*/
     @Override
     public void init()
     {

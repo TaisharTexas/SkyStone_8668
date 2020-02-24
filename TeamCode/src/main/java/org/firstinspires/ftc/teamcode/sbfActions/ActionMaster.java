@@ -22,7 +22,7 @@ import java.util.Vector;
  * ActionMaster is responsible for managing the run list of actions and moving each action to the
  * run map and then removing it in sequence.
  *
- * @author Andrew, Error 404: Team Name Not Found
+ * @author Andrew, 8668 Should Be Fine!
  * */
 public class ActionMaster
 {
@@ -38,7 +38,8 @@ public class ActionMaster
     boolean firstRun = true;
     String firstAction = "One";
 
-    /** Initializes telemetry. */
+    /** Initializes the telemetry, csv file, and robot.
+     * **/
     public void init(Telemetry telem, File autoFile, Robot robot)
     {
         telemetry = telem;
@@ -60,96 +61,104 @@ public class ActionMaster
                 String[] theItems = line.split(",");
 
                 // Grab the first one... this will be the type of RobotAction to create
-                String type = theItems[0].trim().toUpperCase();
+                if(theItems.length != 0)
+                {
+                    String type = theItems[0].trim().toUpperCase();
 
-                // Grab the reset of the items after the first one... these are the parameters to use
-                // with the constructors for each of the RobotAction subclasses.
-                String[] params = (Arrays.copyOfRange(theItems, 1, theItems.length));
+                    if (!type.isEmpty()) {
 
-                // Based on the type, make the specific kind of RobotAction
-                if (type.equalsIgnoreCase("WAITACTION"))
-                {
-                    myAction = new WaitAction(params);
-                    myAction.init(telemetry, robot);
-                    this.addAction(myAction);
-                }
-                else if (type.equalsIgnoreCase("DRIVEACTION"))
-                {
-                    myAction = new DriveAction(params);
-                    myAction.init(telemetry, robot);
-                    this.addAction(myAction);
-                }
-                else if(type.equalsIgnoreCase("CAMERAACTION"))
-                {
-                    myAction = new CameraAction(params);
-                    myAction.init(telemetry, robot);
-                    this.addAction(myAction);
-                }
-                else if(type.equalsIgnoreCase("TURNACTION"))
-                {
-                    myAction = new TurnAction(params);
-                    myAction.init(telemetry, robot);
-                    this.addAction(myAction);
-                }
-                else if(type.equalsIgnoreCase("GYROACTION"))
-                {
-                    myAction = new GyroAction(params);
-                    myAction.init(telemetry, robot);
-                    this.addAction(myAction);
-                }
-                else if(type.equalsIgnoreCase("FOUNDATIONACTION"))
-                {
-                    myAction = new FoundationAction(params);
-                    myAction.init(telemetry, robot);
-                    this.addAction(myAction);
-                }
-                else if(type.equalsIgnoreCase("CHANGEOUTACTION"))
-                {
-                    myAction = new ChangeOutAction(params);
-                    myAction.init(telemetry, robot);
-                    this.addAction(myAction);
-                }
-                else if(type.equalsIgnoreCase("INTAKEACTION"))
-                {
-                    myAction = new IntakeAction(params);
-                    myAction.init(telemetry, robot);
-                    this.addAction(myAction);
-                }
-                else if(type.equalsIgnoreCase("LIFTACTION"))
-                {
-                    myAction = new LiftAction(params);
-                    myAction.init(telemetry, robot);
-                    this.addAction(myAction);
-                }
-                else if(type.equalsIgnoreCase("PURSUITACTION"))
-                {
-                    if(!actionMap.containsKey(params[0].toUpperCase()))
-                    {
-                        myAction = new PursuitAction(params);
-                        myAction.init(telemetry, robot);
-                        this.addAction(myAction);
-                    }
-                    else
-                    {
-                        myAction = actionMap.get(params[0].toUpperCase());
-                        if(myAction != null)
-                        {
-                            ((PursuitAction)myAction).addPoint(params);
-                            telemetry.addData("Adding pursuit point to ", params[0]);
 
+                        // Grab the reset of the items after the first one... these are the parameters to use
+                        // with the constructors for each of the RobotAction subclasses.
+                        String[] params = (Arrays.copyOfRange(theItems, 1, theItems.length));
+
+                        // Based on the type, make the specific kind of RobotAction
+                        if (type.equalsIgnoreCase("WAITACTION")) {
+                            myAction = new WaitAction(params);
+                            myAction.init(telemetry, robot);
+                            this.addAction(myAction);
                         }
-                        else
-                        {
-                            telemetry.addData("addPoint() FAILED ", "--myAction equals null--");
+                        else if (type.equalsIgnoreCase("DRIVEACTION")) {
+                            myAction = new DriveAction(params);
+                            myAction.init(telemetry, robot);
+                            this.addAction(myAction);
                         }
+                        else if (type.equalsIgnoreCase("CAMERAACTION")) {
+                            myAction = new CameraAction(params);
+                            myAction.init(telemetry, robot);
+                            this.addAction(myAction);
+                        }
+                        else if (type.equalsIgnoreCase("TURNACTION")) {
+                            myAction = new TurnAction(params);
+                            myAction.init(telemetry, robot);
+                            this.addAction(myAction);
+                        }
+                        else if (type.equalsIgnoreCase("GYROACTION")) {
+                            myAction = new GyroAction(params);
+                            myAction.init(telemetry, robot);
+                            this.addAction(myAction);
+                        }
+                        else if (type.equalsIgnoreCase("FOUNDATIONACTION")) {
+                            myAction = new FoundationAction(params);
+                            myAction.init(telemetry, robot);
+                            this.addAction(myAction);
+                        }
+                        else if (type.equalsIgnoreCase("CHANGEOUTACTION")) {
+                            myAction = new ChangeOutAction(params);
+                            myAction.init(telemetry, robot);
+                            this.addAction(myAction);
+                        }
+                        else if (type.equalsIgnoreCase("INTAKEACTION")) {
+                            myAction = new IntakeAction(params);
+                            myAction.init(telemetry, robot);
+                            this.addAction(myAction);
+                        }
+                        else if (type.equalsIgnoreCase("LIFTACTION")) {
+                            myAction = new LiftAction(params);
+                            myAction.init(telemetry, robot);
+                            this.addAction(myAction);
+                        }
+                        else if (type.equalsIgnoreCase("LIFTHOMEACTION")) {
+                            myAction = new LiftHomeAction(params);
+                            myAction.init(telemetry, robot);
+                            this.addAction(myAction);
+                        }
+                        else if (type.equalsIgnoreCase("DEPLOYSTONEACTION")) {
+                            myAction = new DeployStoneAction(params);
+                            myAction.init(telemetry, robot);
+                            this.addAction(myAction);
+                        }
+                        else if (type.equalsIgnoreCase("INTAKESTONEACTION")) {
+                            myAction = new IntakeStoneAction(params);
+                            myAction.init(telemetry, robot);
+                            this.addAction(myAction);
+                        }
+                        else if (type.equalsIgnoreCase("PURSUITACTION")) {
+                            if (!actionMap.containsKey(params[0].toUpperCase())) {
+                                myAction = new PursuitAction(params);
+                                myAction.init(telemetry, robot);
+                                this.addAction(myAction);
+                            }
+                            else {
+                                myAction = actionMap.get(params[0].toUpperCase());
+                                if (myAction != null) {
+                                    ((PursuitAction) myAction).addPoint(params);
+                                    telemetry.addData("Adding pursuit point to ", params[0]);
+
+                                }
+                                else {
+                                    telemetry.addData("addPoint() FAILED ", "--myAction equals null--");
+                                }
+                            }
+                        }
+                        else {
+                            myAction = null;
+                        }
+
+                        telemetry.addData("TheAction: ", myAction);
                     }
                 }
-                else
-                {
-                    myAction = null;
-                }
-                
-                telemetry.addData("TheAction: ", myAction);
+
             }
 //            this.addRunAction("One");
         }
@@ -201,6 +210,10 @@ public class ActionMaster
         for(RobotAction action : runMap.values())
         {
             Boolean actionDone = action.execute();
+            if(!(action.getAuxAction().toUpperCase().equals("NULL")))
+            {
+                nextList.add(action.getAuxAction().toUpperCase());
+            }
             telemetry.addData("action done: ", actionDone);
 
             if(actionDone)

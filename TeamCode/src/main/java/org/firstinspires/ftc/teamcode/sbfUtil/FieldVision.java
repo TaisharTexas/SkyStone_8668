@@ -29,7 +29,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 /**
  * Contains all the vision code for identifying SkyStones during autonomous
  *
- * @author  Andrew, 8668 SBF
+ * @author  Andrew, 8668 Should Be Fine!
  * */
 public class FieldVision
 {

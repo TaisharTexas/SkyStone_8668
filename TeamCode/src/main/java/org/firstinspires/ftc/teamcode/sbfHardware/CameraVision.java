@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -13,39 +14,68 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
-//import org.openftc.easyopencv.OpenCvWebcam;
 
+import java.util.concurrent.TimeUnit;
+
+/**
+ * Manages opening and using the webcams for detecting SkyStones.
+ *
+ * @author Andrew, 8668 Should Be Fine!
+ */
 public class CameraVision
 {
+    /**
+     * The webcam object which will grab the frames for us
+     */
     OpenCvCamera webCam;
+    /**
+     * Local reference to the telemetry object for displaying debug info
+     */
     Telemetry telemetry;
-
+    /**
+     * Implements the SkyStone processing alrogithm.
+     */
     CameraVision.StageSwitchingPipeline stageSwitchingPipeline;
-
+    /**
+     * The ID for the camera we are using (there are 2 on the robot)
+     */
     public String camDeviceName = "leftCam";
 
+    /**
+     * Initialize the vision hardware and provide the telemetry object for debugging.
+     * @param hwMap  hardware map for connecting to camera
+     * @param whichCam string which identifies the camera to load from the hardware map (left or right)
+     * @param telem telemetry object which can be used for debugging
+     */
     public void init(HardwareMap hwMap, String whichCam, Telemetry telem)
     {
         telemetry = telem;
 
         camDeviceName = whichCam;
         int cameraMonitorViewId = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName());
-//        webCam = new OpenCvWebcam(hwMap.get(WebcamName.class, "rightCam"), cameraMonitorViewId);
         webCam = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, camDeviceName), cameraMonitorViewId);
         webCam.openCameraDevice();
+
         stageSwitchingPipeline = new CameraVision.StageSwitchingPipeline();
         webCam.setPipeline(stageSwitchingPipeline);
-        webCam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+        webCam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+
+        stageSwitchingPipeline.elapsedTime.reset();
     }
 
+    /**
+     * Implements a SkyStone detection algorithm as an OpenCV pipeline.
+     */
     static class StageSwitchingPipeline extends OpenCvPipeline
     {
         Mat yCbCrChan2Mat = new Mat();
         Mat thresholdMat = new Mat();
-
+        Mat Cb = new Mat();
         double leftSum = 0;
         double centerSum = 0;
         double rightSum = 0;
+
+        Deadline elapsedTime = new Deadline(250, TimeUnit.MILLISECONDS);
 
         String SSposition = "null";
 
@@ -56,10 +86,12 @@ public class CameraVision
             RAW_IMAGE,
         }
 
-//        private CameraVision.StageSwitchingPipeline.Stage stageToRenderToViewport = CameraVision.StageSwitchingPipeline.Stage.YCbCr_CHAN2;
         private CameraVision.StageSwitchingPipeline.Stage stageToRenderToViewport = Stage.RAW_IMAGE;
         private CameraVision.StageSwitchingPipeline.Stage[] stages = CameraVision.StageSwitchingPipeline.Stage.values();
 
+        /**
+         * Cycle through which stage of the pipeline is displayed on the screen when the screen is tapped.
+         */
         @Override
         public void onViewportTapped()
         {
@@ -80,105 +112,84 @@ public class CameraVision
             stageToRenderToViewport = stages[nextStageNum];
         }
 
+        /**
+         * Called when a frame from the webcam is returned.  Processing and looking for the SkyStone
+         * happens in this method.
+         * <ol>
+         *     <li>Convert the colorspace from RGB to YCrCb so that we can focus on the relative brightness o the stones.</li>
+         *     <li>Select the Cb channel to focus on.  </li>
+         *     <li>Run a threshold on the Cb channel to isolate the SkyStone.</li>
+         *     <li>Sum the pixel values for each region of the frame where a stone exists.</li>
+         *     <li>Choose the sum with the lowest value as the SkyStone.  This is due to the darkness
+         *         that the SkyStone exhibits with its dark colored label.</li>
+         * </ol>
+         * @param input the Mat object which is the frame of video
+         * @return a Mat object which has been updated with the results of the calculation for the SkyStone.
+         */
         @Override
         public Mat processFrame(Mat input)
         {
-            leftSum = 0;
-            centerSum = 0;
-            rightSum = 0;
 
-            Scalar red = new Scalar(255, 0, 0);
             Scalar green = new Scalar(0,250,0);
 
-            Scalar left = red;
-            Scalar center = red;
-            Scalar right = red;
+            int leftL = 24;
+            int leftR = 118;
+            int rightL = 202;
+            int rightR = 288;
 
-            Double leftL = 0.1;
-            Double leftR = 0.37;
-            Double rightL = 0.63;
-            Double rightR = 0.9;
 
-            /*
-             * This pipeline finds the contours of yellow blobs such as the Gold Mineral
-             * from the Rover Ruckus game.
-             */
-            Imgproc.cvtColor(input, yCbCrChan2Mat, Imgproc.COLOR_RGB2YCrCb);
-            Core.extractChannel(yCbCrChan2Mat, yCbCrChan2Mat, 2);
-            Imgproc.threshold(yCbCrChan2Mat, thresholdMat, 102, 255, Imgproc.THRESH_BINARY_INV);
+            if ( elapsedTime.hasExpired() )
+            {
+                elapsedTime.reset();
 
-            for(int c = (int)(thresholdMat.cols()*leftL); c < (int)(thresholdMat.cols()*leftR); c++)
-            {
-                for(int r = (int)(thresholdMat.rows()*.4); r <= (thresholdMat.rows()*.6); r++)
-                {
-                    leftSum = leftSum + (thresholdMat.get(r,c))[0];
-                }
-            }
-            for(int c = (int)(thresholdMat.cols()*leftR); c < (int)(thresholdMat.cols()*rightL); c++)
-            {
-                for(int r = (int)(thresholdMat.rows()*.4); r <= (thresholdMat.rows()*.6); r++)
-                {
-                    centerSum = centerSum + (thresholdMat.get(r,c))[0];
-                }
-            }
-            for(int c = (int)(thresholdMat.cols()*rightL); c < (int)(thresholdMat.cols()*rightR); c++)
-            {
-                for(int r = (int)(thresholdMat.rows()*.4); r <= (thresholdMat.rows()*.6); r++)
-                {
-                    rightSum = rightSum + (thresholdMat.get(r,c))[0];
-                }
+                Imgproc.cvtColor(input, yCbCrChan2Mat, Imgproc.COLOR_RGB2YCrCb);
+                Core.extractChannel(yCbCrChan2Mat, Cb, 2);
+                Imgproc.threshold(Cb, thresholdMat, 102, 255, Imgproc.THRESH_BINARY_INV);
+
+                leftSum = Core.sumElems(thresholdMat.submat(96, 144, leftL, leftR)).val[0];
+                rightSum = Core.sumElems(thresholdMat.submat(96, 144, rightL, rightR)).val[0];
+                centerSum = Core.sumElems(thresholdMat.submat(96, 144, leftR, rightL)).val[0];
             }
 
-            if(leftSum < rightSum && leftSum < centerSum)
+            if (leftSum < rightSum && leftSum < centerSum)
             {
                 SSposition = "LEFT";
-                left = green;
+                Imgproc.rectangle(
+                        input,
+                        new Point(
+                                leftL,
+                                96),
+                        new Point(
+                                leftR,
+                                144),
+                        green, 4);
             }
-            else if(rightSum < leftSum && rightSum < centerSum)
+            else if (rightSum < leftSum && rightSum < centerSum)
             {
                 SSposition = "RIGHT";
-                right = green;
+                Imgproc.rectangle(
+                        input,
+                        new Point(
+                                rightL,
+                                96),
+                        new Point(
+                                rightR,
+                                144),
+                        green, 4);
             }
             else
             {
                 SSposition = "CENTER";
-                center = green;
+                Imgproc.rectangle(
+                        input,
+                        new Point(
+                                leftR,
+                                96),
+                        new Point(
+                                rightL,
+                                144),
+                        green, 4);
             }
-
-            Imgproc.rectangle(
-                    input,
-                    new Point(
-                            input.cols()*leftL,
-                            input.rows()*.39),
-                    new Point(
-                            input.cols()*leftR,
-                            input.rows()*.61),
-                    left, 4);
-            Imgproc.rectangle(
-                    input,
-                    new Point(
-                            input.cols()*leftR+4,
-                            input.rows()*.39),
-                    new Point(
-                            input.cols()*rightL - 4,
-                            input.rows()*.61),
-                    center, 4);
-            Imgproc.rectangle(
-                    input,
-                    new Point(
-                            input.cols()*rightL,
-                            input.rows()*.39),
-                    new Point(
-                            input.cols()*rightR,
-                            input.rows()*.61),
-                    right, 4);
-
-            double maxSum = Math.max(Math.max(leftSum,centerSum), rightSum);
-            maxSum = Math.max(1, maxSum);
-            Imgproc.putText( input, String.format("%.4f",1-leftSum/maxSum), new Point( 40, 325), Imgproc.FONT_HERSHEY_DUPLEX, 1, left);
-            Imgproc.putText( input, String.format("%.4f",1-centerSum/maxSum), new Point( 260, 325), Imgproc.FONT_HERSHEY_DUPLEX, 1, center);
-            Imgproc.putText( input, String.format("%.4f",1-rightSum/maxSum), new Point( 470, 325), Imgproc.FONT_HERSHEY_DUPLEX, 1, right);
-
 
             switch (stageToRenderToViewport)
             {
@@ -191,12 +202,6 @@ public class CameraVision
                 {
                     return thresholdMat;
                 }
-
-                case RAW_IMAGE:
-                {
-                    return input;
-                }
-
                 default:
                 {
                     return input;
@@ -205,20 +210,51 @@ public class CameraVision
         }
     }
 
+    /**
+     * Provide the caller with the position that has been detected for the SkyStone.
+     * @return a string which indicates LEFT, CENTER, or RIGHT for the position.
+     */
     public String getSkyStonePosition()
     {
         return stageSwitchingPipeline.SSposition;
     }
 
+    /**
+     * Causes the camera to stop steaming video so that the CPU and battery can be preserved.  It is
+     * unclear how long this process takes, and we have observed it taking more than 5 seconds to
+     * complete, so we spin up another thread to take care of it.
+     */
     public void stopCamera()
     {
         if(webCam!=null)
         {
-            webCam.stopStreaming();
+            Runnable r = new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    webCam.stopStreaming();
+                }
+            };
+
+            try
+            {
+                Thread th = new Thread(r);
+                th.start();
+            }
+            catch (Exception e)
+            {
+                telemetry.addData("Exception thrown when closing the webcam: ", e.getMessage());
+
+            }
         }
 
     }
 
+    /**
+     * Sets the name of a imported camera.
+     * @param camDeviceName  The name the camera is set to.
+     */
     public void setCamDeviceName(String camDeviceName)
     {
         this.camDeviceName = camDeviceName;

@@ -5,26 +5,24 @@ import java.io.File;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-@Disabled
 @Autonomous(name="RedNav", group="Zombie")
-/** The autonomous class that handles autonomous from the crater side of the lander.
- * This class loads data from a spreadsheet and uses the data to create a sequential list of robot
- * actions.  It lands, samples, goes to the depot, drops the marker, and comes back to the crater.
+/** The autonomous class that starts on the quarry side of the field and parks under the bridge next to the wall.
  *
- * @author Andrew, SBF Robotics
+ * @author Andrew, 8668 Should Be Fine!
  * @see SBF_Autonomous
  * */
 public class RedNav extends SBF_Autonomous
 {
-    /** Calls the init methods for needed classes and locates the correct file path to the CSV file
-     * for the crater face drive path. */
+    /** Locates the Red Nav CSV file and sets the robot's starting position. */
     public RedNav()
     {
         autoFile = new File("/storage/9016-4EF8/RedNav.csv");
         startX = 39;
         startY = 9;
     }
-
+    /** Called once after the init button is pressed.
+     *
+     * Sets the heading offset, selects the correct camera, and calls the parent method.*/
     @Override
     public void init()
     {

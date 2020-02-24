@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.sbfHardware;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -23,87 +24,123 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @Config
 /**
- * Defines the robot. Has objects needed for each mechanism in use on the robot and contains the all
- * the methods used by the robot.
+ * Defines the robot. Has hardware objects for the chassis system, all the mechanisms on the robot,
+ * and all the functionality methods for the chassis as well as any methods that use multiple mechanisms.
  *
- * @author Andrew, SBF Robotics, Team 8668
+ * @author Andrew, 8668 Should Be Fine!
  */
 public class Robot
 {
 
     // Robot - Generic Items
+    /** A telemetry object passed down from the opmode */
     private Telemetry telemetry;
+    /** A hardware map object passed down from the opmode. */
     private HardwareMap hardwareMap;
+    /** The robot heading offset -- makes what angle the robot starts at not zero.*/
     private double offset;
+    /** A string that describes which camera should be used by an autonomous opmode -- is overridden
+     * in the child autonomous classes. */
     public String whichCamera = "leftCam";
-
+    /** Sets the starting location vector for the robot -- overridden in the child autonomous classes. */
     public PVector location = new PVector(39,9);
+    /** The starting robot velocity, */
     public PVector velocity = new PVector(0,0);
+    /** The robot's current rate of heading change. */
     public double currentAngularVelocity;
 
     // Lift Class
+    /** The lift object -- imports the all the hardware and methods for the lift mechanism. */
     public Lift lift = new Lift();
-
+    /** The Blinkin object -- imports all the hardware and methods for the Blinkin LED driver. */
+    public Blinkin lights = new Blinkin();
+    /** The intake object -- imports all the hardware and methods for the intake mechanim. */
     public Intake intake = new Intake();
 
     // Vision System Items
+    /** The camera object -- imports all the hardware and methods for the webcams and image pipeline. */
     private CameraVision eyeOfSauron = new CameraVision();
+    /** Marks whether or not to run the camera in the opmode. */
     boolean useCamera;
 
     /**
      * Robot - REV Hub Items
      */
+    /** A bulk data object for the primary rev hub. */
     private RevBulkData bulkData;
+    /** A bulk data object for the secondary rev hub. */
     private RevBulkData bulkDataAux;
+    /** Declares the primary rev hub as an extended expansion hub. */
     private ExpansionHubEx expansionHub;
+    /** Declares the secondary rev hub as an extended expansion hub. */
     private ExpansionHubEx expansionHubAux;
 
     /**
      * Chassis Items
       */
+    /** Declares the right front motor as an expanded rev hub motor.*/
     private ExpansionHubMotor RF = null;
+    /** Declares the right rear motor as an expanded rev hub motor.*/
     private ExpansionHubMotor RR = null;
+    /** Declares the left front motor as an expanded rev hub motor.*/
     private ExpansionHubMotor LF = null;
+    /** Declares the left rear motor as an expanded rev hub motor.*/
     private ExpansionHubMotor LR = null;
+    /** Declares the internal rev imu. */
     private BNO055IMU gyro;
     /** The dc motor whose encoder is being used for distance measurements. */
     ExpansionHubMotor encoderMotor;
 
-
-
     /**
      * Foundation Fingers Items
      */
+    /** The left fonudation finger servo. */
     private Servo leftFoundation = null;
+    /** The right foundation finger servo. */
     private Servo rightFoundation = null;
 
     /**
      * Robot - Odometry Items
      */
+    /** Declares the xEncoder as an expanded rev hub motor. */
     private ExpansionHubMotor xEncoder = null;
+    /** Declares the yEncoder as an expanded rev hub motor. */
     private ExpansionHubMotor yEncoder = null;
 
     /**
      * Robot - Encoder information used in odometry
      */
+    /** An x-axis velocity measurement. */
     private double xEncInPerSec;
+    /** A y-axis velocity measurement. */
     private double yEncInPerSec;
-
+    /** The radius of the encoder wheels. */
     private final double encWheelRadius = 1.96/2.0; //in inches ... encoder is a 50mm diameter wheel.
 //    private final double encTickPerRotation = 2400;
+    /** The number of encoder ticks per rotation of the encoder wheel. */
     private final double encTickPerRotation = 3200;
 //    public static double encDistanceConstant = 195.5/192; //calibrated over 16' & 12' on foam tiles -- 9/13/19
+    /** A constant used in calculating robot position change. */
     public static double encDistanceConstant = 1;
+    /** The number of inches moved per rotation of the encoder wheel. */
     private final double encInchesPerRotation = 2.0 * encWheelRadius * Math.PI * encDistanceConstant; // this is the encoder wheel distancd
+    /** The gearing on the drive train. */
     private final double gearRatio = 1.733333333;
+    /** The number of encoder ticks per inch moved. */
     private final double encTicksPerInch = encTickPerRotation / (encInchesPerRotation);
 
+    /** Used to calculate the change in x position. */
     private int prevXEncoder = 0;
+    /** Used to calculate the change in y position. */
     private int prevYEncoder = 0;
+    /** Stores the change in x position. */
     private int xEncoderChange = 0;
+    /** Stores the change in y position. */
     private int yEncoderChange = 0;
 
+    /** The current raw heading of the robot (no offset). */
     private double currentRawHeading = 0;
+    /** Marks whether or not the servos are done. */
     private boolean servoDone = false;
 
     /** Directional variables used to simulate joystick commands in autonomous.
@@ -146,7 +183,7 @@ public class Robot
     /** The encoder ticks per inch ( (ticks per mtr rev*10)/(13*4*3.14159) ).
      * Used in converting inches to encoder ticks. Allows the programmer to code in inches while
      * the motor measures in encoder ticks.*/
-    final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV)/(gearRatio*INCH_PER_REV);
+    final double CHASSIS_COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV)/(gearRatio*INCH_PER_REV);
 
     /** An int variable used in drive, tankDrive, and pointTurn to capture the encoder position before each move. */
     double initialPosition;
@@ -159,7 +196,9 @@ public class Robot
     /** A double that stores the starting heading of the robot for use in reseting the robot's
      * heading to its start heading. */
     private double resetHeading;
+    /** Marks whether or not the robot is moving. */
     private boolean moving;
+    /** Sets the start time to zero (in nanoseconds). */
     private long startTime = 0; // in nanoseconds
     /** A double that is the number of nanoseconds per second. */
     double NANOSECONDS_PER_SECOND = TimeUnit.SECONDS.toNanos(1);
@@ -176,9 +215,11 @@ public class Robot
      * @param telem  An instance of Telemetry which allows the use of Telemtry in this class.
      * @param hwmap  An instance of the FIRST-provided HardwareMap which is passed onto more
      *               specific classes for initializing hardware.
-     * @param useVision A boolean flag which tells the class whether or not the camera should be used.
+     * @param useVision  A boolean flag which tells the class whether or not the camera should be used.
+     * @param theOffset  The heading offset which is set by the child autonomous classes.
+     * @param isTeleop  Marks whether or not the opmode is teleop.
      * */
-    public void init(Telemetry telem, HardwareMap hwmap, boolean useVision, double theOffset )
+    public void init(Telemetry telem, HardwareMap hwmap, boolean useVision, double theOffset, boolean isTeleop )
     {
         telemetry = telem;
         hardwareMap = hwmap;
@@ -190,7 +231,7 @@ public class Robot
         {
             eyeOfSauron.init(hwmap, whichCamera, telemetry);
         }
-
+        lights.init(telemetry, hardwareMap, isTeleop);
         lift.init(telemetry, hardwareMap);
 
         expansionHub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 2");
@@ -345,10 +386,12 @@ public class Robot
      * Robot - Method that is intended to be called when the START button is pressed and handled
      * in an OpMode.  If there is something which should happen when start() is called in the
      * OpMode, put it in this method.
+     *
+     * Currently starts the timers inside of the Blinkin LED Driver class.
      */
     public void start()
     {
-
+        lights.start();
     }
 
     /**
@@ -361,7 +404,7 @@ public class Robot
          * Update the sensor data using bulk transferes from the Rev Hubs
          */
         currentRawHeading = updateHeadingRaw();
-        telemetry.addData("raw heading", currentRawHeading);
+//        telemetry.addData("raw heading", currentRawHeading);
         telemetry.addData("pursuitHeading: ", getHeadingPursuit());
         bulkData = expansionHub.getBulkInputData();
         bulkDataAux = expansionHubAux.getBulkInputData();
@@ -392,10 +435,9 @@ public class Robot
         prevXEncoder = bulkDataAux.getMotorCurrentPosition(xEncoder);
         prevYEncoder = bulkDataAux.getMotorCurrentPosition(yEncoder);
 
-        telemetry.addData("x encoder: ", xEncoder.getCurrentPosition());
-        telemetry.addData("y encoder: ", yEncoder.getCurrentPosition()) ;
+        telemetry.addData("x encoder: ", prevXEncoder);
+        telemetry.addData("y encoder: ", prevYEncoder) ;
 
-        //TODO: Consider consolidating these updates between here and the pursuit class
         updateVelocity(this.getVelocity());
         updatePosition(this.getLocationChange());
        // updateHeading(getHeadingPursuit());
@@ -435,8 +477,8 @@ public class Robot
         double x = neededVelocity.x / 40.0; //bot.maxSpeed; //max speed is 31.4 in/sec
         double y = neededVelocity.y / 40.0; // bot.maxSpeed;
 
-        telemetry.addData("x encoder: ", xEncoder.getCurrentPosition());
-        telemetry.addData("y encoder: ", yEncoder.getCurrentPosition());
+//        telemetry.addData("x encoder: ", xEncoder.getCurrentPosition());
+//        telemetry.addData("y encoder: ", yEncoder.getCurrentPosition());
         telemetry.addData("SbfJoystick x, y: ", "%.3f, %.3f", x, y );
 
         double turn = spin / 343;
@@ -444,6 +486,7 @@ public class Robot
         joystickDrive(x, y, turn, 0, 1);
     }
 
+    /** Fetches the telemetry relating to the encdoers. */
     public void getEncoderTelem()
     {
         getXChange();
@@ -460,7 +503,7 @@ public class Robot
     {
         AngularVelocity gyroReading;
         gyroReading = gyro.getAngularVelocity();
-        telemetry.addData("mp.rot rate: ", -gyroReading.zRotationRate);
+//        telemetry.addData("mp.rot rate: ", -gyroReading.zRotationRate);
         return -gyroReading.zRotationRate;
     }
 
@@ -474,9 +517,9 @@ public class Robot
     }
 
     /**
-     * Robot - Kill the Chassis and the Vision System
+     * Robot - Kills the Chassis, Lift, and Intake systems.
      */
-    public void stop()
+    public void stopEverything()
     {
         if(motorsValid())
         {
@@ -488,14 +531,45 @@ public class Robot
         {
             telemetry.addData("A drive motor is not configured properly", "");
         }
+        lift.stopLift();
+        intake.intakeStop();
+    }
 
-
-        if (useCamera)
+    /** Stops the drive train. */
+    public void stopChassis()
+    {
+        if(motorsValid())
         {
-            eyeOfSauron.stopCamera();
+            RF.setPower(0.0);
+            RR.setPower(0.0);
+            LF.setPower(0.0);
+            LR.setPower(0.0);
         }
+    }
+    /** Stops the lift mechanism. */
+    public void stopLift()
+    {
+        lift.stopLift();
 
+    }
+    /** Stops the intake mechanism. */
+    public void stopIntake()
+    {
+        intake.intakeStop();
 
+    }
+
+    /**
+     * Drives the lift to a specific position at a specified power.
+     * @param power  The power that the lift drives at.
+     * @param positionInches  The position the lift needs to move to.
+     * @param time  The maximum time the move can take.
+     * @return Whether or not the method has finished.
+     */
+    public boolean liftDrive(double power, double positionInches, double time)
+    {
+        update();
+        return lift.vLiftDrive(power, positionInches, time);
     }
 
     /**
@@ -504,7 +578,6 @@ public class Robot
 
     /**
      * Robot - Used to query the IMU and get the robot's heading.  Internal method only.
-     *
      * @return  the robot's heading as an double
      */
     private double updateHeadingRaw()
@@ -600,8 +673,8 @@ public class Robot
               - The right joystick control turning.
         */
 
-        telemetry.addData("x encoder: ", xEncoder.getCurrentPosition());
-        telemetry.addData("y encoder: ", yEncoder.getCurrentPosition());
+//        telemetry.addData("x encoder: ", xEncoder.getCurrentPosition());
+//        telemetry.addData("y encoder: ", yEncoder.getCurrentPosition());
         double forward = leftStickY;
         double right = -leftStickX;
         double clockwise = rightStickX;
@@ -659,7 +732,7 @@ public class Robot
     }
 
     /**
-     * Chassis - The mecanum Drive method moves the four drive motors on the robot and will move the robot forward,
+     * Chassis - Drives the four drive motors on the robot and will move the robot forward,
      * backward, left, right, or at a 45 degree angle in any direction.
      *
      * @param power  How fast the robot will drive.
@@ -673,14 +746,14 @@ public class Robot
      */
     public boolean drive(double power, double direction, double gain, double distance, double time, double intakePower)
     {
-        double driveDistance = COUNTS_PER_INCH * distance;
+        double driveDistance = CHASSIS_COUNTS_PER_INCH * distance;
         double correction;
 
         update();
 
         double actual = currentRawHeading;
 
-        intake.intakeDrive(intakePower);
+        intake.intakeDrive(intakePower, true, true);
 //        telemetry.addData( "Is RR-Diagonal?: ", direction ==  REVERSE_RIGHT_DIAGONAL);
 //        telemetry.addData("Direction: ", direction);
 //        telemetry.addData("RR-Diag: ", REVERSE_RIGHT_DIAGONAL);
@@ -733,7 +806,7 @@ public class Robot
 //        if (((Math.abs(bulkData.getMotorCurrentPosition(encoderMotor)- initialPosition)) >= driveDistance) || (getRuntime() > time))
         if (((Math.abs(encoderMotor.getCurrentPosition() - initialPosition)) >= driveDistance) || (getRuntime() > time))
         {
-            stop();
+            stopChassis();
             intake.intakeStop();
 
             setZeroBehavior("FLOAT");
@@ -816,7 +889,7 @@ public class Robot
 
         if(Math.abs(targetHeading - currentRawHeading) < 3.0 || getRuntime() > time)
         {
-            stop();
+            stopChassis();
 
             setZeroBehavior("FLOAT");
 
@@ -825,6 +898,7 @@ public class Robot
 
         return !moving;
     }
+
 
     /**
      * Chassis Private Methods
@@ -850,7 +924,7 @@ public class Robot
      * Chassis - Tell the chassis motors what to do when power is set to 0
      * @param mode - which indicates the desired behavior
      */
-    private void setZeroBehavior(String mode)
+    public void setZeroBehavior(String mode)
     {
         if(mode.equalsIgnoreCase("FLOAT"))
         {
@@ -919,6 +993,10 @@ public class Robot
         eyeOfSauron.stopCamera();
     }
 
+    /**
+     * Sets the camera to the imputed name.
+     * @param device  The name the camera is set to.
+     */
     public void setCameraDeviceName( String device )
     {
         eyeOfSauron.setCamDeviceName( device );
@@ -1011,23 +1089,64 @@ public class Robot
     }
 
 
+    /** Update the current location of the robot.
+     * @param currentPosition The position being added to location.
+     * */
     public void updatePosition(PVector currentPosition)
     {
         location = PVector.add(location, currentPosition);
     }
 
+    /**
+     * Update the current velocity.
+     * @param currentVelocity  The velocity being set.
+     */
     public void updateVelocity(PVector currentVelocity)
     {
         velocity.set(currentVelocity.x, currentVelocity.y);
     }
 
+    /**
+     * Update the current angular velocity.
+     * @param angularVelocity  The angular velocity being set.
+     */
     public void updateAngularVelocity( double angularVelocity )
     {
         currentAngularVelocity = angularVelocity;
     }
 
+    /**
+     * Update the current heading.
+     * @param heading  The heading being set.
+     */
     public void updateHeading( double heading )
     {
         currentRawHeading = heading;
+    }
+
+    /**
+     * Drives the intake motors to suck in -- combined with lights and distance sensors to show
+     * where the stone is inside the robot.
+     *
+     * @param thePower  The power at which the intake wheels will spin (sign determines direction).
+     * */
+    public void intakeInWithLights(double thePower)
+    {
+        if(intake.rampSignal())
+        {
+//            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.LIME);
+            intake.intakeIn(thePower, true, true);
+        }
+        else if(intake.backSignal() && intake.rampSignal())
+        {
+//            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+            intake.intakeIn(thePower, true, false);
+        }
+        else
+        {
+//            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
+            intake.intakeIn(thePower, true, true);
+
+        }
     }
 }
