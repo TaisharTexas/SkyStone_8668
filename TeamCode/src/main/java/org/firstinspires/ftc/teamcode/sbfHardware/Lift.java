@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.sbfHardware;
 
 import com.qualcomm.hardware.rev.RevTouchSensor;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -41,6 +42,7 @@ public class Lift
     public Servo wrist = null;
     /** The servo that releases the capstone. */
     public Servo capStone = null;
+    public CRServo vexHoriz = null;
 
     /** Stores the current value of the left lift motor's encoder. */
     public int encoder = 0;
@@ -169,6 +171,16 @@ public class Lift
         {
             telemetry.addData("wrist not found in config file", 0);
             wrist = null;
+        }
+        try
+        {
+            vexHoriz = hardwareMap.get(CRServo.class, "vexH");
+            vexHoriz.setDirection(CRServo.Direction.REVERSE);
+        }
+        catch (Exception p_exeception)
+        {
+            telemetry.addData("vexHorizontal Servo not found in config file", 0);
+            vexHoriz = null;
         }
 
     }

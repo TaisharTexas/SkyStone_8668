@@ -239,6 +239,23 @@ public class SBF_Teleop extends OpMode
                robot.lift.capStone.setPosition(.6);
 
         }
+
+        if(customPad2.getLeftStickX()>0)
+        {
+            robot.lift.vexHoriz.setPower(.5);
+        }
+        else if(customPad2.getLeftStickX()<0)
+        {
+            robot.lift.vexHoriz.setPower(-.5);
+        }
+        else
+        {
+            robot.lift.vexHoriz.setPower(0);
+        }
+
+        telemetry.addData("vex H#: ", robot.lift.vexHoriz.getPortNumber());
+        telemetry.addData("vex H: ", robot.lift.vexHoriz.getPower());
+
 //        telemetry.addData("left y: ", customPad2.getLeftStickY());
 //        telemetry.addData("cap stone: ", robot.lift.capStone.getPosition());
 
