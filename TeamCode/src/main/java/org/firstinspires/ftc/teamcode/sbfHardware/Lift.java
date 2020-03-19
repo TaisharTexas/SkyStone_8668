@@ -246,8 +246,8 @@ public class Lift
             }
             else if(touchR.isPressed() || touchL.isPressed())
             {
-                leftVertical.setPower(0.25);
-                rightVertical.setPower(0.25);
+                leftVertical.setPower(.35);
+                rightVertical.setPower(.35);
             }
             else if ( encoder < 700  && power > 0)
             {

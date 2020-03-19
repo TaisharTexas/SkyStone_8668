@@ -56,6 +56,9 @@ public class Robot
     public Blinkin lights = new Blinkin();
     /** The intake object -- imports all the hardware and methods for the intake mechanim. */
     public Intake intake = new Intake();
+    public StoneClaw stoneClaw = new StoneClaw();
+
+    int intakeState;
 
     // Vision System Items
     /** The camera object -- imports all the hardware and methods for the webcams and image pipeline. */
@@ -226,6 +229,7 @@ public class Robot
         useCamera = useVision;
         startTime = 0;
         offset = theOffset;
+        intakeState = 0;
 
         if ( useCamera)
         {
@@ -233,6 +237,7 @@ public class Robot
         }
         lights.init(telemetry, hardwareMap, isTeleop);
         lift.init(telemetry, hardwareMap);
+        stoneClaw.init(telemetry, hardwareMap);
 
         expansionHub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 2");
         expansionHubAux = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 3");
@@ -1132,21 +1137,73 @@ public class Robot
      * */
     public void intakeInWithLights(double thePower)
     {
-        if(intake.rampSignal())
+        telemetry.addData("intake state: ", intakeState);
+        switch (intakeState)
         {
-//            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.LIME);
-            intake.intakeIn(thePower, true, true);
-        }
-        else if(intake.backSignal() && intake.rampSignal())
-        {
-//            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
-            intake.intakeIn(thePower, true, false);
-        }
-        else
-        {
-//            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
-            intake.intakeIn(thePower, true, true);
+            //Run intake normally, waiting for ramp sensor to trigger
+            //Lights are orange
+            case 0:
+                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
+                intake.intakeIn(thePower, true, true);
+                telemetry.addData("orange","");
+                if(intake.rampSignal())
+                {
+                    //On trigger, bump lift up
+                    if(liftDrive(1,1.5,1))
+                    {
+                        intakeState = 1;
+                    }
+                }
+                break;
 
+            //Run intake normally, waiting for back sensor to trigger
+            //lights are lime
+            case 1:
+                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.LIME);
+                intake.intakeIn(thePower, true, true);
+                telemetry.addData("lime","");
+                if(intake.backSignal())
+                {
+                    //On trigger, bring lift back down
+                    if(liftDrive(-1,2,1.2))
+                    {
+                        intakeState = 2;
+                    }
+                }
+                break;
+
+                //Lift has cycled once, wait for horizontal to extend before resetting back to start.
+            case 2:
+                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+                intake.intakeIn(thePower, true, true);
+                if(lift.horizontal.getPosition() > .35)
+                {
+                    intakeState = 0;
+                }
+                break;
+
+            default:
+                break;
         }
+
+//        if(intake.rampSignal())
+//        {
+//            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.LIME);
+//            intake.intakeIn(thePower, true, true);
+//            telemetry.addData("lime","");
+//        }
+//        else if(intake.backSignal() && intake.rampSignal())
+//        {
+//            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+//            intake.intakeIn(thePower, true, false);
+//            telemetry.addData("green","");
+//        }
+//        else
+//        {
+//            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
+//            intake.intakeIn(thePower, true, true);
+//            telemetry.addData("orange","");
+//
+//        }
     }
 }

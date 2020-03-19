@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.sbfHardware.CameraVision;
 import org.firstinspires.ftc.teamcode.sbfHardware.Lift;
 import org.firstinspires.ftc.teamcode.sbfHardware.Robot;
 import org.firstinspires.ftc.teamcode.sbfHardware.SbfJoystick;
+import org.firstinspires.ftc.teamcode.sbfHardware.StoneClaw;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
@@ -52,6 +53,10 @@ public class SBF_Teleop extends OpMode
     /** The position the wrist needs to be turned to. */
     double wristPos;
     Deadline capWait;
+
+    double armPosition = .5;
+
+    double clawPosition = .5;
 
     /** Stores the current x position of the robot. */
     int currentXEncoder = 0;
@@ -115,8 +120,7 @@ public class SBF_Teleop extends OpMode
         resetStartTime();
         pad1Wait.reset();
 //        pad2Wait.reset();
-//        robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
-
+        robot.lights.start();
 //        lift.wrist.setPosition(.9);
 //        lift.claw.setPosition(.1);
     }
@@ -161,27 +165,10 @@ public class SBF_Teleop extends OpMode
 
         if(customPad2.getDpadDown())
         {
-//            if(customPad2.getRightBumper())
-//            {
-//                shoulderPos -= .01;
-//            }
-//            else
-//            {
-//                shoulderPos -= .025;
-//            }
             shoulderPos -= .02;
-
         }
         else if(customPad2.getDpadUp())
         {
-//            if(customPad2.getRightBumper())
-//            {
-//                shoulderPos += .01;
-//            }
-//            else
-//            {
-//                shoulderPos += .025;
-//            }
             shoulderPos += .02;
         }
         else if(customPad2.getLeftBumper())
@@ -216,9 +203,40 @@ public class SBF_Teleop extends OpMode
         }
         else
         {
-//            robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
+            robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
             robot.intake.intakeStop();
         }
+        if(customPad1.getDpadUp())
+        {
+            armPosition += .05;
+        }
+        else if(customPad1.getDpadDown())
+        {
+            armPosition -= .05;
+        }
+        if(customPad1.getDpadLeft())
+        {
+            clawPosition += .05;
+        }
+        else if(customPad1.getDpadRight())
+        {
+            clawPosition -= .05;
+        }
+        armPosition = Range.clip(armPosition,0,1);
+        clawPosition = Range.clip(clawPosition,.28,.86);
+        if(robot.stoneClaw.stoneArm!=null)
+        {
+            robot.stoneClaw.stoneArm.setPosition(armPosition);
+            telemetry.addData("arm position: ", robot.stoneClaw.stoneArm.getPosition());
+
+        }
+        if(robot.stoneClaw.stoneClaw!=null)
+        {
+            robot.stoneClaw.stoneClaw.setPosition(clawPosition);
+            telemetry.addData("claw position: ", robot.stoneClaw.stoneClaw.getPosition());
+
+        }
+
 
 
         if(customPad2.getLeftStickY()<-0.6)

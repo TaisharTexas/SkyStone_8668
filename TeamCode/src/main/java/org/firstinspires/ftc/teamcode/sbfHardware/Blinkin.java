@@ -135,7 +135,7 @@ public class Blinkin
         is15Seconds.reset();
         is5Seconds.reset();
         isGameOver.reset();
-        setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
+        setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
     }
 
     /** A control method that sets the lights on the robot to equal one of four possible states:
@@ -153,7 +153,7 @@ public class Blinkin
             {
                 if (isGameOver.hasExpired() )
                 {
-                    blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_PARTY_PALETTE);
+                    blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.SHOT_WHITE);
                 }
                 else if(is5Seconds.hasExpired())
                 {
@@ -178,5 +178,6 @@ public class Blinkin
             }
         }
     }
+
 
 }

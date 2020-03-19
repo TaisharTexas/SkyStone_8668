@@ -16,7 +16,7 @@ import java.io.File;
  * @author Andrew, 8668 Should Be Fine!
  * @see OpMode
  * */
-@Autonomous(name="SBF Autonomous", group="Yeltron")
+//@Autonomous(name="SBF Autonomous", group="Yeltron")
 @Config
 public class SBF_Autonomous extends OpMode
 {
@@ -110,11 +110,18 @@ public class SBF_Autonomous extends OpMode
      * Updates the robot position and calls execute on any actions in the runmap. */
     public void loop()
     {
-        robot.update();
-        telemetry.addData("Robot Heading: ", robot.getHeadingPursuit());
+        try {
+            robot.update();
+            telemetry.addData("Robot Heading: ", robot.getHeadingPursuit());
 
-        theMaster.execute();
-
+            theMaster.execute();
+        }
+        catch (IndexOutOfBoundsException e)
+        {
+//            telemetry.addData("Ugh: %s, %s, %s",e.getStackTrace()[1], e.getStackTrace()[2], e.getStackTrace()[3]);
+            telemetry.addData("Ugh: ", "%s, %s, %s", e.getStackTrace()[1], e.getStackTrace()[2], e.getStackTrace()[3]);
+            robot.stopChassis();
+        }
     }
 
     /** Runs once when STOP is pressed on the driver station.
