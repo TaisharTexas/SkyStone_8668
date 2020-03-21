@@ -59,6 +59,7 @@ public class Robot
     public StoneClaw stoneClaw = new StoneClaw();
 
     public int intakeState;
+    public boolean isVLiftMoving;
 
     // Vision System Items
     /** The camera object -- imports all the hardware and methods for the webcams and image pipeline. */
@@ -230,6 +231,7 @@ public class Robot
         startTime = 0;
         offset = theOffset;
         intakeState = 0;
+        isVLiftMoving = false;
 
         if ( useCamera)
         {
@@ -1154,7 +1156,14 @@ public class Robot
                 if(intake.rampSignal())
                 {
                     //On trigger, bump lift up
-                    if(liftDrive(1,1.5,1))
+                    if(!isVLiftMoving)
+                    {
+                        if(liftDrive(1,1.5,1))
+                        {
+                            intakeState = 1;
+                        }
+                    }
+                    else
                     {
                         intakeState = 1;
                     }
@@ -1164,16 +1173,24 @@ public class Robot
             //Run intake normally, waiting for back sensor to trigger
             //lights are lime
             case 1:
-                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.LIME);
+                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED_ORANGE);
                 intake.intakeIn(thePower, true, true);
                 telemetry.addData("lime","");
                 if(intake.backSignal())
                 {
-                    //On trigger, bring lift back down
-                    if(liftDrive(-1,2,1.2))
+                    if(!isVLiftMoving)
+                    {
+                        //On trigger, bring lift back down
+                        if(liftDrive(-1,2,1.2))
+                        {
+                            intakeState = 2;
+                        }
+                    }
+                    else
                     {
                         intakeState = 2;
                     }
+
                 }
                 break;
 

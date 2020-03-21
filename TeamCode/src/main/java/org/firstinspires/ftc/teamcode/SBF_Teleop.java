@@ -146,42 +146,17 @@ public class SBF_Teleop extends OpMode
                             afterburners());
 
 //        lift controls
+        if(customPad2.getRightStickY() > .1 || customPad2.getRightStickY() < .1)
+        {
+            robot.isVLiftMoving = true;
+        }
+        else
+        {
+            robot.isVLiftMoving = false;
+        }
         robot.lift.verticalDrive(customPad2.getRightStickY());
         telemetry.addData("vertical: ", robot.lift.vEncoder);
 
-//        double[] shoulderVals = {.86, .7, .62};
-
-//        if(pad2Wait.hasExpired())
-//        {
-//            pad2Wait.reset();
-//            if(customPad2.getDpadDown())
-//            {
-//                shoulderPos -= .025;
-//            }
-//            else if(customPad2.getDpadUp())
-//            {
-//                shoulderPos += .025;
-//            }
-//        }
-
-//        if(customPad2.getDpadDown())
-//        {
-//            shoulderPos -= .02;
-//        }
-//        else if(customPad2.getDpadUp())
-//        {
-//            shoulderPos += .02;
-//        }
-//        else if(customPad2.getLeftBumper())
-//        {
-//            shoulderPos = .41;
-//        }
-//        else if(customPad2.getRightBumper())
-//        {
-//            shoulderPos = .34;
-//        }
-//        shoulderPos = Range.clip(shoulderPos, .24, .46);
-//        robot.lift.horizontalDrive(shoulderPos);
         if(customPad2.getDpadDown())
         {
             robot.lift.horizontalDrive(-.6);
