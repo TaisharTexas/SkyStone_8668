@@ -163,33 +163,36 @@ public class SBF_Teleop extends OpMode
 //            }
 //        }
 
+//        if(customPad2.getDpadDown())
+//        {
+//            shoulderPos -= .02;
+//        }
+//        else if(customPad2.getDpadUp())
+//        {
+//            shoulderPos += .02;
+//        }
+//        else if(customPad2.getLeftBumper())
+//        {
+//            shoulderPos = .41;
+//        }
+//        else if(customPad2.getRightBumper())
+//        {
+//            shoulderPos = .34;
+//        }
+//        shoulderPos = Range.clip(shoulderPos, .24, .46);
+//        robot.lift.horizontalDrive(shoulderPos);
         if(customPad2.getDpadDown())
         {
-            shoulderPos -= .02;
+            robot.lift.horizontalDrive(-1);
         }
         else if(customPad2.getDpadUp())
         {
-            shoulderPos += .02;
+            robot.lift.horizontalDrive(1);
         }
-        else if(customPad2.getLeftBumper())
-        {
-            shoulderPos = .41;
-        }
-        else if(customPad2.getRightBumper())
-        {
-            shoulderPos = .34;
-        }
-        shoulderPos = Range.clip(shoulderPos, .24, .46);
-        robot.lift.horizontalDrive(shoulderPos);
-
-        telemetry.addData("shoulder", robot.lift.horizontal.getPosition());
-        telemetry.addData("shoulderPos", shoulderPos);
+        telemetry.addData("horizontal pwr", robot.lift.vexHoriz.getPower());
+        telemetry.addData("horizontal pos", robot.lift.hEncoder);
 
 
-//        telemetry.addData("right trigger: ", customPad1.getRightTrigger());
-//        telemetry.addData("left trigger: ", customPad1.getLeftTrigger());
-//        telemetry.addData("left Intake: ", robot.intake.leftIntake.getPower());
-//        telemetry.addData("right intake: ", robot.intake.rightIntake.getPower());
         telemetry.addData("position: ", robot.location);
 
         //intake controls

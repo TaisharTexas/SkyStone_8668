@@ -4,6 +4,7 @@ import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
@@ -33,6 +34,10 @@ public class Lift
     public ExpansionHubMotor leftVertical = null;
     /** Declaring the right lift motor as an expanded rev hub motor. */
     public ExpansionHubMotor rightVertical = null;
+    /** Declaring the vertical encoder */
+    public ExpansionHubMotor vLiftEncoder = null;
+    /** Declaring the horizontal encoder */
+    public ExpansionHubMotor hLiftEncoder = null;
 
     /** The servo that drives the horizontal slides. */
     public Servo horizontal = null;
@@ -45,7 +50,8 @@ public class Lift
     public CRServo vexHoriz = null;
 
     /** Stores the current value of the left lift motor's encoder. */
-    public int encoder = 0;
+    public int vEncoder = 0;
+    public int hEncoder = 0;
 
     /** The IN position for the horizontal slides. */
     private final double HOME = .29;
@@ -83,13 +89,67 @@ public class Lift
         hardwareMap = hwmap;
         moving = false;
 
+//        try
+//        {
+//            leftVertical = (ExpansionHubMotor) hardwareMap.get(DcMotorEx .class, "leftV");
+//            leftVertical.setDirection(DcMotorEx.Direction.REVERSE);
+//            leftVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//            leftVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            leftVertical.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//
+//        }
+//        catch (Exception p_execption)
+//        {
+//            leftVertical = null;
+//            telemetry.addData("left vertical not found in config file", "");
+//        }
+//
+//        try
+//        {
+//            rightVertical = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "rightV");
+//            rightVertical.setDirection(DcMotorEx.Direction.FORWARD);
+//            rightVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//            rightVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            rightVertical.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        }
+//        catch (Exception p_execption)
+//        {
+//            rightVertical = null;
+//            telemetry.addData("right vertical not found in config file", "");
+//        }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //ODOMETERS -- MUST INITIALIZE BEFORE THE VERTICAL MOTORS
+        try
+        {
+            vLiftEncoder = (ExpansionHubMotor)hardwareMap.get(DcMotorEx.class, "vEncoder");
+            vLiftEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            vLiftEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
+        }
+        catch(Exception p_exception)
+        {
+            vLiftEncoder = null;
+            telemetry.addData("vertical lift encoder ", "not found in config file");
+        }
+        try
+        {
+            hLiftEncoder = (ExpansionHubMotor)hardwareMap.get(DcMotorEx.class, "hEncoder");
+            hLiftEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            hLiftEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
+        }
+        catch(Exception p_exception)
+        {
+            hLiftEncoder = null;
+            telemetry.addData("horizontal lift encoder ", "not found in config file");
+        }
+        //NORMAL LIFT MOTORS -- MUST INITIALIZE AFTER THE ODOMETERS
         try
         {
             leftVertical = (ExpansionHubMotor) hardwareMap.get(DcMotorEx .class, "leftV");
             leftVertical.setDirection(DcMotorEx.Direction.REVERSE);
             leftVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            leftVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            leftVertical.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            leftVertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         }
         catch (Exception p_execption)
@@ -103,14 +163,14 @@ public class Lift
             rightVertical = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "rightV");
             rightVertical.setDirection(DcMotorEx.Direction.FORWARD);
             rightVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            rightVertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightVertical.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightVertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
         catch (Exception p_execption)
         {
             rightVertical = null;
             telemetry.addData("right vertical not found in config file", "");
         }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         try
         {
             touchL = hardwareMap.get(RevTouchSensor.class, "touchL");
@@ -199,9 +259,9 @@ public class Lift
         double driveDistance = ENCODER_TICKS_PER_IN_VERTICAL * positionInches;
         telemetry.addData("drive distance: ", driveDistance);
         telemetry.addData("moving: ", moving);
-        telemetry.addData("encoder: ", encoder);
+        telemetry.addData("encoder: ", vEncoder);
         double gain = 1;
-        double liftEncoderPos = encoder;
+        double liftEncoderPos = vEncoder;
 
         if (!moving)
         {
@@ -222,7 +282,6 @@ public class Lift
         }
 
         return !moving;
-
     }
 
     /** Drives the lift at a set power (sign of power determines direction).
@@ -236,11 +295,11 @@ public class Lift
      * */
     public void verticalDrive(double power)
     {
-        if(isLiftValid())
+        if(isVLiftValid())
         {
             telemetry.addData("velocity: ", leftVertical.getVelocity());
 
-            if ( encoder > 4700 && power < 0 ) {
+            if ( vEncoder > 4700 && power < 0 ) {
                 leftVertical.setPower(0.0);
                 rightVertical.setPower(0.0);
             }
@@ -249,7 +308,7 @@ public class Lift
                 leftVertical.setPower(.35);
                 rightVertical.setPower(.35);
             }
-            else if ( encoder < 700  && power > 0)
+            else if ( vEncoder < 700  && power > 0)
             {
                 leftVertical.setPower(Range.clip(-power,-.5,.5));
                 rightVertical.setPower(Range.clip(-power,-.5,.5));
@@ -276,15 +335,48 @@ public class Lift
     }
 
     /** Drives the horizontal slides to a specified position.
-     * @param position  The position the slides are driven to.
+     * @param power  The position the slides are driven to.
      * */
-    public void horizontalDrive(double position)
+    public void horizontalDrive(double power)
     {
         if(horizontal != null)
         {
-            telemetry.addData("horizontal: ", horizontal.getPosition());
-            horizontal.setPosition(position);
+            telemetry.addData("horizontal pwr: ", vexHoriz.getPower());
+            telemetry.addData("horizontal pos: ", hEncoder);
+            vexHoriz.setPower(power);
         }
+    }
+
+    /**
+     * Drives the lift to a set position (inches).
+     *
+     * @param power  How fast the lift will drive.
+     * @param positionInches  Where the lift will be driven to in inches.
+     * @param time  The max time this move can take. A time-out feature: if the move stalls for some
+     *              reason, the timer will catch it.
+     * @return  A boolean that tells us whether or not the lift is moving.
+     */
+    public boolean hLiftDrive(double power, double positionInches, double time)
+    {
+        double driveDistance = positionInches;
+        double gain = 1;
+        double liftEncoderPos = hEncoder;
+
+        if (!moving)
+        {
+            initialPosition = liftEncoderPos;
+            resetLiftStartTime();
+            moving = true;
+        }
+
+        horizontalDrive(-power);
+
+        if (((Math.abs(liftEncoderPos - initialPosition)) >= driveDistance) || (getLiftRuntime() > time))
+        {
+            stopLift();
+            moving = false;
+        }
+        return !moving;
     }
 
     /**
@@ -368,10 +460,14 @@ public class Lift
      */
     public void stopLift()
     {
-        if(isLiftValid())
+        if(isVLiftValid())
         {
             rightVertical.setPower(0.0);
             leftVertical.setPower(0.0);
+        }
+        if(vexHoriz!=null)
+        {
+            vexHoriz.setPower(0.0);
         }
     }
 
@@ -379,7 +475,7 @@ public class Lift
      * Checks to make sure both lift motors were initialized properly.
      * @return true if the motors are fine, false if the motors are null.
      */
-    private boolean isLiftValid()
+    private boolean isVLiftValid()
     {
         if(leftVertical!=null && rightVertical!=null)
         {
