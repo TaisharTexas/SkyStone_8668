@@ -82,6 +82,9 @@ public class SBF_Teleop extends OpMode
         robot.releaseFoundation();
 //        shoulderPos = .29;
         robot.lift.horizontalDrive(.25);
+        robot.stoneClaw.stoneDrive(StoneClaw.stoneClawPositions.HOME);
+        armPosition = .1;
+        clawPosition = .28;
         wristPos = .05;
         capWait = new Deadline(75, TimeUnit.SECONDS);
 
