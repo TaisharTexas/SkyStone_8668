@@ -293,11 +293,8 @@ public class Robot
             LR = null;
         }
 
-
-        //ODOMETERS -- MUST INITIALIZE BEFORE INTAKE
         try
         {
-            //X Encoder
             xEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "xEncoder");
             xEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             xEncoder.setDirection((DcMotorEx.Direction.REVERSE));
@@ -309,7 +306,6 @@ public class Robot
         }
         try
         {
-            //Y Encoder
             yEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "yEncoder");
             yEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             yEncoder.setDirection((DcMotorEx.Direction.FORWARD ));
@@ -438,8 +434,7 @@ public class Robot
 
 //        telemetry.addData("left position: ", bulkDataAux.getMotorCurrentPosition(lift.leftVertical));
 //        telemetry.addData("right position: ", bulkDataAux.getMotorCurrentPosition(lift.rightVertical));
-        lift.vEncoder = bulkDataAux.getMotorCurrentPosition(lift.vLiftEncoder);
-        lift.hEncoder = bulkDataAux.getMotorCurrentPosition(lift.hLiftEncoder);
+        lift.encoder = bulkDataAux.getMotorCurrentPosition(lift.leftVertical);
 
         /* store the current value to use as the previous value the next time around */
         prevXEncoder = bulkDataAux.getMotorCurrentPosition(xEncoder);
