@@ -82,6 +82,9 @@ public class SBF_Teleop extends OpMode
         robot.releaseFoundation();
 //        shoulderPos = .29;
         robot.lift.horizontalDrive(.25);
+        robot.stoneClaw.stoneDrive(StoneClaw.stoneClawPositions.HOME);
+        clawPosition = .28;
+        armPosition = .1;
         wristPos = .05;
         capWait = new Deadline(75, TimeUnit.SECONDS);
 
@@ -222,7 +225,7 @@ public class SBF_Teleop extends OpMode
         {
             clawPosition -= .05;
         }
-        armPosition = Range.clip(armPosition,0,1);
+        armPosition = Range.clip(armPosition,.1,.9);
         clawPosition = Range.clip(clawPosition,.28,.86);
         if(robot.stoneClaw.stoneArm!=null)
         {
