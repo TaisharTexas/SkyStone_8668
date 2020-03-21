@@ -125,7 +125,7 @@ public class Lift
         {
             vLiftEncoder = (ExpansionHubMotor)hardwareMap.get(DcMotorEx.class, "vEncoder");
             vLiftEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            vLiftEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
+            vLiftEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
         }
         catch(Exception p_exception)
         {
@@ -146,7 +146,7 @@ public class Lift
         //NORMAL LIFT MOTORS -- MUST INITIALIZE AFTER THE ODOMETERS
         try
         {
-            leftVertical = (ExpansionHubMotor) hardwareMap.get(DcMotorEx .class, "leftV");
+            leftVertical = (ExpansionHubMotor) hardwareMap.get(DcMotorEx .class, "vEncoder");
             leftVertical.setDirection(DcMotorEx.Direction.REVERSE);
             leftVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             leftVertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -160,7 +160,7 @@ public class Lift
 
         try
         {
-            rightVertical = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "rightV");
+            rightVertical = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "hEncoder");
             rightVertical.setDirection(DcMotorEx.Direction.FORWARD);
             rightVertical.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             rightVertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -348,7 +348,7 @@ public class Lift
     }
 
     /**
-     * Drives the lift to a set position (inches).
+     * Drives the horizontal lift to a set position (inches).
      *
      * @param power  How fast the lift will drive.
      * @param positionInches  Where the lift will be driven to in inches.

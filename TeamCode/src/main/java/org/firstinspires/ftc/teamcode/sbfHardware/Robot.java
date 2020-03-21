@@ -58,7 +58,7 @@ public class Robot
     public Intake intake = new Intake();
     public StoneClaw stoneClaw = new StoneClaw();
 
-    int intakeState;
+    public int intakeState;
 
     // Vision System Items
     /** The camera object -- imports all the hardware and methods for the webcams and image pipeline. */
@@ -1181,7 +1181,7 @@ public class Robot
             case 2:
                 lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
                 intake.intakeIn(thePower, true, true);
-                if(lift.horizontal.getPosition() > .35)
+                if(lift.hEncoder > 1000)
                 {
                     intakeState = 0;
                 }

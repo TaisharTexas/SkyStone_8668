@@ -81,7 +81,6 @@ public class SBF_Teleop extends OpMode
 
         robot.releaseFoundation();
 //        shoulderPos = .29;
-        robot.lift.horizontalDrive(.25);
         robot.stoneClaw.stoneDrive(StoneClaw.stoneClawPositions.HOME);
         armPosition = .1;
         clawPosition = .28;
@@ -148,8 +147,7 @@ public class SBF_Teleop extends OpMode
 
 //        lift controls
         robot.lift.verticalDrive(customPad2.getRightStickY());
-        telemetry.addData("right vertical: ", robot.lift.rightVertical.getCurrentPosition());
-        telemetry.addData("left vertical: ", robot.lift.leftVertical.getCurrentPosition());
+        telemetry.addData("vertical: ", robot.lift.vEncoder);
 
 //        double[] shoulderVals = {.86, .7, .62};
 
@@ -186,11 +184,19 @@ public class SBF_Teleop extends OpMode
 //        robot.lift.horizontalDrive(shoulderPos);
         if(customPad2.getDpadDown())
         {
-            robot.lift.horizontalDrive(-1);
+            robot.lift.horizontalDrive(-.6);
         }
         else if(customPad2.getDpadUp())
         {
-            robot.lift.horizontalDrive(1);
+            robot.lift.horizontalDrive(.6);
+        }
+        else
+        {
+            robot.lift.horizontalDrive(0.0);
+        }
+        if(robot.lift.hEncoder > 2000)
+        {
+            robot.intakeState=0;
         }
         telemetry.addData("horizontal pwr", robot.lift.vexHoriz.getPower());
         telemetry.addData("horizontal pos", robot.lift.hEncoder);
@@ -262,19 +268,6 @@ public class SBF_Teleop extends OpMode
 //            }
                robot.lift.capStone.setPosition(.6);
 
-        }
-
-        if(customPad2.getLeftStickX()>0)
-        {
-            robot.lift.vexHoriz.setPower(.5);
-        }
-        else if(customPad2.getLeftStickX()<0)
-        {
-            robot.lift.vexHoriz.setPower(-.5);
-        }
-        else
-        {
-            robot.lift.vexHoriz.setPower(0);
         }
 
         telemetry.addData("vex H#: ", robot.lift.vexHoriz.getPortNumber());
