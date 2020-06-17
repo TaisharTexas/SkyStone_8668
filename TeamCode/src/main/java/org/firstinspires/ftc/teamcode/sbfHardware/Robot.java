@@ -670,7 +670,7 @@ public class Robot
      * @param rightStickY  The y-axis of the right joystick on the primary gamepad. N/A
      * @param powerLimit  The maximum power value.
      * */
-    public void joystickDrive(double leftStickX, double leftStickY, double rightStickX, double rightStickY, double powerLimit)
+    public void double leftStickX, double leftStickY, double rightStickX, double rightStickY, double powerLimit)
     {
         /*
             These are the calculations needed to make a simple mecaccnum drive.
