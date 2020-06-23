@@ -73,7 +73,6 @@ public class SBF_Autonomous extends OpMode
         theMaster.init(telemetry, autoFile, robot);
 
         robot.getEncoderTelem();
-
     }
 
     /** Runs repeatedly after init() is done but before START is pressed -- locates the skystone
@@ -103,7 +102,6 @@ public class SBF_Autonomous extends OpMode
         resetStartTime();
         pursuit.elapsedTime = 0;
         robot.start();
-
     }
 
     /** Run repeatedly until STOP is pressed.
