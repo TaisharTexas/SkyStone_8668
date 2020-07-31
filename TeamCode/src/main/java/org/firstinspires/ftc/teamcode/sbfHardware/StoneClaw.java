@@ -57,9 +57,9 @@ public class StoneClaw
 
     public enum stoneClawPositions
     {
-        HOME(.1,.28),
+        HOME(.23,.28),
         TRANSPORT(.4,.32),
-        GRAB(.9,.32),
+        GRAB(.8,.32),
         RELEASE(.7,.54);
 
         public final double stoneArm;

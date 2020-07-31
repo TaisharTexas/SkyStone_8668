@@ -82,7 +82,7 @@ public class SBF_Teleop extends OpMode
         robot.releaseFoundation();
 //        shoulderPos = .29;
         robot.stoneClaw.stoneDrive(StoneClaw.stoneClawPositions.HOME);
-        armPosition = .1;
+        armPosition = .23;
         clawPosition = .28;
         wristPos = .05;
 //        capWait = new Deadline(75, TimeUnit.SECONDS);
@@ -186,19 +186,22 @@ public class SBF_Teleop extends OpMode
         telemetry.addData("position: ", robot.location);
 
         //intake controls
-        if(customPad1.getLeftTrigger() != 0)
-        {
-            robot.intakeInWithLights(customPad1.getLeftTrigger());
-        }
-        else if(customPad1.getRightTrigger() != 0)
-        {
-            robot.intake.intakeOut(customPad1.getRightTrigger()*0.6, true, true);
-        }
-        else
-        {
-            robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
-            robot.intake.intakeStop();
-        }
+//        if(customPad1.getLeftTrigger() != 0)
+//        {
+//            robot.intakeInWithLights(customPad1.getLeftTrigger());
+//        }
+//        else if(customPad1.getRightTrigger() != 0)
+//        {
+//            robot.intake.intakeOut(customPad1.getRightTrigger()*0.6, true, true);
+//        }
+//        else
+//        {
+//            robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
+//            robot.intake.intakeStop();
+//        }
+
+
+//        claw controls
         if(customPad1.getDpadUp())
         {
             armPosition += .05;
@@ -215,8 +218,8 @@ public class SBF_Teleop extends OpMode
         {
             clawPosition -= .05;
         }
-        armPosition = Range.clip(armPosition,0,1);
-        clawPosition = Range.clip(clawPosition,.28,.86);
+        armPosition = Range.clip(armPosition,.23,.8);
+        clawPosition = Range.clip(clawPosition,.28,.6);
         if(robot.stoneClaw.stoneArm!=null)
         {
             robot.stoneClaw.stoneArm.setPosition(armPosition);

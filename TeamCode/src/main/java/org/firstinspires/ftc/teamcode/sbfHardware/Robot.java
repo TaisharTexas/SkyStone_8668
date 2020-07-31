@@ -544,7 +544,7 @@ public class Robot
             telemetry.addData("A drive motor is not configured properly", "");
         }
         lift.stopLift();
-        intake.intakeStop();
+//        intake.intakeStop();
     }
 
     /** Stops the drive train. */

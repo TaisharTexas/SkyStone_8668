@@ -299,7 +299,7 @@ public class Lift
         {
             telemetry.addData("velocity: ", leftVertical.getVelocity());
 
-            if ( vEncoder > 9000 && power < 0 ) {
+            if ( vEncoder >8500 && power < 0 ) {
                 leftVertical.setPower(0.0);
                 rightVertical.setPower(0.0);
             }
@@ -467,7 +467,7 @@ public class Lift
         }
         if(vexHoriz!=null)
         {
-            vexHoriz.setPower(0.0);
+//            vexHoriz.setPower(0.0);
         }
     }
 
