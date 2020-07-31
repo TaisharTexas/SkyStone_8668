@@ -99,9 +99,9 @@ public class Robot
      * Foundation Fingers Items
      */
     /** The left fonudation finger servo. */
-    private Servo leftFoundation = null;
+    public Servo leftFoundation = null;
     /** The right foundation finger servo. */
-    private Servo rightFoundation = null;
+    public Servo rightFoundation = null;
 
     /**
      * Robot - Odometry Items
@@ -237,12 +237,12 @@ public class Robot
         {
             eyeOfSauron.init(hwmap, whichCamera, telemetry);
         }
-        lights.init(telemetry, hardwareMap, isTeleop);
+//        lights.init(telemetry, hardwareMap, isTeleop);
         lift.init(telemetry, hardwareMap);
         stoneClaw.init(telemetry, hardwareMap);
 
-        expansionHub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 2");
-        expansionHubAux = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 3");
+        expansionHub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 4");
+        expansionHubAux = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 2");
         /*
          * Setting ExpansionHub I2C bus speed
          */
@@ -402,7 +402,7 @@ public class Robot
      */
     public void start()
     {
-        lights.start();
+//        lights.start();
     }
 
     /**

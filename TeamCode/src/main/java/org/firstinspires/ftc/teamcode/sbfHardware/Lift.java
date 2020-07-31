@@ -26,9 +26,9 @@ public class Lift
     private HardwareMap hardwareMap;
 
     /** The left touch sensor. Used to keep the lift from driving down into the chassis. */
-    private RevTouchSensor touchL = null;
+    public RevTouchSensor touchL = null;
     /** The right touch sensor. Used to keep the lift from driving down into the chassis. */
-    private RevTouchSensor touchR = null;
+    public RevTouchSensor touchR = null;
 
     /** Declaring the left lift motor as an expanded rev hub motor. */
     public ExpansionHubMotor leftVertical = null;
@@ -190,58 +190,58 @@ public class Lift
             touchR = null;
             telemetry.addData("right touch not found in config file", "");
         }
-        try
-        {
-            horizontal = hardwareMap.get(Servo.class, "horizontal");
-            horizontal.setDirection(Servo.Direction.REVERSE);
-//            horizontal.setPosition(.29);
-        }
-        catch (Exception p_exeception)
-        {
-            telemetry.addData("horizontal not found in config file", 0);
-            horizontal = null;
-        }
-        try
-        {
-            capStone = hardwareMap.get(Servo.class, "cap");
-            capStone.setDirection(Servo.Direction.REVERSE);
-            capStone.setPosition(.6);
-        }
-        catch (Exception p_exeception)
-        {
-            telemetry.addData("capStone Servo not found in config file", 0);
-            capStone = null;
-        }
-        try
-        {
-            claw = hardwareMap.get(Servo.class, "claw");
-            claw.setDirection(Servo.Direction.FORWARD);
-        }
-        catch (Exception p_exeception)
-        {
-            telemetry.addData("claw not found in config file", 0);
-            claw = null;
-        }
-        try
-        {
-            wrist = hardwareMap.get(Servo.class, "wrist");
-            wrist.setDirection(Servo.Direction.FORWARD);
-        }
-        catch (Exception p_exeception)
-        {
-            telemetry.addData("wrist not found in config file", 0);
-            wrist = null;
-        }
-        try
-        {
-            vexHoriz = hardwareMap.get(CRServo.class, "vexH");
-            vexHoriz.setDirection(CRServo.Direction.REVERSE);
-        }
-        catch (Exception p_exeception)
-        {
-            telemetry.addData("vexHorizontal Servo not found in config file", 0);
-            vexHoriz = null;
-        }
+//        try
+//        {
+//            horizontal = hardwareMap.get(Servo.class, "horizontal");
+//            horizontal.setDirection(Servo.Direction.REVERSE);
+////            horizontal.setPosition(.29);
+//        }
+//        catch (Exception p_exeception)
+//        {
+//            telemetry.addData("horizontal not found in config file", 0);
+//            horizontal = null;
+//        }
+//        try
+//        {
+//            capStone = hardwareMap.get(Servo.class, "cap");
+//            capStone.setDirection(Servo.Direction.REVERSE);
+//            capStone.setPosition(.6);
+//        }
+//        catch (Exception p_exeception)
+//        {
+//            telemetry.addData("capStone Servo not found in config file", 0);
+//            capStone = null;
+//        }
+//        try
+//        {
+//            claw = hardwareMap.get(Servo.class, "claw");
+//            claw.setDirection(Servo.Direction.FORWARD);
+//        }
+//        catch (Exception p_exeception)
+//        {
+//            telemetry.addData("claw not found in config file", 0);
+//            claw = null;
+//        }
+//        try
+//        {
+//            wrist = hardwareMap.get(Servo.class, "wrist");
+//            wrist.setDirection(Servo.Direction.FORWARD);
+//        }
+//        catch (Exception p_exeception)
+//        {
+//            telemetry.addData("wrist not found in config file", 0);
+//            wrist = null;
+//        }
+//        try
+//        {
+//            vexHoriz = hardwareMap.get(CRServo.class, "vexH");
+//            vexHoriz.setDirection(CRServo.Direction.REVERSE);
+//        }
+//        catch (Exception p_exeception)
+//        {
+//            telemetry.addData("vexHorizontal Servo not found in config file", 0);
+//            vexHoriz = null;
+//        }
 
     }
 
@@ -299,7 +299,7 @@ public class Lift
         {
             telemetry.addData("velocity: ", leftVertical.getVelocity());
 
-            if ( vEncoder > 4700 && power < 0 ) {
+            if ( vEncoder > 9000 && power < 0 ) {
                 leftVertical.setPower(0.0);
                 rightVertical.setPower(0.0);
             }
