@@ -544,7 +544,7 @@ public class Robot
             telemetry.addData("A drive motor is not configured properly", "");
         }
         lift.stopLift();
-//        intake.intakeStop();
+        intake.intakeStop();
     }
 
     /** Stops the drive train. */
@@ -688,7 +688,7 @@ public class Robot
 //        telemetry.addData("x encoder: ", xEncoder.getCurrentPosition());
 //        telemetry.addData("y encoder: ", yEncoder.getCurrentPosition());
         double forward = leftStickY;
-        double right = -leftStickX;
+        double right = leftStickX;
         double clockwise = rightStickX;
 
         double leftFront = (forward + clockwise + right);
@@ -765,7 +765,7 @@ public class Robot
 
         double actual = currentRawHeading;
 
-        intake.intakeDrive(intakePower, true, true);
+        intake.intakeDrive(intakePower);
 //        telemetry.addData( "Is RR-Diagonal?: ", direction ==  REVERSE_RIGHT_DIAGONAL);
 //        telemetry.addData("Direction: ", direction);
 //        telemetry.addData("RR-Diag: ", REVERSE_RIGHT_DIAGONAL);
@@ -1059,7 +1059,7 @@ public class Robot
     {
         if(rightFoundation != null)
         {
-            rightFoundation.setPosition(.9);
+            rightFoundation.setPosition(.2);
         }
         else
         {
@@ -1068,7 +1068,7 @@ public class Robot
 
         if(leftFoundation != null)
         {
-            leftFoundation.setPosition(.9);
+            leftFoundation.setPosition(.2);
         }
         else
         {
@@ -1083,7 +1083,7 @@ public class Robot
     {
         if(rightFoundation != null)
         {
-            rightFoundation.setPosition(.2);
+            rightFoundation.setPosition(.9);
         }
         else
         {
@@ -1092,7 +1092,7 @@ public class Robot
 
         if(leftFoundation != null)
         {
-            leftFoundation.setPosition(.2);
+            leftFoundation.setPosition(.9);
         }
         else
         {
@@ -1150,8 +1150,8 @@ public class Robot
             //Run intake normally, waiting for ramp sensor to trigger
             //Lights are orange
             case 0:
-                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
-                intake.intakeIn(thePower, true, true);
+//                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
+                intake.intakeIn(thePower);
                 telemetry.addData("orange","");
                 if(intake.rampSignal())
                 {
@@ -1173,8 +1173,8 @@ public class Robot
             //Run intake normally, waiting for back sensor to trigger
             //lights are lime
             case 1:
-                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED_ORANGE);
-                intake.intakeIn(thePower, true, true);
+//                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED_ORANGE);
+                intake.intakeIn(thePower);
                 telemetry.addData("lime","");
                 if(intake.backSignal())
                 {
@@ -1196,8 +1196,8 @@ public class Robot
 
                 //Lift has cycled once, wait for horizontal to extend before resetting back to start.
             case 2:
-                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
-                intake.intakeIn(thePower, true, true);
+//                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+                intake.intakeIn(thePower);
                 if(lift.hEncoder > 1000)
                 {
                     intakeState = 0;

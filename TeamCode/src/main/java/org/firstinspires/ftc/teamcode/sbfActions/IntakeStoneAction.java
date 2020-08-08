@@ -65,7 +65,7 @@ public class IntakeStoneAction extends RobotAction
     {
 
         super.entry();
-        robot.intake.intakeDrive(thePower, true, true);
+        robot.intake.intakeDrive(thePower);
         robot.lift.releaseClaw();
         state = 0;
         done = false;

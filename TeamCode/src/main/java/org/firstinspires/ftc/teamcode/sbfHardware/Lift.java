@@ -212,36 +212,36 @@ public class Lift
 //            telemetry.addData("capStone Servo not found in config file", 0);
 //            capStone = null;
 //        }
-//        try
-//        {
-//            claw = hardwareMap.get(Servo.class, "claw");
-//            claw.setDirection(Servo.Direction.FORWARD);
-//        }
-//        catch (Exception p_exeception)
-//        {
-//            telemetry.addData("claw not found in config file", 0);
-//            claw = null;
-//        }
-//        try
-//        {
-//            wrist = hardwareMap.get(Servo.class, "wrist");
-//            wrist.setDirection(Servo.Direction.FORWARD);
-//        }
-//        catch (Exception p_exeception)
-//        {
-//            telemetry.addData("wrist not found in config file", 0);
-//            wrist = null;
-//        }
-//        try
-//        {
-//            vexHoriz = hardwareMap.get(CRServo.class, "vexH");
-//            vexHoriz.setDirection(CRServo.Direction.REVERSE);
-//        }
-//        catch (Exception p_exeception)
-//        {
-//            telemetry.addData("vexHorizontal Servo not found in config file", 0);
-//            vexHoriz = null;
-//        }
+        try
+        {
+            claw = hardwareMap.get(Servo.class, "claw");
+            claw.setDirection(Servo.Direction.FORWARD);
+        }
+        catch (Exception p_exeception)
+        {
+            telemetry.addData("claw not found in config file", 0);
+            claw = null;
+        }
+        try
+        {
+            wrist = hardwareMap.get(Servo.class, "wrist");
+            wrist.setDirection(Servo.Direction.FORWARD);
+        }
+        catch (Exception p_exeception)
+        {
+            telemetry.addData("wrist not found in config file", 0);
+            wrist = null;
+        }
+        try
+        {
+            vexHoriz = hardwareMap.get(CRServo.class, "vexH");
+            vexHoriz.setDirection(CRServo.Direction.REVERSE);
+        }
+        catch (Exception p_exeception)
+        {
+            telemetry.addData("vexHorizontal Servo not found in config file", 0);
+            vexHoriz = null;
+        }
 
     }
 
@@ -339,12 +339,14 @@ public class Lift
      * */
     public void horizontalDrive(double power)
     {
-        if(horizontal != null)
+        if(vexHoriz != null)
         {
-            telemetry.addData("horizontal pwr: ", vexHoriz.getPower());
-            telemetry.addData("horizontal pos: ", hEncoder);
+            telemetry.addData("horiz pwr to vex", power);
             vexHoriz.setPower(power);
         }
+//        telemetry.addData("horiz pwr to vex", power);
+//        vexHoriz.setPower(power);
+
     }
 
     /**
@@ -386,7 +388,7 @@ public class Lift
     {
         if(claw != null)
         {
-            claw.setPosition(.8);
+            claw.setPosition(.9);
         }
     }
 
@@ -409,7 +411,7 @@ public class Lift
         if(wrist != null)
         {
 //            wrist.setPosition(.9);
-            wrist.setPosition(.45);
+            wrist.setPosition(.85);
         }
 
     }
@@ -421,7 +423,7 @@ public class Lift
     {
         if(wrist != null)
         {
-            wrist.setPosition(.05);
+            wrist.setPosition(.45);
         }
     }
 

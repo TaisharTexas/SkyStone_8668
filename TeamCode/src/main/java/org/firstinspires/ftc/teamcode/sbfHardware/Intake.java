@@ -26,10 +26,6 @@ public class Intake
     public ExpansionHubMotor leftIntake = null;
     /** The right intake motor -- initialized as an expansion hub motor. */
     public ExpansionHubMotor rightIntake = null;
-    /** The left intake servo -- initialized as a continuous rotation servo. */
-    private CRServo leftInSupport = null;
-    /** The right intake servo -- initialized as a continuous rotation servo. */
-    private CRServo rightInSupport = null;
     /** The ramp distance sensor -- senses when a stone is on the ramp. */
     private DistanceSensor rampSignalD = null;
     /** The back distance sensor -- senses when a stone is ready to be deployed. */
@@ -82,56 +78,7 @@ public class Intake
             rightIntake = null;
         }
 
-        try
-        {
-            leftInSupport = hardwareMap.get(CRServo.class, "leftIn");
-            leftInSupport.setDirection(CRServo.Direction.REVERSE);
-        }
-        catch (Exception p_exeception)
-        {
-            telemetry.addData("leftIn not found in config file", 0);
-            leftInSupport = null;
-        }
-        try
-        {
-            rightInSupport = hardwareMap.get(CRServo.class, "rightIn");
-            rightInSupport.setDirection(CRServo.Direction.REVERSE);
-        }
-        catch (Exception p_exeception)
-        {
-            telemetry.addData("rightIn not found in config file", 0);
-            rightInSupport = null;
-        }
-//        try
-//        {
-//            rightInSupport2 = hardwareMap.get(CRServo.class, "rightIn2");
-//            rightInSupport2.setDirection(CRServo.Direction.REVERSE);
-//        }
-//        catch (Exception p_exeception)
-//        {
-//            telemetry.addData("rightIn2 not found in config file", 0);
-//            rightInSupport2 = null;
-//        }
-//        try
-//        {
-//            leftInSupport2 = hardwareMap.get(CRServo.class, "leftIn2");
-//            leftInSupport2.setDirection(CRServo.Direction.REVERSE);
-//        }
-//        catch (Exception p_exeception)
-//        {
-//            telemetry.addData("leftIn2 not found in config file", 0);
-//            leftInSupport2 = null;
-//        }
 
-//        try
-//        {
-//            rampSignalC = hardwareMap.get(ColorSensor.class, "rampSignal");
-//        }
-//        catch (Exception p_exception)
-//        {
-//            telemetry.addData("rampSignalC not found in config file", 0);
-//            rampSignalC = null;
-//        }
         try
         {
             rampSignalD = hardwareMap.get(DistanceSensor.class, "rampSignal");
@@ -156,12 +103,10 @@ public class Intake
     /**
      * Intake - Rotate the intake wheels to eject a stone out of the robot.
      * @param power  The power the intake motors are driven at.
-     * @param useServos  Whether or not to run the servos.
-     * @param useMotors  Whether or not to run the motors.
      */
-    public void intakeOut(double power, boolean useServos, boolean useMotors)
+    public void intakeOut(double power)
     {
-        intakeDrive(-power, useServos, useMotors);
+        intakeDrive(-power);
     }
 
     /**
@@ -222,25 +167,13 @@ public class Intake
     /**
      * Intake - Rotate the intake wheels to take in a stone into the intake.
      * @param power  The power the intake motors are driven at.
-     * @param useServos  Whether or not to run the servos.
-     * @param useMotors  Whether or not to run the motors.
      */
-    public void intakeIn(double power, boolean useServos, boolean useMotors)
+    public void intakeIn(double power)
     {
-        intakeDrive(power, useServos, useMotors);
+        intakeDrive(power);
     }
 
-    /**
-     * Drives the two intake servos.
-     * @param power The power determines whether the servo is on or off and in what direction.
-     */
-    public void servosDrive(double power)
-    {
-        leftInSupport.setPower(-power);
-//        leftInSupport2.setPower(-power);
-        rightInSupport.setPower(power);
-//        leftInSupport2.setPower(power);
-    }
+
 
 //    private boolean isLeftStalled()
 //    {
@@ -275,7 +208,6 @@ public class Intake
         if(leftIntake != null)
         {
             leftIntake.setPower(0.0);
-            leftInSupport.setPower(0.0);
 //            leftInSupport2.setPower(0.0);
 
         }
@@ -287,7 +219,6 @@ public class Intake
         if(rightIntake != null)
         {
             rightIntake.setPower(0.0);
-            rightInSupport.setPower(0.0);
 //            rightInSupport2.setPower(0.0);
         }
         else
@@ -302,20 +233,12 @@ public class Intake
      * @param power  the power at which the motors drive
      *               - power = eject
      *               + power = intake
-     * @param useServos  Determines whether or not to use the servos.
-     * @param useMotors  Determines whether or not to use the motors.
      * */
-    public void intakeDrive(double power, boolean useServos, boolean useMotors)
+    public void intakeDrive(double power)
     {
-        if(useMotors)
-        {
+
             leftIntake.setPower(-power*leftMaxIntakeSpdAuto);
             rightIntake.setPower(-power*rightMaxIntakeSpdAuto);
-        }
-        if(useServos)
-        {
-            servosDrive(power);
-        }
 
     }
 
