@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.SBF_Autonomous;
 
 import java.io.File;
 
-@Autonomous(name="autoRun", group="Zombie")
+@Autonomous(name="autoRun", group="Yeltron")
 /** The autonomous class that is used to test new actions and drive paths.
  *
  * @author Andrew, 8668 Should Be Fine!

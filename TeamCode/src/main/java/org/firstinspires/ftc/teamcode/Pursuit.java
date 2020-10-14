@@ -116,166 +116,163 @@ public class Pursuit
      */
     public void follow(Path drivePath)
     {
-        PVector target;
-        PVector start = drivePath.pathPoints.get(currentSegment);
-        end = drivePath.pathPoints.get(currentSegment + 1);
+        try {
+            PVector target;
+            PVector start = drivePath.pathPoints.get(currentSegment);
+            end = drivePath.pathPoints.get(currentSegment + 1);
 
 //        telemetry.addData("Going to: ", end);
 
-        double theMaxSpeed = drivePath.maxSpeeds.get(currentSegment + 1);
-        double theTargetHeading = drivePath.targetHeadings.get(currentSegment + 1);
+            double theMaxSpeed = drivePath.maxSpeeds.get(currentSegment + 1);
+            double theTargetHeading = drivePath.targetHeadings.get(currentSegment + 1);
 
-        double radius = theMaxSpeed / 6.0;
-        radius = Range.clip(radius,1.0,radius);
-        radius = endZone;
-        auxAction = "NULL";
+            double radius = theMaxSpeed / 6.0;
+//        radius = Range.clip(radius,1.0,radius);
+            radius = endZone;
+            auxAction = "NULL";
 
-        /**
-         * Determine the maximum acceleration by basing it off the maximum speed.  However, if
-         * we are accelerating from stop on the first segment, use a smoother acceleration value
-         * that comes from the exponential calculation.
-         */
-        if(theMaxSpeed >= 20 && theMaxSpeed < 26)
-        {
-            maxAccel = theMaxSpeed * maxMedAccelGain;
-        }
-        else if(theMaxSpeed >= 26)
-        {
-            maxAccel = theMaxSpeed * maxFastAccelGain;
-            if (currentSegment == 0)
-            {
-                maxAccel = maxAccel / (1.0 + Math.exp(-accelerationSteepness * (elapsedTime - timeToAccelerate)));
-                maxAccel = Range.clip( maxAccel, 0, 35*maxFastAccelGain);
+            /**
+             * Determine the maximum acceleration by basing it off the maximum speed.  However, if
+             * we are accelerating from stop on the first segment, use a smoother acceleration value
+             * that comes from the exponential calculation.
+             */
+            if (theMaxSpeed >= 20 && theMaxSpeed < 26) {
+                maxAccel = theMaxSpeed * maxMedAccelGain;
             }
-        }
-        else
-        {
-            maxAccel = theMaxSpeed * maxLowAccelGain;
-        }
-        maxTurnAccel = maxTurnSpd * turnGain;
+            else if (theMaxSpeed >= 26) {
+                maxAccel = theMaxSpeed * maxFastAccelGain;
+                if (currentSegment == 0) {
+                    maxAccel = maxAccel / (1.0 + Math.exp(-accelerationSteepness * (elapsedTime - timeToAccelerate)));
+                    maxAccel = Range.clip(maxAccel, 0, 35 * maxFastAccelGain);
+                }
+            }
+            else {
+                maxAccel = theMaxSpeed * maxLowAccelGain;
+            }
+            maxTurnAccel = maxTurnSpd * turnGain;
 
 //        telemetry.addData("v.elapsedTime: ", elapsedTime);
 //        telemetry.addData("v.gain: ", maxAccel);
 
-        /**
-         * Determine if I am targeting the last point, then set a flag which indicates I am on the
-         * last segment.  This has implications for when I get to the end.... I need to slow down
-         * and stop, since it is the last point.
-         */
-        if(drivePath.pathPoints.size() == currentSegment + 2)
-        {
-            lastSegment = true;
-        }
-        telemetry.addData("CurrentSegment, Last Segment?: ", "%d, %s", currentSegment, String.valueOf(lastSegment ));
-
-        /**
-         * 1. Calculate a Projected Future Location
-         *
-         * Do this by taking the current location and current velocity and calculating a
-         * projected location a few inches out from the current location in the direction the current
-         * velocity is pointing.
-         */
-        PVector velocityCopy = velocity.copy();
-        velocityCopy.setMag(pathLookahead);
-
-        PVector projectedLoc = PVector.add(location, velocityCopy);
-
-        /**
-         * 2. Calculate the Desired Target Location to shoot for
-         *
-         * Do this by taking the Projected Location and projecting it onto the current path segment.
-         * This projection is the point on the path segment which is closest to the Projected Location
-         * calculated in the previous step.  This point is called the Normal Point since it represents
-         * the point on the path which is perpendicular to the Projected Location of the robot.
-         *
-         * Once this Normal Point has been calculated, shift this point along the path towards the
-         * endpoint to give the robot a nice target ahead to shoot for.
-         *
-         * There are a few cases that have to be checked when the Normal Point is close to the
-         * start and end of the path segment.  For example, if the Normal Point is close to the
-         * end point, it's time to switch to the next segment.  Also, if the Normal Point is calculated
-         * to be outside of the segment defined by start and end, it must be corrected.
-         */
-
-        if(projectedLoc.dist(end) < radius && lastSegment)
-        {
-            target = end.copy();
-
-        }
-        else if(projectedLoc.dist(end) < radius)
-        {
-            currentSegment++;
-            start = drivePath.pathPoints.get(currentSegment);
-            end = drivePath.pathPoints.get(currentSegment + 1);
-            auxAction = drivePath.auxActions.get(currentSegment);
-
-            theMaxSpeed = drivePath.maxSpeeds.get(currentSegment + 1);
-            theTargetHeading = drivePath.targetHeadings.get(currentSegment + 1);
-
-            PVector normalPoint = getNormalPoint(projectedLoc, start, end);
-
-            if(normalPoint.dist(end) > start.dist(end))
-            {
-                normalPoint = start;
+            /**
+             * Determine if I am targeting the last point, then set a flag which indicates I am on the
+             * last segment.  This has implications for when I get to the end.... I need to slow down
+             * and stop, since it is the last point.
+             */
+            if (drivePath.pathPoints.size() == currentSegment + 2) {
+                lastSegment = true;
             }
-            else if(normalPoint.dist(start) > end.dist(start))
-            {
-                normalPoint = end;
+            telemetry.addData("CurrentSegment, Last Segment?: ", "%d, %s", currentSegment, String.valueOf(lastSegment));
+
+            /**
+             * 1. Calculate a Projected Future Location
+             *
+             * Do this by taking the current location and current velocity and calculating a
+             * projected location a few inches out from the current location in the direction the current
+             * velocity is pointing.
+             */
+            PVector velocityCopy = velocity.copy();
+            velocityCopy.setMag(pathLookahead);
+
+            PVector projectedLoc = PVector.add(location, velocityCopy);
+
+            /**
+             * 2. Calculate the Desired Target Location to shoot for
+             *
+             * Do this by taking the Projected Location and projecting it onto the current path segment.
+             * This projection is the point on the path segment which is closest to the Projected Location
+             * calculated in the previous step.  This point is called the Normal Point since it represents
+             * the point on the path which is perpendicular to the Projected Location of the robot.
+             *
+             * Once this Normal Point has been calculated, shift this point along the path towards the
+             * endpoint to give the robot a nice target ahead to shoot for.
+             *
+             * There are a few cases that have to be checked when the Normal Point is close to the
+             * start and end of the path segment.  For example, if the Normal Point is close to the
+             * end point, it's time to switch to the next segment.  Also, if the Normal Point is calculated
+             * to be outside of the segment defined by start and end, it must be corrected.
+             */
+
+            if (projectedLoc.dist(end) < radius && lastSegment) {
+                target = end.copy();
+
+            }
+            else if (projectedLoc.dist(end) < radius) {
+                currentSegment++;
+                start = drivePath.pathPoints.get(currentSegment);
+                end = drivePath.pathPoints.get(currentSegment + 1);
+                auxAction = drivePath.auxActions.get(currentSegment);
+
+                theMaxSpeed = drivePath.maxSpeeds.get(currentSegment + 1);
+                theTargetHeading = drivePath.targetHeadings.get(currentSegment + 1);
+
+                PVector normalPoint = getNormalPoint(projectedLoc, start, end);
+
+                if (normalPoint.dist(end) > start.dist(end)) {
+                    normalPoint = start;
+                }
+                else if (normalPoint.dist(start) > end.dist(start)) {
+                    normalPoint = end;
+                }
+
+                PVector pathDirection = PVector.sub(end, start);
+                pathDirection.setMag(2);
+
+                target = normalPoint.copy();
+                target.add(pathDirection);
+
+            }
+            else {
+                PVector normalPoint = getNormalPoint(projectedLoc, start, end);
+
+                if (normalPoint.dist(end) > start.dist(end)) {
+                    normalPoint = start;
+                }
+                else if (normalPoint.dist(start) > end.dist(start)) {
+                    normalPoint = end;
+                }
+
+                PVector pathDirection = PVector.sub(end, start);
+                pathDirection.setMag(pathLookahead);
+
+                target = normalPoint.copy();
+                target.add(pathDirection);
+            }
+            telemetry.addData("ProjectedLoc: ", projectedLoc);
+            telemetry.addData("Distance Proj to End: ", projectedLoc.dist(end));
+
+
+            if (location.dist(end) < radius && !lastSegment) {
+                currentSegment++;
             }
 
-            PVector pathDirection = PVector.sub(end, start);
-            pathDirection.setMag(2);
+            telemetry.addData("Target loc: ", target);
 
-            target = normalPoint.copy();
-            target.add(pathDirection);
+            /**
+             * 3.  Calcualte the Steering Vector to achieve the Target Location
+             */
+            arrive(target, theMaxSpeed);
 
-        }
-        else
-        {
-            PVector normalPoint = getNormalPoint(projectedLoc, start, end);
+            /**
+             * 4.  Calculate the Rotation Speed to achieve the Target Heading
+             */
+            point(theTargetHeading, maxTurnSpd);
+            telemetry.addData("end: ", end);
 
-            if(normalPoint.dist(end) > start.dist(end))
-            {
-                normalPoint = start;
+            telemetry.addData("Distance to end: ", location.dist(end));
+
+            if (lastSegment && location.dist(end) <= 3.5 && (Math.abs(currentHeading) - Math.abs(theTargetHeading)) <= 2) {
+                done = true;
             }
-            else if(normalPoint.dist(start) > end.dist(start))
-            {
-                normalPoint = end;
-            }
-
-            PVector pathDirection = PVector.sub(end, start);
-            pathDirection.setMag(pathLookahead);
-
-            target = normalPoint.copy();
-            target.add(pathDirection);
         }
-        telemetry.addData("ProjectedLoc: ", projectedLoc);
-        telemetry.addData("Distance Proj to End: ", projectedLoc.dist(end));
-
-
-        if(location.dist(end) < radius && !lastSegment)
+        catch(Exception p_exception)
         {
-            currentSegment++;
-        }
+            telemetry.addData("Pursuit.follow() exception thrown: ", p_exception);
+            telemetry.addData("current segment: ", currentSegment);
+            telemetry.addData("last segment: ", lastSegment);
+            telemetry.update();
+            throw p_exception;
 
-        telemetry.addData("Target loc: ", target);
-
-        /**
-         * 3.  Calcualte the Steering Vector to achieve the Target Location
-         */
-        arrive(target, theMaxSpeed);
-
-        /**
-         * 4.  Calculate the Rotation Speed to achieve the Target Heading
-         */
-        point(theTargetHeading, maxTurnSpd);
-        telemetry.addData("end: ", end);
-
-        telemetry.addData("Distance to end: ", location.dist(end));
-
-        if(lastSegment && location.dist(end) <= 3.5 && (Math.abs(currentHeading)-Math.abs(theTargetHeading)) <= 2)
-        {
-            done = true;
         }
     }
 

@@ -1,0 +1,22 @@
+Type,ID,Next Action,Duration,Pwr/Position,Direction,Distance/x,Intake/y,AuxAction
+WaitAction,LEFT,stoneHome,5,,,,,
+WaitAction,RIGHT,stoneHome,5,,,,,
+WaitAction,CENTER,stoneHome,5,,,,,
+DeployStoneAction,lift,in,4,,,,,
+LiftHomeAction,in,,4,,,,,
+PursuitAction,pursuit,,5,35,-90,24,9,NULL
+PursuitAction,pursuit,,5,35,-90,24,24,NULL
+PursuitAction,pursuit,,5,35,-90,39,9,lift
+PursuitAction,pursuit,,5,35,-90,24,9,NULL
+PursuitAction,pursuit,,5,35,-90,39,9,out
+PursuitAction,pursuit,,5,35,-90,24,9,NULL
+PursuitAction,pursuit,,5,35,-90,24,24,NULL
+PursuitAction,pursuit,,5,35,-90,39,9,NULL
+PursuitAction,pursuit,,5,35,-90,24,9,NULL
+PursuitAction,pursuit,,5,35,-90,39,9,NULL
+,,,,,,,,
+IntakeAction,out,eject,2,1,,,,
+IntakeAction,eject,,2,-1,,,,
+StoneClawAction,stoneHome,,2,HOME,,,,
+StoneClawAction,stoneTransport,,2,TRANSPORT,,,,
+StoneClawAction,stoneGrab,,2,GRAB,,,,

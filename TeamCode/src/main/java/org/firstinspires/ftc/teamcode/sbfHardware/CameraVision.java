@@ -39,7 +39,7 @@ public class CameraVision
     /**
      * The ID for the camera we are using (there are 2 on the robot)
      */
-    public String camDeviceName = "leftCam";
+    public String camDeviceName = "webcam";
 
     /**
      * Initialize the vision hardware and provide the telemetry object for debugging.

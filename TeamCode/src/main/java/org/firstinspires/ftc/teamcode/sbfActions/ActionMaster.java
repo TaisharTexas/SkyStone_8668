@@ -13,6 +13,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -207,25 +208,47 @@ public class ActionMaster
         }
 
         telemetry.addData("RunMap: ", keyList());
-        for(RobotAction action : runMap.values())
-        {
-            Boolean actionDone = action.execute();
-            if(!(action.getAuxAction().toUpperCase().equals("NULL")))
-            {
-                nextList.add(action.getAuxAction().toUpperCase());
-            }
-            telemetry.addData("action done: ", actionDone);
+        Iterator<Map.Entry<String, RobotAction>> itr = runMap.entrySet().iterator();
 
+        while(itr.hasNext())
+        {
+
+            Map.Entry<String, RobotAction> entry = itr.next();
+            Boolean actionDone = entry.getValue().execute();
+            if(!(entry.getValue().getAuxAction().toUpperCase().equals("NULL")))
+            {
+                nextList.add(entry.getValue().getAuxAction().toUpperCase());
+//                telemetry.addData("aux action: ", action.getAuxAction());
+            }
             if(actionDone)
             {
-                if(action.theNextAction != null)
+                if(entry.getValue().theNextAction != null)
                 {
-                    nextList.add(action.theNextAction.toUpperCase());
+                    nextList.add(entry.getValue().theNextAction.toUpperCase());
                 }
-                action.exit();
-                runMap.remove(action.theId.toUpperCase());
+                entry.getValue().exit();
+                itr.remove();
             }
         }
+//        for(RobotAction action : runMap.values())
+//        {
+//            Boolean actionDone = action.execute();
+//            if(!(action.getAuxAction().toUpperCase().equals("NULL")))
+//            {
+//                nextList.add(action.getAuxAction().toUpperCase());
+////                telemetry.addData("aux action: ", action.getAuxAction());
+//            }
+//            if(actionDone)
+//            {
+//                if(action.theNextAction != null)
+//                {
+//                    nextList.add(action.theNextAction.toUpperCase());
+//                }
+//                action.exit();
+//                runMap.remove(action.theId.toUpperCase());
+//            }
+//            telemetry.addData("action done: ", actionDone);
+//        }
 
         telemetry.addData("next list: ", nextList.toString());
         for(String next : nextList)

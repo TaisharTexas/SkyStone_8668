@@ -56,6 +56,10 @@ public class Robot
     public Blinkin lights = new Blinkin();
     /** The intake object -- imports all the hardware and methods for the intake mechanim. */
     public Intake intake = new Intake();
+    public StoneClaw stoneClaw = new StoneClaw();
+
+    public int intakeState;
+    public boolean isVLiftMoving;
 
     // Vision System Items
     /** The camera object -- imports all the hardware and methods for the webcams and image pipeline. */
@@ -95,9 +99,9 @@ public class Robot
      * Foundation Fingers Items
      */
     /** The left fonudation finger servo. */
-    private Servo leftFoundation = null;
+    public Servo leftFoundation = null;
     /** The right foundation finger servo. */
-    private Servo rightFoundation = null;
+    public Servo rightFoundation = null;
 
     /**
      * Robot - Odometry Items
@@ -226,16 +230,19 @@ public class Robot
         useCamera = useVision;
         startTime = 0;
         offset = theOffset;
+        intakeState = 0;
+        isVLiftMoving = false;
 
         if ( useCamera)
         {
             eyeOfSauron.init(hwmap, whichCamera, telemetry);
         }
-        lights.init(telemetry, hardwareMap, isTeleop);
+//        lights.init(telemetry, hardwareMap, isTeleop);
         lift.init(telemetry, hardwareMap);
+        stoneClaw.init(telemetry, hardwareMap);
 
-        expansionHub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 2");
-        expansionHubAux = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 3");
+        expansionHub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 4");
+        expansionHubAux = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 2");
         /*
          * Setting ExpansionHub I2C bus speed
          */
@@ -288,8 +295,11 @@ public class Robot
             LR = null;
         }
 
+
+        //ODOMETERS -- MUST INITIALIZE BEFORE INTAKE
         try
         {
+            //X Encoder
             xEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "xEncoder");
             xEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             xEncoder.setDirection((DcMotorEx.Direction.REVERSE));
@@ -301,6 +311,7 @@ public class Robot
         }
         try
         {
+            //Y Encoder
             yEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "yEncoder");
             yEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             yEncoder.setDirection((DcMotorEx.Direction.FORWARD ));
@@ -391,7 +402,7 @@ public class Robot
      */
     public void start()
     {
-        lights.start();
+//        lights.start();
     }
 
     /**
@@ -429,7 +440,8 @@ public class Robot
 
 //        telemetry.addData("left position: ", bulkDataAux.getMotorCurrentPosition(lift.leftVertical));
 //        telemetry.addData("right position: ", bulkDataAux.getMotorCurrentPosition(lift.rightVertical));
-        lift.encoder = bulkDataAux.getMotorCurrentPosition(lift.leftVertical);
+        lift.vEncoder = bulkDataAux.getMotorCurrentPosition(lift.vLiftEncoder);
+        lift.hEncoder = bulkDataAux.getMotorCurrentPosition(lift.hLiftEncoder);
 
         /* store the current value to use as the previous value the next time around */
         prevXEncoder = bulkDataAux.getMotorCurrentPosition(xEncoder);
@@ -676,7 +688,7 @@ public class Robot
 //        telemetry.addData("x encoder: ", xEncoder.getCurrentPosition());
 //        telemetry.addData("y encoder: ", yEncoder.getCurrentPosition());
         double forward = leftStickY;
-        double right = -leftStickX;
+        double right = leftStickX;
         double clockwise = rightStickX;
 
         double leftFront = (forward + clockwise + right);
@@ -753,7 +765,7 @@ public class Robot
 
         double actual = currentRawHeading;
 
-        intake.intakeDrive(intakePower, true, true);
+        intake.intakeDrive(intakePower);
 //        telemetry.addData( "Is RR-Diagonal?: ", direction ==  REVERSE_RIGHT_DIAGONAL);
 //        telemetry.addData("Direction: ", direction);
 //        telemetry.addData("RR-Diag: ", REVERSE_RIGHT_DIAGONAL);
@@ -1047,7 +1059,7 @@ public class Robot
     {
         if(rightFoundation != null)
         {
-            rightFoundation.setPosition(.9);
+            rightFoundation.setPosition(.2);
         }
         else
         {
@@ -1056,7 +1068,7 @@ public class Robot
 
         if(leftFoundation != null)
         {
-            leftFoundation.setPosition(.9);
+            leftFoundation.setPosition(.2);
         }
         else
         {
@@ -1071,7 +1083,7 @@ public class Robot
     {
         if(rightFoundation != null)
         {
-            rightFoundation.setPosition(.2);
+            rightFoundation.setPosition(.9);
         }
         else
         {
@@ -1080,7 +1092,7 @@ public class Robot
 
         if(leftFoundation != null)
         {
-            leftFoundation.setPosition(.2);
+            leftFoundation.setPosition(.9);
         }
         else
         {
@@ -1132,21 +1144,88 @@ public class Robot
      * */
     public void intakeInWithLights(double thePower)
     {
-        if(intake.rampSignal())
+        telemetry.addData("intake state: ", intakeState);
+        switch (intakeState)
         {
-//            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.LIME);
-            intake.intakeIn(thePower, true, true);
-        }
-        else if(intake.backSignal() && intake.rampSignal())
-        {
-//            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
-            intake.intakeIn(thePower, true, false);
-        }
-        else
-        {
-//            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
-            intake.intakeIn(thePower, true, true);
+            //Run intake normally, waiting for ramp sensor to trigger
+            //Lights are orange
+            case 0:
+//                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
+                intake.intakeIn(thePower);
+                telemetry.addData("orange","");
+                if(intake.rampSignal())
+                {
+                    //On trigger, bump lift up
+                    if(!isVLiftMoving)
+                    {
+                        if(liftDrive(1,1.5,1))
+                        {
+                            intakeState = 1;
+                        }
+                    }
+                    else
+                    {
+                        intakeState = 1;
+                    }
+                }
+                break;
 
+            //Run intake normally, waiting for back sensor to trigger
+            //lights are lime
+            case 1:
+//                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED_ORANGE);
+                intake.intakeIn(thePower);
+                telemetry.addData("lime","");
+                if(intake.backSignal())
+                {
+                    if(!isVLiftMoving)
+                    {
+                        //On trigger, bring lift back down
+                        if(liftDrive(-1,2,1.2))
+                        {
+                            intakeState = 2;
+                        }
+                    }
+                    else
+                    {
+                        intakeState = 2;
+                    }
+
+                }
+                break;
+
+                //Lift has cycled once, wait for horizontal to extend before resetting back to start.
+            case 2:
+//                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+                intake.intakeIn(thePower);
+                if(lift.hEncoder > 1000)
+                {
+                    intakeState = 0;
+                }
+                break;
+
+            default:
+                break;
         }
+
+//        if(intake.rampSignal())
+//        {
+//            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.LIME);
+//            intake.intakeIn(thePower, true, true);
+//            telemetry.addData("lime","");
+//        }
+//        else if(intake.backSignal() && intake.rampSignal())
+//        {
+//            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+//            intake.intakeIn(thePower, true, false);
+//            telemetry.addData("green","");
+//        }
+//        else
+//        {
+//            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
+//            intake.intakeIn(thePower, true, true);
+//            telemetry.addData("orange","");
+//
+//        }
     }
 }

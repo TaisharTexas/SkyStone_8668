@@ -76,6 +76,8 @@ public class Blinkin
     /** Tracks when there is 5 seconds left. */
     private Deadline is5Seconds;
 
+    private Deadline isGameOver;
+
 
     /** An enum that stores the display mode of the LEDs */
     protected enum DisplayKind {
@@ -101,7 +103,8 @@ public class Blinkin
         {
             blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, "lights");
             pattern = RevBlinkinLedDriver.BlinkinPattern.BREATH_BLUE;
-            setPattern(pattern);
+//            setPattern(pattern);
+            blinkinLedDriver.setPattern(pattern);
             telemetry.addData("success", " blinkin configured");
         }
         catch(Exception p_exception)
@@ -113,6 +116,7 @@ public class Blinkin
         isEndgame = new Deadline(90, TimeUnit.SECONDS);
         is15Seconds = new Deadline(105, TimeUnit.SECONDS);
         is5Seconds = new Deadline(115, TimeUnit.SECONDS);
+        isGameOver = new Deadline( 120, TimeUnit.SECONDS);
     }
 
     public void loop()
@@ -130,6 +134,8 @@ public class Blinkin
         isEndgame.reset();
         is15Seconds.reset();
         is5Seconds.reset();
+        isGameOver.reset();
+        setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
     }
 
     /** A control method that sets the lights on the robot to equal one of four possible states:
@@ -145,7 +151,11 @@ public class Blinkin
         {
             if(isTeleop)
             {
-                if(is5Seconds.hasExpired())
+                if (isGameOver.hasExpired() )
+                {
+                    blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.SHOT_WHITE);
+                }
+                else if(is5Seconds.hasExpired())
                 {
                     blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.STROBE_RED);
                 }
@@ -168,5 +178,6 @@ public class Blinkin
             }
         }
     }
+
 
 }
