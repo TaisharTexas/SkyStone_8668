@@ -1,51 +1,16 @@
-## NOTICE
-
-This repository contains the public FTC SDK for the SKYSTONE (2019-2020) competition season.  
-
-Formerly this software project was hosted [here](https://github.com/ftctechnh/ftc_app).  Teams who are competing in the SKYSTONE Challenge should use this [new SKYSTONE repository](https://github.com/FIRST-Tech-Challenge/SKYSTONE) instead of the older (and no longer updated) ftc_app repository.
-
 ## Welcome!
-This GitHub repository contains the source code that is used to build an Android app to control a *FIRST* Tech Challenge competition robot.  To use this SDK, download/clone the entire project to your local computer.
 
-## Getting Started
-If you are new to robotics or new to the *FIRST* Tech Challenge, then you should consider reviewing the [FTC Blocks Tutorial](https://github.com/FIRST-Tech-Challenge/SKYSTONE/wiki/Blocks-Tutorial) to get familiar with how to use the control system:  
+This GitHub repository contains the code used by [FTC team 8668 Should Be Fine](https://www.error404robotics.com) for the FIRST Tech Challenge SKYSTONE (2019-2020) competition season. This repository contains the public FTC SDK for the SKYSTONE (2019-2020) competition season.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[FTC Blocks Online Tutorial](https://github.com/FIRST-Tech-Challenge/SKYSTONE/wiki/Blocks-Tutorial)
+Formerly this repository was hosted on Bitbucket, but was migrated to GitHub after the conclusion of the 2019-2020 season.
 
-Even if you are an advanced Java programmer, it is helpful to start with the [FTC Blocks tutorial](https://github.com/FIRST-Tech-Challenge/SKYSTONE/wiki/Blocks-Tutorial), and then migrate to the [OnBot Java Tool](https://github.com/FIRST-Tech-Challenge/SKYSTONE/wiki/OnBot-Java-Tutorial) or to [Android Studio](https://github.com/FIRST-Tech-Challenge/SKYSTONE/wiki/Android-Studio-Tutorial) afterwards.
+## Key Algorithms
+### Pure Pursuit Autonomous Algorithm
+The SBF Pure Pursuit algorithm is a vector-based navigational system first developed by Carnegie Mellon University, and subsequently adapted by us. Pure pursuit uses a fusion of positional information (x and y values, via two encoders) and heading (provided by the IMU). The algorithm is given a series of coordinate points along with a desired heading for each point. From the points, a path is constructed. The robot then uses the current robot position and the desired robot position (the next point on the path) to construct a movement vector. This means that if the robot is knocked off course, as long as the encoders track the movement, the robot can recover and return to the desired path.
 
-## Downloading the Project
-If you are an Android Studio programmer, there are several ways to download this repo.  Note that if you use the Blocks or OnBot Java Tool to program your robot, then you do not need to download this repository.
+### Generic Action Engine with Zero-Compile Autonomous Programming
+For our autonomous code, we built an Action Engine that does not use hard-coded states and transitions encoded in our Java classes.  Instead, the Action Engine loads a CSV file from the phone’s internal storage to define the actions and transitions that the robot executes to perform the desired tasks.  Instead of dealing with tangled Java syntax for 80+ states and transitions, we are able to neatly organize them in a spreadsheet program.  Then we export the spreadsheet as a CSV file and load this file onto the phone.
+During Init, our code takes whichever CSV file is selected and reads through it and builds a map of all the robot actions defined in the CSV file.  The Action Engine then loads each robot action into a run list and executes them sequentially, following the information provided in each action’s parameters to know which action to load and execute next. After an action is executed, the Action Engine removes it from the run list and the next listed action is loaded in its place.  Adapting our autonomous is as easy as changing a few rows in a CSV file using Excel.
 
-* If you are a git user, you can clone the most current version of the repository:
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;git clone https://github.com/FIRST-Tech-Challenge/SKYSTONE.git</p>
-
-* Or, if you prefer, you can use the "Download Zip" button available through the main repository page.  Downloading the project as a .ZIP file will keep the size of the download manageable.
-
-* You can also download the project folder (as a .zip or .tar.gz archive file) from the Downloads subsection of the [Releases](https://github.com/FIRST-Tech-Challenge/SKYSTONE/releases) page for this repository.
-
-Once you have downloaded and uncompressed (if needed) your folder, you can use Android Studio to import the folder  ("Import project (Eclipse ADT, Gradle, etc.)").
-
-## Getting Help
-### User Documentation and Tutorials
-*FIRST* maintains online documentation with information and tutorials on how to use the *FIRST* Tech Challenge software and robot control system.  You can access this documentation using the following link:
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[SKYSTONE Online Documentation](https://github.com/FIRST-Tech-Challenge/SKYSTONE/wiki)
-
-Note that the online documentation is an "evergreen" document that is constantly being updated and edited.  It contains the most current information about the *FIRST* Tech Challenge software and control system.
-
-### Javadoc Reference Material
-The Javadoc reference documentation for the FTC SDK is now available online.  Click on the following link to view the FTC SDK Javadoc documentation as a live website:
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[FTC Javadoc Documentation](https://first-tech-challenge.github.io/SkyStone/doc/javadoc/index.html)    
-
-Documentation for the FTC SDK is also included with this repository.  There is a subfolder called "doc" which contains several subfolders:
-
- * The folder "apk" contains the .apk files for the FTC Driver Station and FTC Robot Controller apps.
- * The folder "javadoc" contains the JavaDoc user documentation for the FTC SDK.
-
-### Online User Forum
-For technical questions regarding the Control System or the FTC SDK, please visit the FTC Technology forum:
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[FTC Technology Forum](https://ftcforum.usfirst.org/forumdisplay.php?156-FTC-Technology)
+### OpenCV Image Process for SkyStone Detection
+We use OpenCV image processing where the webcam image is put through several filters that makes the 3 stones in the image turn black or white based on the color and brightness of each stone. As a result of the filtering process, the SkyStone shows up as black while the normal stones appear white in the processed image.  In order to increase robustness and to automatically account for varying lighting conditions, the numeric pixel values for each stone’s pixel region on the screen are added together resulting in a single value for each stone.  The three summed values are compared, and the lowest value represents the darkest stone.  Since the SkyStone is covered with dark decal, the darkest stone is chosen as the SkyStone.  The image processing activity occurs continuously during Init, so the robot already knows the SkyStone position when the autonomous period begins.
